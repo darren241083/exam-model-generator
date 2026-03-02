@@ -16,21 +16,18 @@
       --radius:16px;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-
-      --accent2:#2563eb;
+      --accent:#2563eb;
     }
 
     *{ box-sizing:border-box; }
     body{ margin:0; font-family:var(--sans); color:var(--text); background:var(--bg); }
-
-    .wrap{ max-width:1200px; margin:0 auto; padding:28px 18px 40px; }
+    .wrap{ max-width:1200px; margin:0 auto; padding:26px 18px 40px; }
 
     header{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;
-      margin-bottom:16px;
+      display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;
+      margin-bottom:12px;
     }
     h1{ font-size:22px; margin:0; letter-spacing:.2px; }
-    .sub{ color:var(--muted); margin-top:6px; font-size:13px; max-width:860px; }
     .tip{
       color:var(--muted);
       font-size:12px;
@@ -50,7 +47,7 @@
       display:grid;
       grid-template-columns: repeat(6, minmax(170px, 1fr));
       gap:12px;
-      margin-top:14px;
+      margin-top:10px;
     }
     @media (max-width:1100px){ .grid{ grid-template-columns: repeat(3, minmax(180px, 1fr)); } }
     @media (max-width:700px){ .grid{ grid-template-columns: repeat(1, 1fr); } }
@@ -78,7 +75,7 @@
     }
     .critTitle{ font-size:13px; font-weight:900; line-height:1.25; }
 
-    /* ===== Descriptor area with vertical arrows ===== */
+    /* descriptor + arrows on the right */
     .descWrap{
       display:grid;
       grid-template-columns: 1fr 44px;
@@ -86,7 +83,6 @@
       align-items:stretch;
       margin-top:auto;
     }
-
     .descBox{
       border:1px dashed var(--line);
       border-radius:14px;
@@ -94,14 +90,12 @@
       background:#fff;
       min-height:120px;
     }
-
     .descLabel{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       margin-bottom:6px;
     }
     .descLabel .bandName{ font-weight:900; font-size:12px; }
     .descLabel .bandRange{ color:var(--muted); font-size:12px; font-weight:800; }
-
     .descText{
       font-size:12px;
       line-height:1.35;
@@ -115,7 +109,6 @@
       align-items:stretch;
       gap:10px;
     }
-
     .triBtn{
       height:44px;
       width:44px;
@@ -132,9 +125,8 @@
     .triBtn:focus{
       outline:none;
       box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-      border-color: var(--accent2);
+      border-color: var(--accent);
     }
-
     .tri{
       width:0; height:0;
       border-left:9px solid transparent;
@@ -143,7 +135,6 @@
     .tri.up{ border-bottom:14px solid var(--crit); }
     .tri.down{ border-top:14px solid var(--crit); }
 
-    /* Band pill (kept, but no longer shares space with arrows) */
     .bandPill{
       display:inline-flex; align-items:center; gap:8px;
       border:1px solid var(--line);
@@ -155,14 +146,9 @@
       white-space:nowrap;
     }
     .bandPill .range{ font-weight:800; color:var(--muted); }
+    .bandFooter{ display:flex; justify-content:flex-start; margin-top:10px; }
 
-    .bandFooter{
-      display:flex;
-      justify-content:flex-start;
-      margin-top:10px;
-    }
-
-    /* ===== Live answer area ===== */
+    /* output */
     .output{
       margin-top:14px;
       border:1px solid var(--line);
@@ -171,8 +157,13 @@
       padding:18px;
       box-shadow: var(--shadow);
     }
+
     .outputTop{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
       margin-bottom:10px;
     }
     .output h2{
@@ -180,21 +171,48 @@
       font-size:14px;
       letter-spacing:.2px;
     }
-    .legend{
-      display:flex; gap:10px; flex-wrap:wrap;
+
+    .scoreBox{
+      display:flex;
+      gap:10px;
       align-items:center;
-      color:var(--muted);
-      font-size:12px;
+      flex-wrap:wrap;
     }
-    .chip{
-      display:inline-flex; align-items:center; gap:6px;
-      border:1px solid var(--line);
+    .scorePill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px;
       border-radius:999px;
-      padding:4px 8px;
+      border:1px solid var(--line);
       background:#fff;
+      font-size:12px;
+      font-weight:900;
       white-space:nowrap;
     }
-    .dot{ width:10px; height:10px; border-radius:999px; background: var(--c); }
+    .scorePill .mut{ color:var(--muted); font-weight:800; }
+    .scoreTag{
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      cursor:pointer;
+      user-select:none;
+      font-size:12px;
+      font-weight:900;
+    }
+    .toggle input{ transform: translateY(1px); }
+    .toggle .mut{ color:var(--muted); font-weight:800; }
 
     .answer{
       background:#fff;
@@ -204,12 +222,21 @@
       line-height:1.6;
       font-size:14px;
     }
+
+    /* highlighted segments */
     .seg{
       display:inline;
       padding:2px 6px;
       border-radius:9px;
       border:1px solid color-mix(in srgb, var(--c) 35%, #ffffff);
       background: color-mix(in srgb, var(--c) 12%, #ffffff);
+    }
+    /* when highlights are off, make segments plain text */
+    .noHighlights .seg{
+      padding:0;
+      border:none;
+      background:transparent;
+      border-radius:0;
     }
 
     .toolbar{
@@ -225,8 +252,8 @@
       font-size:13px;
     }
     .btn.primary{
-      background: var(--accent2);
-      border-color: var(--accent2);
+      background: var(--accent);
+      border-color: var(--accent);
       color:#fff;
     }
     .mutedSmall{ color:var(--muted); font-size:12px; margin-top:10px; }
@@ -238,22 +265,35 @@
     <header>
       <div>
         <h1>Model Answer Generator – Q18 “Open Design”</h1>
-        <div class="sub">
-          Use ▲/▼ to select a band for each success criterion. Cards show <b>grade descriptors</b>; the model answer updates with <b>colour-matched</b> segments.
-        </div>
       </div>
       <div class="tip">Tip for GitHub Pages: bump <code>?v=</code> when you update files.</div>
     </header>
 
+    <!-- cards -->
     <section id="criteriaGrid" class="grid" aria-label="Success criteria controls"></section>
 
+    <!-- output (no legend, no extra instruction line) -->
     <section class="output" aria-label="Generated model answer">
       <div class="outputTop">
         <h2>Live model answer</h2>
-        <div id="legend" class="legend" aria-label="Colour legend"></div>
+
+        <div class="scoreBox">
+          <div class="scorePill">
+            <span id="scoreText">Estimated mark: —</span>
+            <span class="mut" id="scoreBand">—</span>
+          </div>
+
+          <label class="toggle" title="Toggle colour highlighting in the answer">
+            <input id="toggleHighlights" type="checkbox" checked />
+            <span>Highlights</span>
+            <span class="mut" id="toggleState">On</span>
+          </label>
+        </div>
       </div>
 
-      <div id="answer" class="answer">Select bands to generate an answer…</div>
+      <div id="answerWrap">
+        <div id="answer" class="answer">Select bands to generate an answer…</div>
+      </div>
 
       <div class="toolbar">
         <button class="btn primary" id="btnCopy" type="button">Copy answer</button>
@@ -262,12 +302,13 @@
       </div>
 
       <div class="mutedSmall">
-        Want more variety? Add extra model-sentence options per band and select randomly.
+        Mark shown is an estimate based on the mix of criteria bands.
       </div>
     </section>
   </div>
 
   <script>
+    // ----- Bands
     const BAND_KEYS = ["Developing", "Secure", "Advanced"];
     const BAND_META = {
       Developing: { range: "1–3" },
@@ -275,6 +316,10 @@
       Advanced:   { range: "7–9" }
     };
 
+    // Score mapping: midpoint of each band (used for estimating final /9 mark)
+    const BAND_SCORE = { Developing: 2, Secure: 5, Advanced: 8 };
+
+    // ----- Criteria data
     const CRITERIA = [
       {
         id: "c1",
@@ -374,26 +419,52 @@
       }
     ];
 
+    // ----- State
     const DEFAULT_INDEX = BAND_KEYS.indexOf("Secure");
     const state = Object.fromEntries(CRITERIA.map(c => [c.id, DEFAULT_INDEX]));
+    let highlightsOn = true;
 
+    // ----- DOM
     const gridEl = document.getElementById("criteriaGrid");
     const answerEl = document.getElementById("answer");
-    const legendEl = document.getElementById("legend");
+    const answerWrapEl = document.getElementById("answerWrap");
+    const scoreTextEl = document.getElementById("scoreText");
+    const scoreBandEl = document.getElementById("scoreBand");
+    const toggleEl = document.getElementById("toggleHighlights");
+    const toggleStateEl = document.getElementById("toggleState");
 
+    // ----- Helpers
     function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
     function bandKeyFor(id){ return BAND_KEYS[state[id]]; }
 
-    function renderLegend(){
-      legendEl.innerHTML = "";
-      CRITERIA.forEach(c => {
-        const chip = document.createElement("span");
-        chip.className = "chip";
-        chip.innerHTML = `<span class="dot" style="--c:${c.color}"></span><span>${c.number}. ${c.title}</span>`;
-        legendEl.appendChild(chip);
-      });
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
 
+    // ----- Mark estimation
+    function estimateMarkOutOf9(){
+      const scores = CRITERIA.map(c => BAND_SCORE[bandKeyFor(c.id)]);
+      const avg = scores.reduce((a,b)=>a+b,0) / scores.length;
+
+      // Map avg (2..8) to mark (1..9) linearly:
+      // 2 -> 1, 8 -> 9
+      let mark = 1 + ((avg - 2) * (8/6)); // scale factor 8/6 = 1.333...
+      mark = Math.round(mark);
+      mark = clamp(mark, 1, 9);
+
+      let bandLabel = "Developing";
+      if (mark >= 7) bandLabel = "Advanced";
+      else if (mark >= 4) bandLabel = "Secure";
+
+      return { mark, bandLabel };
+    }
+
+    // ----- UI render
     function render(){
       gridEl.innerHTML = "";
 
@@ -412,7 +483,6 @@
           <div class="critTitle">${c.title}</div>
         `;
 
-        // descriptor + arrows column
         const descWrap = document.createElement("div");
         descWrap.className = "descWrap";
 
@@ -437,7 +507,7 @@
         upBtn.addEventListener("click", () => {
           state[c.id] = clamp(state[c.id] + 1, 0, BAND_KEYS.length - 1);
           render();
-          updateAnswer();
+          updateAnswerAndScore();
         });
 
         const downBtn = document.createElement("button");
@@ -448,7 +518,7 @@
         downBtn.addEventListener("click", () => {
           state[c.id] = clamp(state[c.id] - 1, 0, BAND_KEYS.length - 1);
           render();
-          updateAnswer();
+          updateAnswerAndScore();
         });
 
         arrowCol.appendChild(upBtn);
@@ -457,7 +527,6 @@
         descWrap.appendChild(descBox);
         descWrap.appendChild(arrowCol);
 
-        // band pill footer
         const footer = document.createElement("div");
         footer.className = "bandFooter";
         const pill = document.createElement("div");
@@ -473,16 +542,7 @@
       });
     }
 
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    function updateAnswer(){
+    function buildAnswerHtml(){
       const seg = (c, text) => `<span class="seg" style="--c:${c.color}">${escapeHtml(text)}</span>`;
 
       const c1 = CRITERIA[0], c2 = CRITERIA[1], c3 = CRITERIA[2], c4 = CRITERIA[3], c5 = CRITERIA[4], c6 = CRITERIA[5];
@@ -492,19 +552,35 @@
       const p3 = `${seg(c5, c5.model[bandKeyFor("c5")])}`;
       const p4 = `${seg(c6, c6.model[bandKeyFor("c6")])}`;
 
-      answerEl.innerHTML = `${p1}<br><br>${p2}<br><br>${p3}<br><br>${p4}`;
+      return `${p1}<br><br>${p2}<br><br>${p3}<br><br>${p4}`;
     }
 
-    // Toolbar actions
-    document.getElementById("btnCopy")?.addEventListener("click", async () => {
+    function buildAnswerText(){
       const parts = CRITERIA.map(c => c.model[bandKeyFor(c.id)]);
-      const text = [
+      return [
         parts[0] + " " + parts[1],
         parts[2] + " " + parts[3],
         parts[4],
         parts[5]
       ].join("\n\n");
+    }
 
+    function updateAnswerAndScore(){
+      // Answer
+      answerEl.innerHTML = buildAnswerHtml();
+
+      // Highlight toggle
+      answerWrapEl.classList.toggle("noHighlights", !highlightsOn);
+
+      // Score
+      const { mark, bandLabel } = estimateMarkOutOf9();
+      scoreTextEl.textContent = `Estimated mark: ${mark}/9`;
+      scoreBandEl.textContent = `• ${bandLabel}`;
+    }
+
+    // ----- Toolbar actions
+    document.getElementById("btnCopy").addEventListener("click", async () => {
+      const text = buildAnswerText();
       try{
         await navigator.clipboard.writeText(text);
       }catch(e){
@@ -517,29 +593,29 @@
       }
     });
 
-    document.getElementById("btnReset")?.addEventListener("click", () => {
+    document.getElementById("btnReset").addEventListener("click", () => {
       CRITERIA.forEach(c => state[c.id] = DEFAULT_INDEX);
       render();
-      updateAnswer();
+      updateAnswerAndScore();
     });
 
-    document.getElementById("btnRandom")?.addEventListener("click", () => {
+    document.getElementById("btnRandom").addEventListener("click", () => {
       CRITERIA.forEach(c => state[c.id] = Math.floor(Math.random() * BAND_KEYS.length));
       render();
-      updateAnswer();
+      updateAnswerAndScore();
     });
 
-    // Create missing toolbar buttons if your page already has them; otherwise ignore.
-    // (If you pasted this whole file, the buttons exist.)
-    renderLegend();
-    render();
-    updateAnswer();
-  </script>
+    // Highlight toggle
+    toggleEl.addEventListener("change", (e) => {
+      highlightsOn = !!e.target.checked;
+      toggleStateEl.textContent = highlightsOn ? "On" : "Off";
+      updateAnswerAndScore();
+    });
 
-  <!-- Toolbar buttons (kept here to match previous versions) -->
-  <script>
-    // If buttons were not in your HTML (older paste), inject them.
-    // In this file they ARE present, so this does nothing.
+    // ----- Init
+    toggleStateEl.textContent = "On";
+    render();
+    updateAnswerAndScore();
   </script>
 </body>
 </html>
