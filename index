@@ -1,1 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Model Answer Generator – Q18 Open Design</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --soft:#f3f4f6;
+      --accent:#4f46e5;
+      --shadow: 0 12px 30px rgba(17,24,39,.08);
+      --radius:16px;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0; font-family:var(--sans); color:var(--text); background:var(--bg);
+    }
+    .wrap{
+      max-width:1200px; margin:0 auto; padding:28px 18px 40px;
+    }
+    header{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+    h1{ font-size:20px; margin:0; letter-spacing:.2px; }
+    .sub{ color:var(--muted); margin-top:6px; font-size:13px; max-width:760px; }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(6, minmax(160px, 1fr));
+      gap:12px;
+      margin-top:16px;
+    }
+    @media (max-width:1100px){
+      .grid{ grid-template-columns: repeat(3, minmax(180px, 1fr)); }
+    }
+    @media (max-width:700px){
+      .grid{ grid-template-columns: repeat(1, 1fr); }
+    }
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px 12px;
+      background:#fff;
+      box-shadow: var(--shadow);
+      min-height:210px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .critTop{
+      display:flex; align-items:flex-start; gap:10px;
+    }
+    .badge{
+      width:22px; height:22px; border-radius:6px;
+      background:var(--accent); color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:700; flex:0 0 auto;
+      margin-top:1px;
+    }
+    .critTitle{
+      font-size:13px; font-weight:700; line-height:1.25;
+    }
+    .bands{
+      display:flex; flex-direction:column; gap:8px;
+      margin-top:auto;
+    }
+    .bandBtn{
+      border:1px solid var(--line);
+      background:#fff;
+      padding:8px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      text-align:left;
+      transition: .15s ease;
+    }
+    .bandBtn:hover{ border-color:#c7cbe3; }
+    .bandLabel{
+      font-size:12px; font-weight:700;
+    }
+    .bandDesc{
+      font-size:12px; color:var(--muted); margin-top:3px; line-height:1.25;
+    }
+    .bandBtn[aria-pressed="true"]{
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79,70,229,.12);
+    }
 
+    .output{
+      margin-top:14px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background: var(--soft);
+      padding:18px;
+      min-height:220px;
+      box-shadow: var(--shadow);
+    }
+    .output h2{
+      margin:0 0 8px;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+    .answer{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px 14px;
+      line-height:1.55;
+      font-size:14px;
+      white-space:pre-wrap;
+    }
+    .toolbar{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background:#fff;
+      padding:9px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:13px;
+    }
+    .btn.primary{
+      background: var(--accent);
+      border-color: var(--accent);
+      color:#fff;
+    }
+    .mutedSmall{ color:var(--muted); font-size:12px; margin-top:10px; }
+    code.k{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      background:#fff;
+      border:1px solid var(--line);
+      padding:2px 6px;
+      border-radius:8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Model Answer Generator – Q18 “Open Design”</h1>
+        <div class="sub">
+          Select a band for each success criterion. The model answer updates live by stitching together sentence blocks.
+        </div>
+      </div>
+      <div class="mutedSmall">
+        Tip for GitHub Pages: bump <code class="k">?v=</code> in your script link when you update files.
+      </div>
+    </header>
+
+    <section id="criteriaGrid" class="grid" aria-label="Success criteria controls"></section>
+
+    <section class="output" aria-label="Generated model answer">
+      <h2>Live model answer</h2>
+      <div id="answer" class="answer">Select bands to generate an answer…</div>
+
+      <div class="toolbar">
+        <button class="btn primary" id="btnCopy">Copy answer</button>
+        <button class="btn" id="btnReset">Reset to Secure</button>
+        <button class="btn" id="btnRandom">Random mix</button>
+      </div>
+      <div class="mutedSmall">
+        This is a template engine. You can add more “sentence blocks” per band to increase variety.
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // --- Bands
+    const BANDS = ["Developing", "Secure", "Advanced"]; // 0..2
+
+    // --- Criteria + sentence blocks for each band.
+    // Each criterion supplies a sentence (or 2) that gets stitched into a full answer.
+    // You can expand these arrays to vary outputs (random pick per band).
+    const CRITERIA = [
+      {
+        id: "c1",
+        number: 1,
+        title: "Understanding of Open Design",
+        bandText: {
+          Developing: "Open design is when people share designs online so others can use them.",
+          Secure: "Open design is an approach where design files and ideas are shared openly so others can use, adapt and redistribute them.",
+          Advanced: "Open design is built on openly shared design information (often CAD, instructions and licensing), enabling others to access, adapt, distribute and develop products beyond traditional IP-protected models."
+        }
+      },
+      {
+        id: "c2",
+        number: 2,
+        title: "Comparison with Traditional Development",
+        bandText: {
+          Developing: "This is different to normal product development.",
+          Secure: "In traditional product development, companies protect ideas through IP and develop products within closed teams; open design makes the process more accessible and shared.",
+          Advanced: "Where traditional development relies on protected IP, controlled R&D and commercial release cycles, open design shifts development towards shared ownership, distributed contribution and wider access to manufacturing pathways."
+        }
+      },
+      {
+        id: "c3",
+        number: 3,
+        title: "Depth of Analysis (Impact Explained)",
+        bandText: {
+          Developing: "It changes how products get made.",
+          Secure: "It can speed up iteration because many users can test, feedback and improve designs, which can shorten development time compared to a single in-house team.",
+          Advanced: "Its biggest impact is on iteration and knowledge flow: large numbers of contributors can identify issues, propose refinements and release improved versions rapidly, changing the pace and direction of development compared to finite in-house expertise."
+        }
+      },
+      {
+        id: "c4",
+        number: 4,
+        title: "Quality of Evaluation",
+        bandText: {
+          Developing: "There are good and bad points.",
+          Secure: "Although open design increases access and collaboration, it can reduce the ability for designers or companies to profit directly from exclusive ownership.",
+          Advanced: "While open design democratises participation and can accelerate innovation, it also weakens exclusivity (and therefore profit models) and can create ambiguity over responsibility, legality and accountability when problems occur."
+        }
+      },
+      {
+        id: "c5",
+        number: 5,
+        title: "Breadth of Impact Covered",
+        bandText: {
+          Developing: "It affects designers and companies.",
+          Secure: "It affects IP/profit, development speed and user customisation, and can reduce reliance on large manufacturers as home manufacture (e.g., 3D printing) increases.",
+          Advanced: "Its impact spans IP and copyright culture, profitability, speed of iteration, customisation/repair, distributed manufacture (including home 3D printing), and quality control—reshaping who develops products and how value is captured."
+        }
+      },
+      {
+        id: "c6",
+        number: 6,
+        title: "Overall Judgement & Structure",
+        bandText: {
+          Developing: "Overall, open design has changed product development.",
+          Secure: "Overall, open design has influenced traditional development by opening up participation and speeding iteration, but it introduces challenges around ownership and commercial incentives.",
+          Advanced: "Overall, open design meaningfully disrupts traditional product development by redistributing design power from closed commercial teams to wider communities; however, without robust licensing and quality assurance it can create risks around IP, safety and consistency."
+        }
+      }
+    ];
+
+    // Current selection (default all Secure)
+    const state = Object.fromEntries(CRITERIA.map(c => [c.id, "Secure"]));
+
+    // --- UI build
+    const gridEl = document.getElementById("criteriaGrid");
+    const answerEl = document.getElementById("answer");
+
+    function render(){
+      gridEl.innerHTML = "";
+      CRITERIA.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const top = document.createElement("div");
+        top.className = "critTop";
+        top.innerHTML = `
+          <div class="badge">${c.number}</div>
+          <div class="critTitle">${c.title}</div>
+        `;
+
+        const bands = document.createElement("div");
+        bands.className = "bands";
+
+        BANDS.forEach(b => {
+          const btn = document.createElement("button");
+          btn.className = "bandBtn";
+          btn.type = "button";
+          btn.setAttribute("aria-pressed", String(state[c.id] === b));
+          btn.innerHTML = `
+            <div class="bandLabel">${b} (${b==="Developing"?"1–3":b==="Secure"?"4–6":"7–9"})</div>
+            <div class="bandDesc">${c.bandText[b]}</div>
+          `;
+          btn.addEventListener("click", () => {
+            state[c.id] = b;
+            render();
+            updateAnswer();
+          });
+          bands.appendChild(btn);
+        });
+
+        card.appendChild(top);
+        card.appendChild(bands);
+        gridEl.appendChild(card);
+      });
+    }
+
+    function updateAnswer(){
+      // Stitch together in a logical order.
+      const parts = [
+        pick("c1"),
+        pick("c2"),
+        pick("c3"),
+        pick("c4"),
+        pick("c5"),
+        pick("c6")
+      ];
+
+      // Make it feel like an exam response (one paragraph with a little structure).
+      const text = [
+        parts[0] + " " + parts[1],
+        parts[2] + " " + parts[3],
+        parts[4],
+        parts[5]
+      ].join("\n\n");
+
+      answerEl.textContent = text;
+    }
+
+    function pick(id){
+      const crit = CRITERIA.find(c => c.id === id);
+      const band = state[id];
+      return crit.bandText[band];
+    }
+
+    // --- Controls
+    document.getElementById("btnCopy").addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(answerEl.textContent);
+      }catch(e){
+        // Fallback: select text
+        const range = document.createRange();
+        range.selectNodeContents(answerEl);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    });
+
+    document.getElementById("btnReset").addEventListener("click", () => {
+      Object.keys(state).forEach(k => state[k] = "Secure");
+      render();
+      updateAnswer();
+    });
+
+    document.getElementById("btnRandom").addEventListener("click", () => {
+      Object.keys(state).forEach(k => {
+        const r = Math.floor(Math.random()*BANDS.length);
+        state[k] = BANDS[r];
+      });
+      render();
+      updateAnswer();
+    });
+
+    // Init
+    render();
+    updateAnswer();
+  </script>
+</body>
+</html>
