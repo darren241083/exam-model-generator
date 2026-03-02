@@ -17,8 +17,6 @@
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-      /* global accents (fallback) */
-      --accent:#4f46e5;
       --accent2:#2563eb;
     }
 
@@ -80,12 +78,72 @@
     }
     .critTitle{ font-size:13px; font-weight:900; line-height:1.25; }
 
-    /* Band control row */
-    .bandRow{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    /* ===== Descriptor area with vertical arrows ===== */
+    .descWrap{
+      display:grid;
+      grid-template-columns: 1fr 44px;
+      gap:10px;
+      align-items:stretch;
       margin-top:auto;
-      padding-top:4px;
     }
+
+    .descBox{
+      border:1px dashed var(--line);
+      border-radius:14px;
+      padding:10px 10px;
+      background:#fff;
+      min-height:120px;
+    }
+
+    .descLabel{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:6px;
+    }
+    .descLabel .bandName{ font-weight:900; font-size:12px; }
+    .descLabel .bandRange{ color:var(--muted); font-size:12px; font-weight:800; }
+
+    .descText{
+      font-size:12px;
+      line-height:1.35;
+      color:var(--muted);
+    }
+
+    .arrowCol{
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      align-items:stretch;
+      gap:10px;
+    }
+
+    .triBtn{
+      height:44px;
+      width:44px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:.15s ease;
+      flex:0 0 auto;
+    }
+    .triBtn:hover{ border-color:#c7cbe3; transform: translateY(-1px); }
+    .triBtn:active{ transform: translateY(0px); }
+    .triBtn:focus{
+      outline:none;
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+      border-color: var(--accent2);
+    }
+
+    .tri{
+      width:0; height:0;
+      border-left:9px solid transparent;
+      border-right:9px solid transparent;
+    }
+    .tri.up{ border-bottom:14px solid var(--crit); }
+    .tri.down{ border-top:14px solid var(--crit); }
+
+    /* Band pill (kept, but no longer shares space with arrows) */
     .bandPill{
       display:inline-flex; align-items:center; gap:8px;
       border:1px solid var(--line);
@@ -98,52 +156,13 @@
     }
     .bandPill .range{ font-weight:800; color:var(--muted); }
 
-    .triControls{ display:flex; gap:8px; }
-    .triBtn{
-      width:38px; height:38px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:#fff;
-      cursor:pointer;
-      display:flex; align-items:center; justify-content:center;
-      transition:.15s ease;
-    }
-    .triBtn:hover{ border-color:#c7cbe3; transform: translateY(-1px); }
-    .triBtn:active{ transform: translateY(0px); }
-    .triBtn:focus{
-      outline:none;
-      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-      border-color: var(--accent2);
-    }
-    .tri{
-      width:0; height:0;
-      border-left:8px solid transparent;
-      border-right:8px solid transparent;
-    }
-    .tri.up{ border-bottom:12px solid var(--crit); }
-    .tri.down{ border-top:12px solid var(--crit); }
-
-    /* Grade descriptor (NOT model answer text) */
-    .descBox{
-      border:1px dashed var(--line);
-      border-radius:14px;
-      padding:10px 10px;
-      background: #fff;
-      min-height:96px;
-    }
-    .descLabel{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      margin-bottom:6px;
-    }
-    .descLabel .bandName{ font-weight:900; font-size:12px; }
-    .descLabel .bandRange{ color:var(--muted); font-size:12px; font-weight:800; }
-    .descText{
-      font-size:12px;
-      line-height:1.35;
-      color: var(--muted);
+    .bandFooter{
+      display:flex;
+      justify-content:flex-start;
+      margin-top:10px;
     }
 
-    /* Live answer area */
+    /* ===== Live answer area ===== */
     .output{
       margin-top:14px;
       border:1px solid var(--line);
@@ -176,6 +195,7 @@
       white-space:nowrap;
     }
     .dot{ width:10px; height:10px; border-radius:999px; background: var(--c); }
+
     .answer{
       background:#fff;
       border:1px solid var(--line);
@@ -248,7 +268,6 @@
   </div>
 
   <script>
-    // Bands in order (index controls ▲/▼)
     const BAND_KEYS = ["Developing", "Secure", "Advanced"];
     const BAND_META = {
       Developing: { range: "1–3" },
@@ -256,10 +275,6 @@
       Advanced:   { range: "7–9" }
     };
 
-    // 6 criteria, each with:
-    // - colour (used in UI and highlighted answer segments)
-    // - grade descriptors (shown in cards) for each band
-    // - model answer sentence blocks (used in the live answer) for each band
     const CRITERIA = [
       {
         id: "c1",
@@ -359,7 +374,6 @@
       }
     ];
 
-    // State: store band index for each criterion (default Secure)
     const DEFAULT_INDEX = BAND_KEYS.indexOf("Secure");
     const state = Object.fromEntries(CRITERIA.map(c => [c.id, DEFAULT_INDEX]));
 
@@ -367,11 +381,8 @@
     const answerEl = document.getElementById("answer");
     const legendEl = document.getElementById("legend");
 
-    function bandKeyFor(id){
-      return BAND_KEYS[state[id]];
-    }
-
     function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+    function bandKeyFor(id){ return BAND_KEYS[state[id]]; }
 
     function renderLegend(){
       legendEl.innerHTML = "";
@@ -394,7 +405,6 @@
         card.className = "card";
         card.style.setProperty("--crit", c.color);
 
-        // Title
         const top = document.createElement("div");
         top.className = "critTop";
         top.innerHTML = `
@@ -402,7 +412,10 @@
           <div class="critTitle">${c.title}</div>
         `;
 
-        // Descriptor box (grade descriptors only)
+        // descriptor + arrows column
+        const descWrap = document.createElement("div");
+        descWrap.className = "descWrap";
+
         const descBox = document.createElement("div");
         descBox.className = "descBox";
         descBox.innerHTML = `
@@ -413,16 +426,8 @@
           <div class="descText">${c.descriptors[band]}</div>
         `;
 
-        // Controls row
-        const bandRow = document.createElement("div");
-        bandRow.className = "bandRow";
-
-        const pill = document.createElement("div");
-        pill.className = "bandPill";
-        pill.innerHTML = `<span>${band}</span> <span class="range">(${range})</span>`;
-
-        const controls = document.createElement("div");
-        controls.className = "triControls";
+        const arrowCol = document.createElement("div");
+        arrowCol.className = "arrowCol";
 
         const upBtn = document.createElement("button");
         upBtn.className = "triBtn";
@@ -446,23 +451,38 @@
           updateAnswer();
         });
 
-        controls.appendChild(upBtn);
-        controls.appendChild(downBtn);
+        arrowCol.appendChild(upBtn);
+        arrowCol.appendChild(downBtn);
 
-        bandRow.appendChild(pill);
-        bandRow.appendChild(controls);
+        descWrap.appendChild(descBox);
+        descWrap.appendChild(arrowCol);
+
+        // band pill footer
+        const footer = document.createElement("div");
+        footer.className = "bandFooter";
+        const pill = document.createElement("div");
+        pill.className = "bandPill";
+        pill.innerHTML = `<span>${band}</span> <span class="range">(${range})</span>`;
+        footer.appendChild(pill);
 
         card.appendChild(top);
-        card.appendChild(descBox);
-        card.appendChild(bandRow);
+        card.appendChild(descWrap);
+        card.appendChild(footer);
 
         gridEl.appendChild(card);
       });
     }
 
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
     function updateAnswer(){
-      // Build a multi-paragraph answer, with colour-matched highlighted segments per criterion.
-      // Each segment maps 1:1 to a criterion (so students can see what's doing what).
       const seg = (c, text) => `<span class="seg" style="--c:${c.color}">${escapeHtml(text)}</span>`;
 
       const c1 = CRITERIA[0], c2 = CRITERIA[1], c3 = CRITERIA[2], c4 = CRITERIA[3], c5 = CRITERIA[4], c6 = CRITERIA[5];
@@ -475,18 +495,8 @@
       answerEl.innerHTML = `${p1}<br><br>${p2}<br><br>${p3}<br><br>${p4}`;
     }
 
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
     // Toolbar actions
-    document.getElementById("btnCopy").addEventListener("click", async () => {
-      // Copy plain text (without HTML)
+    document.getElementById("btnCopy")?.addEventListener("click", async () => {
       const parts = CRITERIA.map(c => c.model[bandKeyFor(c.id)]);
       const text = [
         parts[0] + " " + parts[1],
@@ -498,7 +508,6 @@
       try{
         await navigator.clipboard.writeText(text);
       }catch(e){
-        // Fallback: temporary textarea
         const ta = document.createElement("textarea");
         ta.value = text;
         document.body.appendChild(ta);
@@ -508,22 +517,29 @@
       }
     });
 
-    document.getElementById("btnReset").addEventListener("click", () => {
+    document.getElementById("btnReset")?.addEventListener("click", () => {
       CRITERIA.forEach(c => state[c.id] = DEFAULT_INDEX);
       render();
       updateAnswer();
     });
 
-    document.getElementById("btnRandom").addEventListener("click", () => {
+    document.getElementById("btnRandom")?.addEventListener("click", () => {
       CRITERIA.forEach(c => state[c.id] = Math.floor(Math.random() * BAND_KEYS.length));
       render();
       updateAnswer();
     });
 
-    // Init
+    // Create missing toolbar buttons if your page already has them; otherwise ignore.
+    // (If you pasted this whole file, the buttons exist.)
     renderLegend();
     render();
     updateAnswer();
+  </script>
+
+  <!-- Toolbar buttons (kept here to match previous versions) -->
+  <script>
+    // If buttons were not in your HTML (older paste), inject them.
+    // In this file they ARE present, so this does nothing.
   </script>
 </body>
 </html>
