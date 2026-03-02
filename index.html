@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Model Answer Generator – Q18 Open Design</title>
+  <title>Model Answer Generator – Q18 “Open Design”</title>
+
   <style>
     :root{
       --bg:#ffffff;
@@ -11,108 +12,186 @@
       --muted:#6b7280;
       --line:#e5e7eb;
       --soft:#f3f4f6;
-      --accent:#4f46e5;
       --shadow: 0 12px 30px rgba(17,24,39,.08);
       --radius:16px;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      /* global accents (fallback) */
+      --accent:#4f46e5;
+      --accent2:#2563eb;
     }
+
     *{ box-sizing:border-box; }
-    body{
-      margin:0; font-family:var(--sans); color:var(--text); background:var(--bg);
-    }
-    .wrap{
-      max-width:1200px; margin:0 auto; padding:28px 18px 40px;
-    }
+    body{ margin:0; font-family:var(--sans); color:var(--text); background:var(--bg); }
+
+    .wrap{ max-width:1200px; margin:0 auto; padding:28px 18px 40px; }
+
     header{
       display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;
-      margin-bottom:18px;
+      margin-bottom:16px;
     }
-    h1{ font-size:20px; margin:0; letter-spacing:.2px; }
-    .sub{ color:var(--muted); margin-top:6px; font-size:13px; max-width:760px; }
+    h1{ font-size:22px; margin:0; letter-spacing:.2px; }
+    .sub{ color:var(--muted); margin-top:6px; font-size:13px; max-width:860px; }
+    .tip{
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+      margin-top:2px;
+    }
+    .tip code{
+      font-family:var(--mono);
+      font-size:12px;
+      background:#fff;
+      border:1px solid var(--line);
+      padding:2px 6px;
+      border-radius:8px;
+    }
+
     .grid{
       display:grid;
-      grid-template-columns: repeat(6, minmax(160px, 1fr));
+      grid-template-columns: repeat(6, minmax(170px, 1fr));
       gap:12px;
-      margin-top:16px;
+      margin-top:14px;
     }
-    @media (max-width:1100px){
-      .grid{ grid-template-columns: repeat(3, minmax(180px, 1fr)); }
-    }
-    @media (max-width:700px){
-      .grid{ grid-template-columns: repeat(1, 1fr); }
-    }
+    @media (max-width:1100px){ .grid{ grid-template-columns: repeat(3, minmax(180px, 1fr)); } }
+    @media (max-width:700px){ .grid{ grid-template-columns: repeat(1, 1fr); } }
+
     .card{
       border:1px solid var(--line);
       border-radius:var(--radius);
       padding:14px 12px;
       background:#fff;
       box-shadow: var(--shadow);
-      min-height:210px;
       display:flex;
       flex-direction:column;
       gap:10px;
-    }
-    .critTop{
-      display:flex; align-items:flex-start; gap:10px;
-    }
-    .badge{
-      width:22px; height:22px; border-radius:6px;
-      background:var(--accent); color:#fff;
-      display:flex; align-items:center; justify-content:center;
-      font-size:12px; font-weight:700; flex:0 0 auto;
-      margin-top:1px;
-    }
-    .critTitle{
-      font-size:13px; font-weight:700; line-height:1.25;
-    }
-    .bands{
-      display:flex; flex-direction:column; gap:8px;
-      margin-top:auto;
-    }
-    .bandBtn{
-      border:1px solid var(--line);
-      background:#fff;
-      padding:8px 10px;
-      border-radius:12px;
-      cursor:pointer;
-      text-align:left;
-      transition: .15s ease;
-    }
-    .bandBtn:hover{ border-color:#c7cbe3; }
-    .bandLabel{
-      font-size:12px; font-weight:700;
-    }
-    .bandDesc{
-      font-size:12px; color:var(--muted); margin-top:3px; line-height:1.25;
-    }
-    .bandBtn[aria-pressed="true"]{
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(79,70,229,.12);
+      min-height:240px;
+      position:relative;
+      overflow:hidden;
     }
 
+    .critTop{ display:flex; align-items:flex-start; gap:10px; }
+    .badge{
+      width:22px; height:22px; border-radius:6px;
+      background: var(--crit);
+      color:#fff; display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:900; flex:0 0 auto; margin-top:1px;
+    }
+    .critTitle{ font-size:13px; font-weight:900; line-height:1.25; }
+
+    /* Band control row */
+    .bandRow{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-top:auto;
+      padding-top:4px;
+    }
+    .bandPill{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .bandPill .range{ font-weight:800; color:var(--muted); }
+
+    .triControls{ display:flex; gap:8px; }
+    .triBtn{
+      width:38px; height:38px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:.15s ease;
+    }
+    .triBtn:hover{ border-color:#c7cbe3; transform: translateY(-1px); }
+    .triBtn:active{ transform: translateY(0px); }
+    .triBtn:focus{
+      outline:none;
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+      border-color: var(--accent2);
+    }
+    .tri{
+      width:0; height:0;
+      border-left:8px solid transparent;
+      border-right:8px solid transparent;
+    }
+    .tri.up{ border-bottom:12px solid var(--crit); }
+    .tri.down{ border-top:12px solid var(--crit); }
+
+    /* Grade descriptor (NOT model answer text) */
+    .descBox{
+      border:1px dashed var(--line);
+      border-radius:14px;
+      padding:10px 10px;
+      background: #fff;
+      min-height:96px;
+    }
+    .descLabel{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:6px;
+    }
+    .descLabel .bandName{ font-weight:900; font-size:12px; }
+    .descLabel .bandRange{ color:var(--muted); font-size:12px; font-weight:800; }
+    .descText{
+      font-size:12px;
+      line-height:1.35;
+      color: var(--muted);
+    }
+
+    /* Live answer area */
     .output{
       margin-top:14px;
       border:1px solid var(--line);
       border-radius:var(--radius);
       background: var(--soft);
       padding:18px;
-      min-height:220px;
       box-shadow: var(--shadow);
     }
+    .outputTop{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-bottom:10px;
+    }
     .output h2{
-      margin:0 0 8px;
+      margin:0;
       font-size:14px;
       letter-spacing:.2px;
     }
+    .legend{
+      display:flex; gap:10px; flex-wrap:wrap;
+      align-items:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:6px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:4px 8px;
+      background:#fff;
+      white-space:nowrap;
+    }
+    .dot{ width:10px; height:10px; border-radius:999px; background: var(--c); }
     .answer{
       background:#fff;
       border:1px solid var(--line);
       border-radius:14px;
       padding:14px 14px;
-      line-height:1.55;
+      line-height:1.6;
       font-size:14px;
-      white-space:pre-wrap;
     }
+    .seg{
+      display:inline;
+      padding:2px 6px;
+      border-radius:9px;
+      border:1px solid color-mix(in srgb, var(--c) 35%, #ffffff);
+      background: color-mix(in srgb, var(--c) 12%, #ffffff);
+    }
+
     .toolbar{
       display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;
     }
@@ -122,79 +201,93 @@
       padding:9px 12px;
       border-radius:12px;
       cursor:pointer;
-      font-weight:700;
+      font-weight:900;
       font-size:13px;
     }
     .btn.primary{
-      background: var(--accent);
-      border-color: var(--accent);
+      background: var(--accent2);
+      border-color: var(--accent2);
       color:#fff;
     }
     .mutedSmall{ color:var(--muted); font-size:12px; margin-top:10px; }
-    code.k{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size:12px;
-      background:#fff;
-      border:1px solid var(--line);
-      padding:2px 6px;
-      border-radius:8px;
-    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <header>
       <div>
         <h1>Model Answer Generator – Q18 “Open Design”</h1>
         <div class="sub">
-          Select a band for each success criterion. The model answer updates live by stitching together sentence blocks.
+          Use ▲/▼ to select a band for each success criterion. Cards show <b>grade descriptors</b>; the model answer updates with <b>colour-matched</b> segments.
         </div>
       </div>
-      <div class="mutedSmall">
-        Tip for GitHub Pages: bump <code class="k">?v=</code> in your script link when you update files.
-      </div>
+      <div class="tip">Tip for GitHub Pages: bump <code>?v=</code> when you update files.</div>
     </header>
 
     <section id="criteriaGrid" class="grid" aria-label="Success criteria controls"></section>
 
     <section class="output" aria-label="Generated model answer">
-      <h2>Live model answer</h2>
+      <div class="outputTop">
+        <h2>Live model answer</h2>
+        <div id="legend" class="legend" aria-label="Colour legend"></div>
+      </div>
+
       <div id="answer" class="answer">Select bands to generate an answer…</div>
 
       <div class="toolbar">
-        <button class="btn primary" id="btnCopy">Copy answer</button>
-        <button class="btn" id="btnReset">Reset to Secure</button>
-        <button class="btn" id="btnRandom">Random mix</button>
+        <button class="btn primary" id="btnCopy" type="button">Copy answer</button>
+        <button class="btn" id="btnReset" type="button">Reset to Secure</button>
+        <button class="btn" id="btnRandom" type="button">Random mix</button>
       </div>
+
       <div class="mutedSmall">
-        This is a template engine. You can add more “sentence blocks” per band to increase variety.
+        Want more variety? Add extra model-sentence options per band and select randomly.
       </div>
     </section>
   </div>
 
   <script>
-    // --- Bands
-    const BANDS = ["Developing", "Secure", "Advanced"]; // 0..2
+    // Bands in order (index controls ▲/▼)
+    const BAND_KEYS = ["Developing", "Secure", "Advanced"];
+    const BAND_META = {
+      Developing: { range: "1–3" },
+      Secure:     { range: "4–6" },
+      Advanced:   { range: "7–9" }
+    };
 
-    // --- Criteria + sentence blocks for each band.
-    // Each criterion supplies a sentence (or 2) that gets stitched into a full answer.
-    // You can expand these arrays to vary outputs (random pick per band).
+    // 6 criteria, each with:
+    // - colour (used in UI and highlighted answer segments)
+    // - grade descriptors (shown in cards) for each band
+    // - model answer sentence blocks (used in the live answer) for each band
     const CRITERIA = [
       {
         id: "c1",
         number: 1,
         title: "Understanding of Open Design",
-        bandText: {
+        color: "#4f46e5",
+        descriptors: {
+          Developing: "Basic/vague definition; limited terminology.",
+          Secure: "Accurate definition with some key principles; mostly correct terms.",
+          Advanced: "Clear, precise definition with key principles and confident terminology."
+        },
+        model: {
           Developing: "Open design is when people share designs online so others can use them.",
           Secure: "Open design is an approach where design files and ideas are shared openly so others can use, adapt and redistribute them.",
-          Advanced: "Open design is built on openly shared design information (often CAD, instructions and licensing), enabling others to access, adapt, distribute and develop products beyond traditional IP-protected models."
+          Advanced: "Open design is built on openly shared design information (often CAD, instructions and licensing), enabling others to access, adapt, distribute and develop products beyond tightly protected IP models."
         }
       },
       {
         id: "c2",
         number: 2,
         title: "Comparison with Traditional Development",
-        bandText: {
+        color: "#0ea5e9",
+        descriptors: {
+          Developing: "Limited comparison; traditional development not clearly referenced.",
+          Secure: "Some comparison made; links to traditional development are mostly clear.",
+          Advanced: "Sustained, explicit comparison using contrast language throughout."
+        },
+        model: {
           Developing: "This is different to normal product development.",
           Secure: "In traditional product development, companies protect ideas through IP and develop products within closed teams; open design makes the process more accessible and shared.",
           Advanced: "Where traditional development relies on protected IP, controlled R&D and commercial release cycles, open design shifts development towards shared ownership, distributed contribution and wider access to manufacturing pathways."
@@ -204,7 +297,13 @@
         id: "c3",
         number: 3,
         title: "Depth of Analysis (Impact Explained)",
-        bandText: {
+        color: "#22c55e",
+        descriptors: {
+          Developing: "Mostly descriptive; limited cause-and-effect.",
+          Secure: "Explains some impacts with basic consequences.",
+          Advanced: "Explains how/why impacts occur; consequences developed in depth."
+        },
+        model: {
           Developing: "It changes how products get made.",
           Secure: "It can speed up iteration because many users can test, feedback and improve designs, which can shorten development time compared to a single in-house team.",
           Advanced: "Its biggest impact is on iteration and knowledge flow: large numbers of contributors can identify issues, propose refinements and release improved versions rapidly, changing the pace and direction of development compared to finite in-house expertise."
@@ -214,7 +313,13 @@
         id: "c4",
         number: 4,
         title: "Quality of Evaluation",
-        bandText: {
+        color: "#f59e0b",
+        descriptors: {
+          Developing: "Mentions pros/cons but does not weigh them.",
+          Secure: "Includes both positives and negatives with some judgement.",
+          Advanced: "Balanced, reasoned evaluation that weighs trade-offs and implications."
+        },
+        model: {
           Developing: "There are good and bad points.",
           Secure: "Although open design increases access and collaboration, it can reduce the ability for designers or companies to profit directly from exclusive ownership.",
           Advanced: "While open design democratises participation and can accelerate innovation, it also weakens exclusivity (and therefore profit models) and can create ambiguity over responsibility, legality and accountability when problems occur."
@@ -224,7 +329,13 @@
         id: "c5",
         number: 5,
         title: "Breadth of Impact Covered",
-        bandText: {
+        color: "#a855f7",
+        descriptors: {
+          Developing: "Narrow focus; repeats similar points.",
+          Secure: "Covers a few relevant impact areas.",
+          Advanced: "Covers multiple impact areas (e.g., IP, profit, iteration speed, manufacture, quality control)."
+        },
+        model: {
           Developing: "It affects designers and companies.",
           Secure: "It affects IP/profit, development speed and user customisation, and can reduce reliance on large manufacturers as home manufacture (e.g., 3D printing) increases.",
           Advanced: "Its impact spans IP and copyright culture, profitability, speed of iteration, customisation/repair, distributed manufacture (including home 3D printing), and quality control—reshaping who develops products and how value is captured."
@@ -234,7 +345,13 @@
         id: "c6",
         number: 6,
         title: "Overall Judgement & Structure",
-        bandText: {
+        color: "#ef4444",
+        descriptors: {
+          Developing: "Limited structure; unclear overall judgement.",
+          Secure: "Some structure; overall judgement present but not fully reasoned.",
+          Advanced: "Coherent structure with a clear, reasoned overall judgement."
+        },
+        model: {
           Developing: "Overall, open design has changed product development.",
           Secure: "Overall, open design has influenced traditional development by opening up participation and speeding iteration, but it introduces challenges around ownership and commercial incentives.",
           Advanced: "Overall, open design meaningfully disrupts traditional product development by redistributing design power from closed commercial teams to wider communities; however, without robust licensing and quality assurance it can create risks around IP, safety and consistency."
@@ -242,19 +359,42 @@
       }
     ];
 
-    // Current selection (default all Secure)
-    const state = Object.fromEntries(CRITERIA.map(c => [c.id, "Secure"]));
+    // State: store band index for each criterion (default Secure)
+    const DEFAULT_INDEX = BAND_KEYS.indexOf("Secure");
+    const state = Object.fromEntries(CRITERIA.map(c => [c.id, DEFAULT_INDEX]));
 
-    // --- UI build
     const gridEl = document.getElementById("criteriaGrid");
     const answerEl = document.getElementById("answer");
+    const legendEl = document.getElementById("legend");
+
+    function bandKeyFor(id){
+      return BAND_KEYS[state[id]];
+    }
+
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+    function renderLegend(){
+      legendEl.innerHTML = "";
+      CRITERIA.forEach(c => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.innerHTML = `<span class="dot" style="--c:${c.color}"></span><span>${c.number}. ${c.title}</span>`;
+        legendEl.appendChild(chip);
+      });
+    }
 
     function render(){
       gridEl.innerHTML = "";
+
       CRITERIA.forEach(c => {
+        const band = bandKeyFor(c.id);
+        const range = BAND_META[band].range;
+
         const card = document.createElement("div");
         card.className = "card";
+        card.style.setProperty("--crit", c.color);
 
+        // Title
         const top = document.createElement("div");
         top.className = "critTop";
         top.innerHTML = `
@@ -262,44 +402,92 @@
           <div class="critTitle">${c.title}</div>
         `;
 
-        const bands = document.createElement("div");
-        bands.className = "bands";
+        // Descriptor box (grade descriptors only)
+        const descBox = document.createElement("div");
+        descBox.className = "descBox";
+        descBox.innerHTML = `
+          <div class="descLabel">
+            <div class="bandName">${band}</div>
+            <div class="bandRange">(${range})</div>
+          </div>
+          <div class="descText">${c.descriptors[band]}</div>
+        `;
 
-        BANDS.forEach(b => {
-          const btn = document.createElement("button");
-          btn.className = "bandBtn";
-          btn.type = "button";
-          btn.setAttribute("aria-pressed", String(state[c.id] === b));
-          btn.innerHTML = `
-            <div class="bandLabel">${b} (${b==="Developing"?"1–3":b==="Secure"?"4–6":"7–9"})</div>
-            <div class="bandDesc">${c.bandText[b]}</div>
-          `;
-          btn.addEventListener("click", () => {
-            state[c.id] = b;
-            render();
-            updateAnswer();
-          });
-          bands.appendChild(btn);
+        // Controls row
+        const bandRow = document.createElement("div");
+        bandRow.className = "bandRow";
+
+        const pill = document.createElement("div");
+        pill.className = "bandPill";
+        pill.innerHTML = `<span>${band}</span> <span class="range">(${range})</span>`;
+
+        const controls = document.createElement("div");
+        controls.className = "triControls";
+
+        const upBtn = document.createElement("button");
+        upBtn.className = "triBtn";
+        upBtn.type = "button";
+        upBtn.title = "Move up a band";
+        upBtn.innerHTML = `<span class="tri up" aria-hidden="true"></span>`;
+        upBtn.addEventListener("click", () => {
+          state[c.id] = clamp(state[c.id] + 1, 0, BAND_KEYS.length - 1);
+          render();
+          updateAnswer();
         });
 
+        const downBtn = document.createElement("button");
+        downBtn.className = "triBtn";
+        downBtn.type = "button";
+        downBtn.title = "Move down a band";
+        downBtn.innerHTML = `<span class="tri down" aria-hidden="true"></span>`;
+        downBtn.addEventListener("click", () => {
+          state[c.id] = clamp(state[c.id] - 1, 0, BAND_KEYS.length - 1);
+          render();
+          updateAnswer();
+        });
+
+        controls.appendChild(upBtn);
+        controls.appendChild(downBtn);
+
+        bandRow.appendChild(pill);
+        bandRow.appendChild(controls);
+
         card.appendChild(top);
-        card.appendChild(bands);
+        card.appendChild(descBox);
+        card.appendChild(bandRow);
+
         gridEl.appendChild(card);
       });
     }
 
     function updateAnswer(){
-      // Stitch together in a logical order.
-      const parts = [
-        pick("c1"),
-        pick("c2"),
-        pick("c3"),
-        pick("c4"),
-        pick("c5"),
-        pick("c6")
-      ];
+      // Build a multi-paragraph answer, with colour-matched highlighted segments per criterion.
+      // Each segment maps 1:1 to a criterion (so students can see what's doing what).
+      const seg = (c, text) => `<span class="seg" style="--c:${c.color}">${escapeHtml(text)}</span>`;
 
-      // Make it feel like an exam response (one paragraph with a little structure).
+      const c1 = CRITERIA[0], c2 = CRITERIA[1], c3 = CRITERIA[2], c4 = CRITERIA[3], c5 = CRITERIA[4], c6 = CRITERIA[5];
+
+      const p1 = `${seg(c1, c1.model[bandKeyFor("c1")])} ${seg(c2, c2.model[bandKeyFor("c2")])}`;
+      const p2 = `${seg(c3, c3.model[bandKeyFor("c3")])} ${seg(c4, c4.model[bandKeyFor("c4")])}`;
+      const p3 = `${seg(c5, c5.model[bandKeyFor("c5")])}`;
+      const p4 = `${seg(c6, c6.model[bandKeyFor("c6")])}`;
+
+      answerEl.innerHTML = `${p1}<br><br>${p2}<br><br>${p3}<br><br>${p4}`;
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // Toolbar actions
+    document.getElementById("btnCopy").addEventListener("click", async () => {
+      // Copy plain text (without HTML)
+      const parts = CRITERIA.map(c => c.model[bandKeyFor(c.id)]);
       const text = [
         parts[0] + " " + parts[1],
         parts[2] + " " + parts[3],
@@ -307,45 +495,33 @@
         parts[5]
       ].join("\n\n");
 
-      answerEl.textContent = text;
-    }
-
-    function pick(id){
-      const crit = CRITERIA.find(c => c.id === id);
-      const band = state[id];
-      return crit.bandText[band];
-    }
-
-    // --- Controls
-    document.getElementById("btnCopy").addEventListener("click", async () => {
       try{
-        await navigator.clipboard.writeText(answerEl.textContent);
+        await navigator.clipboard.writeText(text);
       }catch(e){
-        // Fallback: select text
-        const range = document.createRange();
-        range.selectNodeContents(answerEl);
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
+        // Fallback: temporary textarea
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
       }
     });
 
     document.getElementById("btnReset").addEventListener("click", () => {
-      Object.keys(state).forEach(k => state[k] = "Secure");
+      CRITERIA.forEach(c => state[c.id] = DEFAULT_INDEX);
       render();
       updateAnswer();
     });
 
     document.getElementById("btnRandom").addEventListener("click", () => {
-      Object.keys(state).forEach(k => {
-        const r = Math.floor(Math.random()*BANDS.length);
-        state[k] = BANDS[r];
-      });
+      CRITERIA.forEach(c => state[c.id] = Math.floor(Math.random() * BAND_KEYS.length));
       render();
       updateAnswer();
     });
 
     // Init
+    renderLegend();
     render();
     updateAnswer();
   </script>
