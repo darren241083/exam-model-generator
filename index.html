@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Q18 Open Design – Model + Assess</title>
+  <title>Model + Assess – Q18 Open Design</title>
 
   <style>
     :root{
@@ -16,14 +16,16 @@
       --radius:16px;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
       --accent:#2563eb;
       --ok:#16a34a;
       --warn:#f59e0b;
       --bad:#ef4444;
     }
+
     *{ box-sizing:border-box; }
     body{ margin:0; font-family:var(--sans); color:var(--text); background:var(--bg); }
-    .wrap{ max-width:1200px; margin:0 auto; padding:22px 18px 40px; }
+    .wrap{ max-width:1200px; margin:0 auto; padding:22px 18px 44px; }
 
     header{
       display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;
@@ -68,13 +70,14 @@
       display:flex;
       flex-direction:column;
       gap:10px;
-      min-height:270px;
+      min-height:265px;
       position:relative;
       overflow:hidden;
     }
+
     .critTop{ display:flex; align-items:flex-start; gap:10px; }
     .badge{
-      width:22px; height:22px; border-radius:6px;
+      width:22px; height:22px; border-radius:7px;
       background: var(--crit);
       color:#fff; display:flex; align-items:center; justify-content:center;
       font-size:12px; font-weight:900; flex:0 0 auto; margin-top:1px;
@@ -93,7 +96,7 @@
       border-radius:14px;
       padding:10px 10px;
       background:#fff;
-      min-height:125px;
+      min-height:118px;
     }
     .descLabel{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -125,6 +128,7 @@
     .tri.up{ border-bottom:14px solid var(--crit); }
     .tri.down{ border-top:14px solid var(--crit); }
 
+    .bandFooter{ display:flex; justify-content:flex-start; margin-top:10px; }
     .bandPill{
       display:inline-flex; align-items:center; gap:8px;
       border:1px solid var(--line);
@@ -136,32 +140,24 @@
       white-space:nowrap;
     }
     .bandPill .range{ font-weight:800; color:var(--muted); }
-    .bandFooter{ display:flex; justify-content:flex-start; margin-top:10px; }
 
+    /* --- Assessment (simplified) --- */
     .assessBlock{
       margin-top:10px;
       border-top:1px solid var(--line);
       padding-top:10px;
       font-size:12px;
-      line-height:1.4;
+      line-height:1.45;
       color:var(--text);
     }
     .assessRow{ margin-top:6px; color:var(--muted); }
     .assessRow strong{ color:var(--text); }
-    .quote{
-      display:block;
-      margin-top:6px;
-      padding:8px 10px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background: var(--soft);
-      color: var(--text);
-    }
+
     .confPill{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      margin-top:6px;
+      margin-top:8px;
       border:1px solid var(--line);
       background:#fff;
       border-radius:999px;
@@ -175,6 +171,51 @@
     .confDot.med{ background: var(--warn); }
     .confDot.low{ background: var(--bad); }
 
+    /* Evidence toggle */
+    .evidenceToggle{
+      margin-top:10px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      overflow:hidden;
+    }
+    .evidenceToggle summary{
+      list-style:none;
+      cursor:pointer;
+      user-select:none;
+      padding:10px 12px;
+      font-weight:900;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .evidenceToggle summary::-webkit-details-marker{ display:none; }
+    .evidenceToggle summary .chev{
+      font-weight:900;
+      color:var(--muted);
+      transition: transform .15s ease;
+    }
+    .evidenceToggle[open] summary{
+      color: var(--text);
+      border-bottom:1px solid var(--line);
+      background: var(--soft);
+    }
+    .evidenceToggle[open] summary .chev{ transform: rotate(90deg); }
+    .evidenceToggle .evidenceBody{ padding:10px 12px; }
+    .quote{
+      display:block;
+      margin-top:8px;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background: var(--soft);
+      color: var(--text);
+    }
+
+    /* Output section */
     .output{
       margin-top:14px;
       border:1px solid var(--line);
@@ -200,7 +241,6 @@
       align-items:center;
       justify-content:flex-end;
     }
-
     .pill{
       display:inline-flex; align-items:center; gap:8px;
       padding:6px 10px;
@@ -272,6 +312,7 @@
     }
     textarea.studentInput:focus{ box-shadow: 0 0 0 3px rgba(37,99,235,.12); border-color: var(--accent); }
 
+    /* Colour-highlight segments (model answer) */
     .seg{
       display:inline;
       padding:2px 6px;
@@ -368,30 +409,40 @@
 
       <div class="status" id="statusLine">
         <span class="dot warn"></span>
-        <span>Assess mode: AI assessment shows band + why + evidence (no model answer writing).</span>
+        <span>Assess mode: band + why are shown. Evidence is hidden under “Show evidence”.</span>
       </div>
 
       <div class="small">
-        Student-only proof of concept: Assess mode sets bands + estimated mark and shows short justification.
+        Student-only proof of concept: Assess mode sets bands + estimated mark and shows brief examiner-style reasoning.
       </div>
     </section>
   </div>
 
   <script>
-    // ✅ Your Worker endpoint
+    /***********************
+     * CONFIG
+     ***********************/
     const ASSESS_API_URL = "https://exam-marker.darren-314.workers.dev/assess";
     const QUESTION_TEXT = "Analyse and evaluate the impact that ‘open design’ has had on traditional product development. (9 marks)";
 
+    /***********************
+     * BANDS + SCORING
+     ***********************/
     const BAND_KEYS = ["Developing", "Secure", "Advanced"];
     const BAND_META = {
       Developing: { range: "1–3" },
       Secure:     { range: "4–6" },
       Advanced:   { range: "7–9" }
     };
+    // midpoint scoring (estimate /9)
     const BAND_SCORE = { Developing: 2, Secure: 5, Advanced: 8 };
 
+    /***********************
+     * CRITERIA
+     ***********************/
     const CRITERIA = [
-      { id:"c1", number:1, title:"Understanding of Open Design", color:"#4f46e5",
+      {
+        id:"c1", number:1, title:"Understanding of Open Design", color:"#4f46e5",
         descriptors:{
           Developing:"Basic/vague definition; limited terminology.",
           Secure:"Accurate definition with some key principles; mostly correct terms.",
@@ -403,7 +454,8 @@
           Advanced:"Open design is built on openly shared design information (often CAD, instructions and licensing), enabling others to access, adapt, distribute and develop products beyond tightly protected IP models."
         }
       },
-      { id:"c2", number:2, title:"Comparison with Traditional Development", color:"#0ea5e9",
+      {
+        id:"c2", number:2, title:"Comparison with Traditional Development", color:"#0ea5e9",
         descriptors:{
           Developing:"Limited comparison; traditional development not clearly referenced.",
           Secure:"Some comparison made; links to traditional development are mostly clear.",
@@ -415,7 +467,8 @@
           Advanced:"Where traditional development relies on protected IP, controlled R&D and commercial release cycles, open design shifts development towards shared ownership, distributed contribution and wider access to manufacturing pathways."
         }
       },
-      { id:"c3", number:3, title:"Depth of Analysis (Impact Explained)", color:"#22c55e",
+      {
+        id:"c3", number:3, title:"Depth of Analysis (Impact Explained)", color:"#22c55e",
         descriptors:{
           Developing:"Mostly descriptive; limited cause-and-effect.",
           Secure:"Explains some impacts with basic consequences.",
@@ -427,7 +480,8 @@
           Advanced:"Its biggest impact is on iteration and knowledge flow: large numbers of contributors can identify issues, propose refinements and release improved versions rapidly, changing the pace and direction of development compared to finite in-house expertise."
         }
       },
-      { id:"c4", number:4, title:"Quality of Evaluation", color:"#f59e0b",
+      {
+        id:"c4", number:4, title:"Quality of Evaluation", color:"#f59e0b",
         descriptors:{
           Developing:"Mentions pros/cons but does not weigh them.",
           Secure:"Includes positives and negatives with some judgement.",
@@ -439,7 +493,8 @@
           Advanced:"While open design democratises participation and can accelerate innovation, it also weakens exclusivity (and therefore profit models) and can create ambiguity over responsibility, legality and accountability when problems occur."
         }
       },
-      { id:"c5", number:5, title:"Breadth of Impact Covered", color:"#a855f7",
+      {
+        id:"c5", number:5, title:"Breadth of Impact Covered", color:"#a855f7",
         descriptors:{
           Developing:"Narrow focus; repeats similar points.",
           Secure:"Covers a few relevant impact areas.",
@@ -451,7 +506,8 @@
           Advanced:"Its impact spans IP and copyright culture, profitability, speed of iteration, customisation/repair, distributed manufacture (including home 3D printing), and quality control—reshaping who develops products and how value is captured."
         }
       },
-      { id:"c6", number:6, title:"Overall Judgement & Structure", color:"#ef4444",
+      {
+        id:"c6", number:6, title:"Overall Judgement & Structure", color:"#ef4444",
         descriptors:{
           Developing:"Limited structure; unclear overall judgement.",
           Secure:"Some structure; overall judgement present but not fully reasoned.",
@@ -465,13 +521,19 @@
       }
     ];
 
+    /***********************
+     * STATE
+     ***********************/
     const DEFAULT_INDEX = BAND_KEYS.indexOf("Secure");
     const state = Object.fromEntries(CRITERIA.map(c => [c.id, DEFAULT_INDEX]));
     let highlightsOn = true;
-    let mode = "model";
+    let mode = "model"; // model | assess
     let studentText = "";
-    let assessmentDetailById = {}; // {c1:{why,evidence[],confidence},...}
+    let assessmentDetailById = {}; // { c1:{why,evidence[],confidence}, ... }
 
+    /***********************
+     * DOM
+     ***********************/
     const gridEl = document.getElementById("criteriaGrid");
     const answerWrapEl = document.getElementById("answerWrap");
     const scoreTextEl = document.getElementById("scoreText");
@@ -490,11 +552,14 @@
     const btnAssess = document.getElementById("btnAssess");
     const btnMockAssess = document.getElementById("btnMockAssess");
 
-    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
-    function bandKeyFor(id){ return BAND_KEYS[state[id]]; }
+    /***********************
+     * HELPERS
+     ***********************/
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const bandKeyFor = (id) => BAND_KEYS[state[id]];
 
     function escapeHtml(str){
-      return String(str)
+      return String(str ?? "")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
@@ -510,6 +575,8 @@
     function estimateMarkOutOf9(){
       const scores = CRITERIA.map(c => BAND_SCORE[bandKeyFor(c.id)]);
       const avg = scores.reduce((a,b)=>a+b,0) / scores.length;
+
+      // map avg (2..8) to mark (1..9)
       let mark = 1 + ((avg - 2) * (8/6));
       mark = Math.round(mark);
       mark = clamp(mark, 1, 9);
@@ -534,6 +601,9 @@
       return { label:"Low", cls:"low" };
     }
 
+    /***********************
+     * RENDER CARDS
+     ***********************/
     function renderCards(){
       gridEl.innerHTML = "";
 
@@ -578,7 +648,9 @@
         upBtn.addEventListener("click", () => {
           state[c.id] = clamp(state[c.id] + 1, 0, BAND_KEYS.length - 1);
           assessmentDetailById = {};
-          renderCards(); renderMainBox(); updateScorePill();
+          renderCards();
+          renderMainBox();
+          updateScorePill();
         });
 
         const downBtn = document.createElement("button");
@@ -590,7 +662,9 @@
         downBtn.addEventListener("click", () => {
           state[c.id] = clamp(state[c.id] - 1, 0, BAND_KEYS.length - 1);
           assessmentDetailById = {};
-          renderCards(); renderMainBox(); updateScorePill();
+          renderCards();
+          renderMainBox();
+          updateScorePill();
         });
 
         arrowCol.appendChild(upBtn);
@@ -601,28 +675,40 @@
 
         const footer = document.createElement("div");
         footer.className = "bandFooter";
-        const pill = document.createElement("div");
-        pill.className = "bandPill";
-        pill.innerHTML = `<span>${band}</span> <span class="range">(${range})</span>`;
-        footer.appendChild(pill);
+        footer.innerHTML = `<div class="bandPill">${band} <span class="range">(${range})</span></div>`;
 
         card.appendChild(top);
         card.appendChild(descWrap);
 
-        // Assessment details (only in Assess mode, when present)
+        // Simplified assessment: show Why + Confidence always, Evidence hidden behind toggle
         if (mode === "assess" && assessmentDetailById[c.id]) {
           const d = assessmentDetailById[c.id];
-          const ev = Array.isArray(d.evidence) ? d.evidence : [];
           const why = d.why ? String(d.why) : "";
+          const ev = Array.isArray(d.evidence) ? d.evidence : [];
           const conf = confidenceLabel(d.confidence);
 
           const block = document.createElement("div");
           block.className = "assessBlock";
           block.innerHTML = `
             <div class="assessRow"><strong>Why:</strong> ${escapeHtml(why || "—")}</div>
-            <div class="assessRow"><strong>Evidence:</strong></div>
-            ${ev.slice(0,2).map(q => `<span class="quote">“${escapeHtml(q)}”</span>`).join("")}
-            <div class="confPill"><span class="confDot ${conf.cls}"></span> Confidence: ${conf.label}</div>
+
+            <div class="confPill">
+              <span class="confDot ${conf.cls}"></span>
+              Confidence: ${conf.label}
+            </div>
+
+            <details class="evidenceToggle">
+              <summary>
+                <span>Show evidence</span>
+                <span class="chev">▸</span>
+              </summary>
+              <div class="evidenceBody">
+                ${
+                  ev.slice(0,2).map(q => `<span class="quote">“${escapeHtml(q)}”</span>`).join("") ||
+                  `<div class="assessRow">No quotes extracted.</div>`
+                }
+              </div>
+            </details>
           `;
           card.appendChild(block);
         }
@@ -632,29 +718,41 @@
       });
     }
 
+    /***********************
+     * MODEL ANSWER BUILD
+     ***********************/
     function buildModelHtml(){
       const seg = (c, text) => `<span class="seg" style="--c:${c.color}">${escapeHtml(text)}</span>`;
       const c1=CRITERIA[0], c2=CRITERIA[1], c3=CRITERIA[2], c4=CRITERIA[3], c5=CRITERIA[4], c6=CRITERIA[5];
+
       const p1 = `${seg(c1, c1.model[bandKeyFor("c1")])} ${seg(c2, c2.model[bandKeyFor("c2")])}`;
       const p2 = `${seg(c3, c3.model[bandKeyFor("c3")])} ${seg(c4, c4.model[bandKeyFor("c4")])}`;
       const p3 = `${seg(c5, c5.model[bandKeyFor("c5")])}`;
       const p4 = `${seg(c6, c6.model[bandKeyFor("c6")])}`;
+
       return `${p1}<br><br>${p2}<br><br>${p3}<br><br>${p4}`;
     }
 
     function buildModelText(){
       const parts = CRITERIA.map(c => c.model[bandKeyFor(c.id)]);
-      return [parts[0]+" "+parts[1], parts[2]+" "+parts[3], parts[4], parts[5]].join("\n\n");
+      return [
+        parts[0] + " " + parts[1],
+        parts[2] + " " + parts[3],
+        parts[4],
+        parts[5]
+      ].join("\n\n");
     }
 
+    /***********************
+     * APPLY AI RESULT
+     ***********************/
     function applyBandsFromAI(aiBands){
-      // aiBands: { c1:{band,why,evidence,confidence}, ... }
       const byId = {};
       for (const c of CRITERIA) {
         const entry = aiBands?.[c.id];
         if (!entry) continue;
-        const bandName = entry.band;
-        const idx = BAND_KEYS.indexOf(bandName);
+
+        const idx = BAND_KEYS.indexOf(entry.band);
         if (idx >= 0) state[c.id] = idx;
 
         byId[c.id] = {
@@ -668,7 +766,9 @@
       updateScorePill();
     }
 
-    // Mock assess (still available)
+    /***********************
+     * MOCK ASSESS
+     ***********************/
     function mockAssessBands(text){
       const t = (text || "").toLowerCase();
       const has = (...words) => words.some(w => t.includes(w));
@@ -692,7 +792,7 @@
       if (c4==="Secure" && (has("weigh")||has("trade-off")||has("arguably")||has("overall"))) c4="Advanced";
 
       let c5="Developing";
-      const breadthCount = countHas(["ip","copyright","profit","licens","manufactur","3d print","quality control","customis","repair"]);
+      const breadthCount = countHas(["ip","copyright","profit","licens","manufactur","3d print","quality control","customis","repair","supply chain"]);
       if (breadthCount>=2) c5="Secure";
       if (breadthCount>=4) c5="Advanced";
 
@@ -703,6 +803,9 @@
       return { c1,c2,c3,c4,c5,c6 };
     }
 
+    /***********************
+     * REAL AI ASSESS
+     ***********************/
     async function realAIAssess(text){
       const payload = {
         question: QUESTION_TEXT,
@@ -734,6 +837,9 @@
       return data;
     }
 
+    /***********************
+     * RENDER MAIN BOX
+     ***********************/
     function renderMainBox(){
       answerWrapEl.classList.toggle("noHighlights", !highlightsOn);
       answerWrapEl.innerHTML = "";
@@ -765,7 +871,7 @@
         ta.addEventListener("input", (e) => { studentText = e.target.value; });
         answerWrapEl.appendChild(ta);
 
-        setStatus("warn", "Assess mode: paste answer, then click “Assess response”.");
+        setStatus("warn", "Assess mode: band + why are shown. Evidence is hidden under “Show evidence”.");
       }
 
       updateScorePill();
@@ -784,6 +890,9 @@
       renderMainBox();
     }
 
+    /***********************
+     * BUTTONS
+     ***********************/
     btnModeModel.addEventListener("click", () => setMode("model"));
     btnModeAssess.addEventListener("click", () => setMode("assess"));
 
@@ -828,12 +937,13 @@
         return;
       }
       const bands = mockAssessBands(text);
-      // minimal detail for mock
+
       assessmentDetailById = {};
       Object.entries(bands).forEach(([id, band]) => {
         const idx = BAND_KEYS.indexOf(band);
         if (idx >= 0) state[id] = idx;
       });
+
       renderCards();
       updateScorePill();
       setStatus("ok", "Mock assess applied (quick heuristic).");
@@ -853,8 +963,7 @@
       try{
         const data = await realAIAssess(text);
         applyBandsFromAI(data.bands);
-        // We’re not showing numeric confidence, but we can still display if overall is uncertain
-        setStatus("ok", "AI assessment applied (band + why + evidence).");
+        setStatus("ok", "AI assessment applied (band + why + evidence toggle).");
       }catch(err){
         setStatus("bad", err && err.message ? err.message : String(err));
       }finally{
@@ -863,6 +972,9 @@
       }
     });
 
+    /***********************
+     * INIT
+     ***********************/
     toggleStateEl.textContent = "On";
     renderCards();
     renderMainBox();
