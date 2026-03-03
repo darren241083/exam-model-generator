@@ -27,7 +27,29 @@
       display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;
       margin-bottom:12px;
     }
+
+    .headLeft{ min-width:280px; }
     h1{ font-size:22px; margin:0; letter-spacing:.2px; }
+
+    .question{
+      margin-top:8px;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      box-shadow: var(--shadow);
+      font-size:13px;
+      line-height:1.35;
+      max-width:920px;
+    }
+    .question b{ font-weight:900; }
+    .question .marks{
+      color:var(--muted);
+      font-weight:800;
+      margin-left:6px;
+      white-space:nowrap;
+    }
+
     .tip{
       color:var(--muted);
       font-size:12px;
@@ -189,14 +211,6 @@
       white-space:nowrap;
     }
     .scorePill .mut{ color:var(--muted); font-weight:800; }
-    .scoreTag{
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:#fff;
-      font-size:12px;
-      font-weight:900;
-    }
 
     .toggle{
       display:inline-flex;
@@ -263,16 +277,23 @@
 <body>
   <div class="wrap">
     <header>
-      <div>
+      <div class="headLeft">
         <h1>Model Answer Generator – Q18 “Open Design”</h1>
+
+        <!-- ✅ Actual question text shown here -->
+        <div class="question">
+          <b>Question:</b> Analyse and evaluate the impact that ‘open design’ has had on traditional product development.
+          <span class="marks">(9 marks)</span>
+        </div>
       </div>
+
       <div class="tip">Tip for GitHub Pages: bump <code>?v=</code> when you update files.</div>
     </header>
 
     <!-- cards -->
     <section id="criteriaGrid" class="grid" aria-label="Success criteria controls"></section>
 
-    <!-- output (no legend, no extra instruction line) -->
+    <!-- output (simplified: no legend, no instruction line) -->
     <section class="output" aria-label="Generated model answer">
       <div class="outputTop">
         <h2>Live model answer</h2>
@@ -453,7 +474,7 @@
 
       // Map avg (2..8) to mark (1..9) linearly:
       // 2 -> 1, 8 -> 9
-      let mark = 1 + ((avg - 2) * (8/6)); // scale factor 8/6 = 1.333...
+      let mark = 1 + ((avg - 2) * (8/6));
       mark = Math.round(mark);
       mark = clamp(mark, 1, 9);
 
@@ -566,13 +587,10 @@
     }
 
     function updateAnswerAndScore(){
-      // Answer
       answerEl.innerHTML = buildAnswerHtml();
 
-      // Highlight toggle
       answerWrapEl.classList.toggle("noHighlights", !highlightsOn);
 
-      // Score
       const { mark, bandLabel } = estimateMarkOutOf9();
       scoreTextEl.textContent = `Estimated mark: ${mark}/9`;
       scoreBandEl.textContent = `• ${bandLabel}`;
