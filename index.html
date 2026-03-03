@@ -735,7 +735,7 @@
         card.appendChild(descWrap);
 
         // Assessment display: Why / Evidence / Improve are toggled; Confidence at bottom
-        if (mode === "assess" && assessmentDetailById[c.id]) {
+        if (mode === "assess") {
           const d = assessmentDetailById[c.id];
           const why = d.why ? String(d.why) : "";
           const ev = Array.isArray(d.evidence) ? d.evidence : [];
