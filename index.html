@@ -70,7 +70,7 @@
       display:flex;
       flex-direction:column;
       gap:10px;
-      min-height:255px;
+      min-height:245px;
       position:relative;
       overflow:hidden;
     }
@@ -128,7 +128,7 @@
     .tri.up{ border-bottom:14px solid var(--crit); }
     .tri.down{ border-top:14px solid var(--crit); }
 
-    /* Assessment UI (collapsed by default) */
+    /* Assessment UI */
     .assessBlock{
       margin-top:10px;
       border-top:1px solid var(--line);
@@ -169,6 +169,7 @@
       background: var(--soft);
     }
     details.toggleBox[open] summary .chev{ transform: rotate(90deg); }
+
     .toggleBody{ padding:10px 12px; color:var(--muted); }
     .toggleBody strong{ color:var(--text); }
 
@@ -395,19 +396,25 @@
 
       <div class="status" id="statusLine">
         <span class="dot warn"></span>
-        <span>Assess mode: Why + Evidence are hidden under toggles. Confidence sits at the bottom.</span>
+        <span>Assess mode: Why / Evidence / How to improve are optional (collapsed). Confidence sits at the bottom of each card.</span>
       </div>
 
       <div class="small">
-        Student-only proof of concept: Assess mode sets bands + estimated mark and provides optional examiner reasoning.
+        Student-only proof of concept: Assess mode sets bands + estimated mark and provides optional examiner reasoning and next steps.
       </div>
     </section>
   </div>
 
   <script>
+    /***********************
+     * CONFIG
+     ***********************/
     const ASSESS_API_URL = "https://exam-marker.darren-314.workers.dev/assess";
     const QUESTION_TEXT = "Analyse and evaluate the impact that ‘open design’ has had on traditional product development. (9 marks)";
 
+    /***********************
+     * BANDS + SCORING
+     ***********************/
     const BAND_KEYS = ["Developing", "Secure", "Advanced"];
     const BAND_META = {
       Developing: { range: "1–3" },
@@ -416,6 +423,9 @@
     };
     const BAND_SCORE = { Developing: 2, Secure: 5, Advanced: 8 };
 
+    /***********************
+     * CRITERIA
+     ***********************/
     const CRITERIA = [
       { id:"c1", number:1, title:"Understanding of Open Design", color:"#4f46e5",
         descriptors:{
@@ -491,6 +501,93 @@
       }
     ];
 
+    /***********************
+     * IMPROVEMENT TIPS (local, student-friendly)
+     ***********************/
+    const IMPROVE = {
+      c1: {
+        Developing: [
+          "Define open design precisely (what is shared + what others can do with it).",
+          "Use 1–2 key terms: CAD files, licensing, IP."
+        ],
+        Secure: [
+          "Add one precise feature (e.g., licensing / redistribution) to push to Advanced.",
+          "Avoid vague wording—be specific about what is open."
+        ],
+        Advanced: [
+          "Keep the definition precise and accurate."
+        ]
+      },
+      c2: {
+        Developing: [
+          "Make an explicit comparison: ‘Traditional… whereas open design…’.",
+          "Reference closed teams + IP protection in traditional development."
+        ],
+        Secure: [
+          "Sustain comparison across the answer, not just one sentence.",
+          "Use contrast language throughout: however, whereas, in contrast."
+        ],
+        Advanced: [
+          "Maintain sustained comparison—keep using contrast language."
+        ]
+      },
+      c3: {
+        Developing: [
+          "Explain cause → effect using because/therefore.",
+          "Add a consequence: what changes in development speed/quality/cost?"
+        ],
+        Secure: [
+          "Add second-order consequences (ripple effects), not just first impact.",
+          "Explain how the impact happens, not only that it happens."
+        ],
+        Advanced: [
+          "Keep the analysis developed and causal."
+        ]
+      },
+      c4: {
+        Developing: [
+          "Include both positives and negatives.",
+          "Add a judgement: which matters more and why?"
+        ],
+        Secure: [
+          "Weigh trade-offs explicitly (benefit vs drawback) and justify.",
+          "Link evaluation to context (commercial firms vs communities/schools)."
+        ],
+        Advanced: [
+          "Maintain balanced evaluation and clear weighing of trade-offs."
+        ]
+      },
+      c5: {
+        Developing: [
+          "Add more impact areas: IP, profit, manufacturing, quality control.",
+          "Don’t repeat the same point—broaden coverage."
+        ],
+        Secure: [
+          "Add one more distinct area (e.g., accountability/regulation or supply chains).",
+          "Connect areas together (IP ↔ profit model ↔ manufacturing)."
+        ],
+        Advanced: [
+          "Keep breadth strong and avoid repetition."
+        ]
+      },
+      c6: {
+        Developing: [
+          "Write a clear final judgement sentence (Overall…).",
+          "Summarise the main impacts—don’t introduce new points at the end."
+        ],
+        Secure: [
+          "Make the conclusion more decisive and synthesised.",
+          "Prioritise: which impact is most significant and why?"
+        ],
+        Advanced: [
+          "Maintain synthesis: prioritise impacts and justify the judgement."
+        ]
+      }
+    };
+
+    /***********************
+     * STATE
+     ***********************/
     const DEFAULT_INDEX = BAND_KEYS.indexOf("Secure");
     const state = Object.fromEntries(CRITERIA.map(c => [c.id, DEFAULT_INDEX]));
     let highlightsOn = true;
@@ -498,6 +595,9 @@
     let studentText = "";
     let assessmentDetailById = {}; // { c1:{why,evidence[],confidence}, ... }
 
+    /***********************
+     * DOM
+     ***********************/
     const gridEl = document.getElementById("criteriaGrid");
     const answerWrapEl = document.getElementById("answerWrap");
     const scoreTextEl = document.getElementById("scoreText");
@@ -516,6 +616,9 @@
     const btnAssess = document.getElementById("btnAssess");
     const btnMockAssess = document.getElementById("btnMockAssess");
 
+    /***********************
+     * HELPERS
+     ***********************/
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
     const bandKeyFor = (id) => BAND_KEYS[state[id]];
 
@@ -560,6 +663,9 @@
       return { label:"Low", cls:"low" };
     }
 
+    /***********************
+     * RENDER CARDS
+     ***********************/
     function renderCards(){
       gridEl.innerHTML = "";
 
@@ -628,16 +734,20 @@
         card.appendChild(top);
         card.appendChild(descWrap);
 
-        // Assessment display: hide Why and Evidence in toggles; confidence at bottom
+        // Assessment display: Why / Evidence / Improve are toggled; Confidence at bottom
         if (mode === "assess" && assessmentDetailById[c.id]) {
           const d = assessmentDetailById[c.id];
           const why = d.why ? String(d.why) : "";
           const ev = Array.isArray(d.evidence) ? d.evidence : [];
           const conf = confidenceLabel(d.confidence);
 
+          const tips = (IMPROVE?.[c.id]?.[band] || []);
+          const improveHtml = tips.length
+            ? tips.map(t => `<div style="margin-top:6px;">• ${escapeHtml(t)}</div>`).join("")
+            : `<div style="margin-top:6px;">No improvement tips available.</div>`;
+
           const block = document.createElement("div");
           block.className = "assessBlock";
-
           block.innerHTML = `
             <details class="toggleBox">
               <summary>
@@ -662,6 +772,16 @@
               </div>
             </details>
 
+            <details class="toggleBox">
+              <summary>
+                <span>Show how to improve</span>
+                <span class="chev">▸</span>
+              </summary>
+              <div class="toggleBody">
+                ${improveHtml}
+              </div>
+            </details>
+
             <div class="confPill">
               <span class="confDot ${conf.cls}"></span>
               Confidence: ${conf.label}
@@ -670,12 +790,13 @@
           card.appendChild(block);
         }
 
-        // Removed bottom band pill (requested) — nothing appended here
-
         gridEl.appendChild(card);
       });
     }
 
+    /***********************
+     * MODEL ANSWER BUILD
+     ***********************/
     function buildModelHtml(){
       const seg = (c, text) => `<span class="seg" style="--c:${c.color}">${escapeHtml(text)}</span>`;
       const c1=CRITERIA[0], c2=CRITERIA[1], c3=CRITERIA[2], c4=CRITERIA[3], c5=CRITERIA[4], c6=CRITERIA[5];
@@ -698,6 +819,9 @@
       ].join("\n\n");
     }
 
+    /***********************
+     * APPLY AI RESULT
+     ***********************/
     function applyBandsFromAI(aiBands){
       const byId = {};
       for (const c of CRITERIA) {
@@ -718,6 +842,9 @@
       updateScorePill();
     }
 
+    /***********************
+     * MOCK ASSESS
+     ***********************/
     function mockAssessBands(text){
       const t = (text || "").toLowerCase();
       const has = (...words) => words.some(w => t.includes(w));
@@ -752,6 +879,9 @@
       return { c1,c2,c3,c4,c5,c6 };
     }
 
+    /***********************
+     * REAL AI ASSESS
+     ***********************/
     async function realAIAssess(text){
       const payload = {
         question: QUESTION_TEXT,
@@ -783,6 +913,9 @@
       return data;
     }
 
+    /***********************
+     * RENDER MAIN BOX
+     ***********************/
     function renderMainBox(){
       answerWrapEl.classList.toggle("noHighlights", !highlightsOn);
       answerWrapEl.innerHTML = "";
@@ -814,7 +947,7 @@
         ta.addEventListener("input", (e) => { studentText = e.target.value; });
         answerWrapEl.appendChild(ta);
 
-        setStatus("warn", "Assess mode: Why + Evidence are hidden under toggles. Confidence sits at the bottom.");
+        setStatus("warn", "Assess mode: Why / Evidence / How to improve are optional (collapsed). Confidence sits at the bottom.");
       }
 
       updateScorePill();
@@ -833,6 +966,9 @@
       renderMainBox();
     }
 
+    /***********************
+     * EVENTS
+     ***********************/
     btnModeModel.addEventListener("click", () => setMode("model"));
     btnModeAssess.addEventListener("click", () => setMode("assess"));
 
@@ -910,6 +1046,9 @@
       }
     });
 
+    /***********************
+     * INIT
+     ***********************/
     toggleStateEl.textContent = "On";
     renderCards();
     renderMainBox();
