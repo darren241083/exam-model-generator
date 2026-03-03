@@ -16,13 +16,11 @@
       --radius:16px;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-
       --accent:#2563eb;
       --ok:#16a34a;
       --warn:#f59e0b;
       --bad:#ef4444;
     }
-
     *{ box-sizing:border-box; }
     body{ margin:0; font-family:var(--sans); color:var(--text); background:var(--bg); }
     .wrap{ max-width:1200px; margin:0 auto; padding:22px 18px 40px; }
@@ -32,19 +30,10 @@
       margin-bottom:12px;
     }
     h1{ font-size:22px; margin:0; letter-spacing:.2px; }
-    .tip{
-      color:var(--muted);
-      font-size:12px;
-      white-space:nowrap;
-      margin-top:2px;
-    }
+    .tip{ color:var(--muted); font-size:12px; white-space:nowrap; margin-top:2px; }
     .tip code{
-      font-family:var(--mono);
-      font-size:12px;
-      background:#fff;
-      border:1px solid var(--line);
-      padding:2px 6px;
-      border-radius:8px;
+      font-family:var(--mono); font-size:12px; background:#fff; border:1px solid var(--line);
+      padding:2px 6px; border-radius:8px;
     }
 
     .question{
@@ -59,12 +48,7 @@
       max-width:920px;
     }
     .question b{ font-weight:900; }
-    .question .marks{
-      color:var(--muted);
-      font-weight:800;
-      margin-left:6px;
-      white-space:nowrap;
-    }
+    .question .marks{ color:var(--muted); font-weight:800; margin-left:6px; white-space:nowrap; }
 
     .grid{
       display:grid;
@@ -73,7 +57,7 @@
       margin-top:10px;
     }
     @media (max-width:1100px){ .grid{ grid-template-columns: repeat(3, minmax(180px, 1fr)); } }
-    @media (max-width:700px){ .grid{ grid-template-columns: repeat(1, 1fr)); } }
+    @media (max-width:700px){ .grid{ grid-template-columns: 1fr; } }
 
     .card{
       border:1px solid var(--line);
@@ -84,11 +68,10 @@
       display:flex;
       flex-direction:column;
       gap:10px;
-      min-height:245px;
+      min-height:270px;
       position:relative;
       overflow:hidden;
     }
-
     .critTop{ display:flex; align-items:flex-start; gap:10px; }
     .badge{
       width:22px; height:22px; border-radius:6px;
@@ -121,11 +104,7 @@
     .descText{ font-size:12px; line-height:1.35; color:var(--muted); }
 
     .arrowCol{
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      align-items:stretch;
-      gap:10px;
+      display:flex; flex-direction:column; justify-content:space-between; align-items:stretch; gap:10px;
     }
     .triBtn{
       height:44px; width:44px;
@@ -139,18 +118,10 @@
     }
     .triBtn:hover{ border-color:#c7cbe3; transform: translateY(-1px); }
     .triBtn:active{ transform: translateY(0px); }
-    .triBtn:focus{
-      outline:none;
-      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-      border-color: var(--accent);
-    }
+    .triBtn:focus{ outline:none; box-shadow: 0 0 0 3px rgba(37,99,235,.12); border-color: var(--accent); }
     .triBtn[disabled]{ opacity:.45; cursor:not-allowed; transform:none; }
 
-    .tri{
-      width:0; height:0;
-      border-left:9px solid transparent;
-      border-right:9px solid transparent;
-    }
+    .tri{ width:0; height:0; border-left:9px solid transparent; border-right:9px solid transparent; }
     .tri.up{ border-bottom:14px solid var(--crit); }
     .tri.down{ border-top:14px solid var(--crit); }
 
@@ -167,6 +138,43 @@
     .bandPill .range{ font-weight:800; color:var(--muted); }
     .bandFooter{ display:flex; justify-content:flex-start; margin-top:10px; }
 
+    .assessBlock{
+      margin-top:10px;
+      border-top:1px solid var(--line);
+      padding-top:10px;
+      font-size:12px;
+      line-height:1.4;
+      color:var(--text);
+    }
+    .assessRow{ margin-top:6px; color:var(--muted); }
+    .assessRow strong{ color:var(--text); }
+    .quote{
+      display:block;
+      margin-top:6px;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background: var(--soft);
+      color: var(--text);
+    }
+    .confPill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-top:6px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:12px;
+      font-weight:900;
+      color: var(--muted);
+    }
+    .confDot{ width:8px; height:8px; border-radius:999px; display:inline-block; }
+    .confDot.high{ background: var(--ok); }
+    .confDot.med{ background: var(--warn); }
+    .confDot.low{ background: var(--bad); }
+
     .output{
       margin-top:14px;
       border:1px solid var(--line);
@@ -175,7 +183,6 @@
       padding:18px;
       box-shadow: var(--shadow);
     }
-
     .outputTop{
       display:flex;
       align-items:flex-start;
@@ -184,7 +191,6 @@
       flex-wrap:wrap;
       margin-bottom:10px;
     }
-
     .outputTop h2{ margin:0; font-size:14px; letter-spacing:.2px; }
 
     .rightControls{
@@ -229,9 +235,7 @@
     }
 
     .segToggle{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
+      display:inline-flex; align-items:center; gap:8px;
       padding:6px 10px;
       border-radius:999px;
       border:1px solid var(--line);
@@ -244,7 +248,6 @@
     .segToggle input{ transform: translateY(1px); }
     .segToggle .mut{ color:var(--muted); font-weight:800; }
 
-    /* Main box */
     .answerBox{
       background:#fff;
       border:1px solid var(--line);
@@ -267,12 +270,8 @@
       background:#fff;
       outline:none;
     }
-    textarea.studentInput:focus{
-      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-      border-color: var(--accent);
-    }
+    textarea.studentInput:focus{ box-shadow: 0 0 0 3px rgba(37,99,235,.12); border-color: var(--accent); }
 
-    /* Highlighted segments */
     .seg{
       display:inline;
       padding:2px 6px;
@@ -280,12 +279,7 @@
       border:1px solid color-mix(in srgb, var(--c) 35%, #ffffff);
       background: color-mix(in srgb, var(--c) 12%, #ffffff);
     }
-    .noHighlights .seg{
-      padding:0;
-      border:none;
-      background:transparent;
-      border-radius:0;
-    }
+    .noHighlights .seg{ padding:0; border:none; background:transparent; border-radius:0; }
 
     .toolbar{
       display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;
@@ -300,11 +294,7 @@
       font-weight:900;
       font-size:13px;
     }
-    .btn.primary{
-      background: var(--accent);
-      border-color: var(--accent);
-      color:#fff;
-    }
+    .btn.primary{ background: var(--accent); border-color: var(--accent); color:#fff; }
     .btn[disabled]{ opacity:.55; cursor:not-allowed; }
 
     .status{
@@ -316,11 +306,7 @@
       align-items:center;
       flex-wrap:wrap;
     }
-    .dot{
-      width:8px; height:8px; border-radius:999px;
-      display:inline-block;
-      background: var(--muted);
-    }
+    .dot{ width:8px; height:8px; border-radius:999px; background: var(--muted); display:inline-block; }
     .dot.ok{ background: var(--ok); }
     .dot.warn{ background: var(--warn); }
     .dot.bad{ background: var(--bad); }
@@ -382,133 +368,110 @@
 
       <div class="status" id="statusLine">
         <span class="dot warn"></span>
-        <span>Assess mode: “Mock assess” works immediately. AI assess uses your Cloudflare Worker.</span>
+        <span>Assess mode: AI assessment shows band + why + evidence (no model answer writing).</span>
       </div>
 
       <div class="small">
-        Student-only proof of concept: Assess mode sets bands + estimated mark (no model answer writing).
+        Student-only proof of concept: Assess mode sets bands + estimated mark and shows short justification.
       </div>
     </section>
   </div>
 
   <script>
-    /***********************
-     * CONFIG
-     ***********************/
-    // ✅ Your Cloudflare Worker endpoint
+    // ✅ Your Worker endpoint
     const ASSESS_API_URL = "https://exam-marker.darren-314.workers.dev/assess";
-
-    // Put your question here (used for assessment payload)
     const QUESTION_TEXT = "Analyse and evaluate the impact that ‘open design’ has had on traditional product development. (9 marks)";
 
-    /***********************
-     * BANDS + SCORING
-     ***********************/
     const BAND_KEYS = ["Developing", "Secure", "Advanced"];
     const BAND_META = {
       Developing: { range: "1–3" },
       Secure:     { range: "4–6" },
       Advanced:   { range: "7–9" }
     };
-    // midpoint scoring (estimate /9)
     const BAND_SCORE = { Developing: 2, Secure: 5, Advanced: 8 };
 
-    /***********************
-     * CRITERIA
-     ***********************/
     const CRITERIA = [
-      {
-        id: "c1", number: 1, title: "Understanding of Open Design", color: "#4f46e5",
-        descriptors: {
-          Developing: "Basic/vague definition; limited terminology.",
-          Secure: "Accurate definition with key principles; mostly correct terms.",
-          Advanced: "Clear, precise definition with key principles and confident terminology."
+      { id:"c1", number:1, title:"Understanding of Open Design", color:"#4f46e5",
+        descriptors:{
+          Developing:"Basic/vague definition; limited terminology.",
+          Secure:"Accurate definition with some key principles; mostly correct terms.",
+          Advanced:"Clear, precise definition with key principles and confident terminology."
         },
-        model: {
-          Developing: "Open design is when people share designs online so others can use them.",
-          Secure: "Open design is an approach where design files and ideas are shared openly so others can use, adapt and redistribute them.",
-          Advanced: "Open design is built on openly shared design information (often CAD, instructions and licensing), enabling others to access, adapt, distribute and develop products beyond tightly protected IP models."
+        model:{
+          Developing:"Open design is when people share designs online so others can use them.",
+          Secure:"Open design is an approach where design files and ideas are shared openly so others can use, adapt and redistribute them.",
+          Advanced:"Open design is built on openly shared design information (often CAD, instructions and licensing), enabling others to access, adapt, distribute and develop products beyond tightly protected IP models."
         }
       },
-      {
-        id: "c2", number: 2, title: "Comparison with Traditional Development", color: "#0ea5e9",
-        descriptors: {
-          Developing: "Limited comparison; traditional development not clearly referenced.",
-          Secure: "Some comparison made; links to traditional development are mostly clear.",
-          Advanced: "Sustained, explicit comparison using contrast language throughout."
+      { id:"c2", number:2, title:"Comparison with Traditional Development", color:"#0ea5e9",
+        descriptors:{
+          Developing:"Limited comparison; traditional development not clearly referenced.",
+          Secure:"Some comparison made; links to traditional development are mostly clear.",
+          Advanced:"Sustained, explicit comparison using contrast language throughout."
         },
-        model: {
-          Developing: "This is different to normal product development.",
-          Secure: "In traditional product development, companies protect ideas through IP and develop products within closed teams; open design makes the process more accessible and shared.",
-          Advanced: "Where traditional development relies on protected IP, controlled R&D and commercial release cycles, open design shifts development towards shared ownership, distributed contribution and wider access to manufacturing pathways."
+        model:{
+          Developing:"This is different to normal product development.",
+          Secure:"In traditional product development, companies protect ideas through IP and develop products within closed teams; open design makes the process more accessible and shared.",
+          Advanced:"Where traditional development relies on protected IP, controlled R&D and commercial release cycles, open design shifts development towards shared ownership, distributed contribution and wider access to manufacturing pathways."
         }
       },
-      {
-        id: "c3", number: 3, title: "Depth of Analysis (Impact Explained)", color: "#22c55e",
-        descriptors: {
-          Developing: "Mostly descriptive; limited cause-and-effect.",
-          Secure: "Explains some impacts with basic consequences.",
-          Advanced: "Explains how/why impacts occur; consequences developed in depth."
+      { id:"c3", number:3, title:"Depth of Analysis (Impact Explained)", color:"#22c55e",
+        descriptors:{
+          Developing:"Mostly descriptive; limited cause-and-effect.",
+          Secure:"Explains some impacts with basic consequences.",
+          Advanced:"Explains how/why impacts occur; consequences developed in depth."
         },
-        model: {
-          Developing: "It changes how products get made.",
-          Secure: "It can speed up iteration because many users can test, feedback and improve designs, which can shorten development time compared to a single in-house team.",
-          Advanced: "Its biggest impact is on iteration and knowledge flow: large numbers of contributors can identify issues, propose refinements and release improved versions rapidly, changing the pace and direction of development compared to finite in-house expertise."
+        model:{
+          Developing:"It changes how products get made.",
+          Secure:"It can speed up iteration because many users can test, feedback and improve designs, which can shorten development time compared to a single in-house team.",
+          Advanced:"Its biggest impact is on iteration and knowledge flow: large numbers of contributors can identify issues, propose refinements and release improved versions rapidly, changing the pace and direction of development compared to finite in-house expertise."
         }
       },
-      {
-        id: "c4", number: 4, title: "Quality of Evaluation", color: "#f59e0b",
-        descriptors: {
-          Developing: "Mentions pros/cons but does not weigh them.",
-          Secure: "Includes positives and negatives with some judgement.",
-          Advanced: "Balanced, reasoned evaluation that weighs trade-offs and implications."
+      { id:"c4", number:4, title:"Quality of Evaluation", color:"#f59e0b",
+        descriptors:{
+          Developing:"Mentions pros/cons but does not weigh them.",
+          Secure:"Includes positives and negatives with some judgement.",
+          Advanced:"Balanced, reasoned evaluation that weighs trade-offs and implications."
         },
-        model: {
-          Developing: "There are good and bad points.",
-          Secure: "Although open design increases access and collaboration, it can reduce the ability for designers or companies to profit directly from exclusive ownership.",
-          Advanced: "While open design democratises participation and can accelerate innovation, it also weakens exclusivity (and therefore profit models) and can create ambiguity over responsibility, legality and accountability when problems occur."
+        model:{
+          Developing:"There are good and bad points.",
+          Secure:"Although open design increases access and collaboration, it can reduce the ability for designers or companies to profit directly from exclusive ownership.",
+          Advanced:"While open design democratises participation and can accelerate innovation, it also weakens exclusivity (and therefore profit models) and can create ambiguity over responsibility, legality and accountability when problems occur."
         }
       },
-      {
-        id: "c5", number: 5, title: "Breadth of Impact Covered", color: "#a855f7",
-        descriptors: {
-          Developing: "Narrow focus; repeats similar points.",
-          Secure: "Covers a few relevant impact areas.",
-          Advanced: "Covers multiple impact areas (e.g., IP, profit, iteration speed, manufacture, quality control)."
+      { id:"c5", number:5, title:"Breadth of Impact Covered", color:"#a855f7",
+        descriptors:{
+          Developing:"Narrow focus; repeats similar points.",
+          Secure:"Covers a few relevant impact areas.",
+          Advanced:"Covers multiple impact areas (e.g., IP, profit, iteration speed, manufacture, quality control)."
         },
-        model: {
-          Developing: "It affects designers and companies.",
-          Secure: "It affects IP/profit, development speed and user customisation, and can reduce reliance on large manufacturers as home manufacture (e.g., 3D printing) increases.",
-          Advanced: "Its impact spans IP and copyright culture, profitability, speed of iteration, customisation/repair, distributed manufacture (including home 3D printing), and quality control—reshaping who develops products and how value is captured."
+        model:{
+          Developing:"It affects designers and companies.",
+          Secure:"It affects IP/profit, development speed and user customisation, and can reduce reliance on large manufacturers as home manufacture (e.g., 3D printing) increases.",
+          Advanced:"Its impact spans IP and copyright culture, profitability, speed of iteration, customisation/repair, distributed manufacture (including home 3D printing), and quality control—reshaping who develops products and how value is captured."
         }
       },
-      {
-        id: "c6", number: 6, title: "Overall Judgement & Structure", color: "#ef4444",
-        descriptors: {
-          Developing: "Limited structure; unclear overall judgement.",
-          Secure: "Some structure; overall judgement present but not fully reasoned.",
-          Advanced: "Coherent structure with a clear, reasoned overall judgement."
+      { id:"c6", number:6, title:"Overall Judgement & Structure", color:"#ef4444",
+        descriptors:{
+          Developing:"Limited structure; unclear overall judgement.",
+          Secure:"Some structure; overall judgement present but not fully reasoned.",
+          Advanced:"Coherent structure with a clear, reasoned overall judgement."
         },
-        model: {
-          Developing: "Overall, open design has changed product development.",
-          Secure: "Overall, open design has influenced traditional development by opening up participation and speeding iteration, but it introduces challenges around ownership and commercial incentives.",
-          Advanced: "Overall, open design meaningfully disrupts traditional product development by redistributing design power from closed commercial teams to wider communities; however, without robust licensing and quality assurance it can create risks around IP, safety and consistency."
+        model:{
+          Developing:"Overall, open design has changed product development.",
+          Secure:"Overall, open design has influenced traditional development by opening up participation and speeding iteration, but it introduces challenges around ownership and commercial incentives.",
+          Advanced:"Overall, open design meaningfully disrupts traditional product development by redistributing design power from closed commercial teams to wider communities; however, without robust licensing and quality assurance it can create risks around IP, safety and consistency."
         }
       }
     ];
 
-    /***********************
-     * STATE
-     ***********************/
     const DEFAULT_INDEX = BAND_KEYS.indexOf("Secure");
     const state = Object.fromEntries(CRITERIA.map(c => [c.id, DEFAULT_INDEX]));
     let highlightsOn = true;
-    let mode = "model";      // "model" | "assess"
-    let studentText = "";    // textarea content
+    let mode = "model";
+    let studentText = "";
+    let assessmentDetailById = {}; // {c1:{why,evidence[],confidence},...}
 
-    /***********************
-     * DOM
-     ***********************/
     const gridEl = document.getElementById("criteriaGrid");
     const answerWrapEl = document.getElementById("answerWrap");
     const scoreTextEl = document.getElementById("scoreText");
@@ -527,9 +490,6 @@
     const btnAssess = document.getElementById("btnAssess");
     const btnMockAssess = document.getElementById("btnMockAssess");
 
-    /***********************
-     * HELPERS
-     ***********************/
     function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
     function bandKeyFor(id){ return BAND_KEYS[state[id]]; }
 
@@ -550,8 +510,6 @@
     function estimateMarkOutOf9(){
       const scores = CRITERIA.map(c => BAND_SCORE[bandKeyFor(c.id)]);
       const avg = scores.reduce((a,b)=>a+b,0) / scores.length;
-
-      // map avg (2..8) to mark (1..9): 2->1, 8->9
       let mark = 1 + ((avg - 2) * (8/6));
       mark = Math.round(mark);
       mark = clamp(mark, 1, 9);
@@ -569,9 +527,13 @@
       scoreBandEl.textContent = `• ${bandLabel}`;
     }
 
-    /***********************
-     * RENDER CRITERIA CARDS
-     ***********************/
+    function confidenceLabel(conf){
+      const n = Number(conf);
+      if (Number.isFinite(n) && n >= 0.85) return { label:"High", cls:"high" };
+      if (Number.isFinite(n) && n >= 0.65) return { label:"Medium", cls:"med" };
+      return { label:"Low", cls:"low" };
+    }
+
     function renderCards(){
       gridEl.innerHTML = "";
 
@@ -582,6 +544,7 @@
         const card = document.createElement("div");
         card.className = "card";
         card.style.setProperty("--crit", c.color);
+        card.dataset.crit = c.id;
 
         const top = document.createElement("div");
         top.className = "critTop";
@@ -611,13 +574,11 @@
         upBtn.type = "button";
         upBtn.title = "Move up a band";
         upBtn.innerHTML = `<span class="tri up" aria-hidden="true"></span>`;
-        // In assess mode we auto-set bands; keep arrows disabled (student-only)
         upBtn.disabled = (mode === "assess");
         upBtn.addEventListener("click", () => {
           state[c.id] = clamp(state[c.id] + 1, 0, BAND_KEYS.length - 1);
-          renderCards();
-          renderMainBox();
-          updateScorePill();
+          assessmentDetailById = {};
+          renderCards(); renderMainBox(); updateScorePill();
         });
 
         const downBtn = document.createElement("button");
@@ -628,9 +589,8 @@
         downBtn.disabled = (mode === "assess");
         downBtn.addEventListener("click", () => {
           state[c.id] = clamp(state[c.id] - 1, 0, BAND_KEYS.length - 1);
-          renderCards();
-          renderMainBox();
-          updateScorePill();
+          assessmentDetailById = {};
+          renderCards(); renderMainBox(); updateScorePill();
         });
 
         arrowCol.appendChild(upBtn);
@@ -648,99 +608,101 @@
 
         card.appendChild(top);
         card.appendChild(descWrap);
-        card.appendChild(footer);
 
+        // Assessment details (only in Assess mode, when present)
+        if (mode === "assess" && assessmentDetailById[c.id]) {
+          const d = assessmentDetailById[c.id];
+          const ev = Array.isArray(d.evidence) ? d.evidence : [];
+          const why = d.why ? String(d.why) : "";
+          const conf = confidenceLabel(d.confidence);
+
+          const block = document.createElement("div");
+          block.className = "assessBlock";
+          block.innerHTML = `
+            <div class="assessRow"><strong>Why:</strong> ${escapeHtml(why || "—")}</div>
+            <div class="assessRow"><strong>Evidence:</strong></div>
+            ${ev.slice(0,2).map(q => `<span class="quote">“${escapeHtml(q)}”</span>`).join("")}
+            <div class="confPill"><span class="confDot ${conf.cls}"></span> Confidence: ${conf.label}</div>
+          `;
+          card.appendChild(block);
+        }
+
+        card.appendChild(footer);
         gridEl.appendChild(card);
       });
     }
 
-    /***********************
-     * MODEL ANSWER BUILDERS
-     ***********************/
     function buildModelHtml(){
       const seg = (c, text) => `<span class="seg" style="--c:${c.color}">${escapeHtml(text)}</span>`;
-
-      const c1 = CRITERIA[0], c2 = CRITERIA[1], c3 = CRITERIA[2], c4 = CRITERIA[3], c5 = CRITERIA[4], c6 = CRITERIA[5];
-
+      const c1=CRITERIA[0], c2=CRITERIA[1], c3=CRITERIA[2], c4=CRITERIA[3], c5=CRITERIA[4], c6=CRITERIA[5];
       const p1 = `${seg(c1, c1.model[bandKeyFor("c1")])} ${seg(c2, c2.model[bandKeyFor("c2")])}`;
       const p2 = `${seg(c3, c3.model[bandKeyFor("c3")])} ${seg(c4, c4.model[bandKeyFor("c4")])}`;
       const p3 = `${seg(c5, c5.model[bandKeyFor("c5")])}`;
       const p4 = `${seg(c6, c6.model[bandKeyFor("c6")])}`;
-
       return `${p1}<br><br>${p2}<br><br>${p3}<br><br>${p4}`;
     }
 
     function buildModelText(){
       const parts = CRITERIA.map(c => c.model[bandKeyFor(c.id)]);
-      return [
-        parts[0] + " " + parts[1],
-        parts[2] + " " + parts[3],
-        parts[4],
-        parts[5]
-      ].join("\n\n");
+      return [parts[0]+" "+parts[1], parts[2]+" "+parts[3], parts[4], parts[5]].join("\n\n");
     }
 
-    /***********************
-     * APPLY AI BANDS
-     ***********************/
-    function applyBands(bandsById){
-      // bandsById: { c1:"Secure", c2:"Developing", ... }
-      for (const c of CRITERIA){
-        const b = bandsById[c.id];
-        if (!b) continue;
-        const idx = BAND_KEYS.indexOf(b);
+    function applyBandsFromAI(aiBands){
+      // aiBands: { c1:{band,why,evidence,confidence}, ... }
+      const byId = {};
+      for (const c of CRITERIA) {
+        const entry = aiBands?.[c.id];
+        if (!entry) continue;
+        const bandName = entry.band;
+        const idx = BAND_KEYS.indexOf(bandName);
         if (idx >= 0) state[c.id] = idx;
+
+        byId[c.id] = {
+          why: entry.why || "",
+          evidence: Array.isArray(entry.evidence) ? entry.evidence : [],
+          confidence: typeof entry.confidence === "number" ? entry.confidence : Number(entry.confidence)
+        };
       }
+      assessmentDetailById = byId;
       renderCards();
       updateScorePill();
     }
 
-    /***********************
-     * MOCK ASSESS (no AI)
-     ***********************/
+    // Mock assess (still available)
     function mockAssessBands(text){
       const t = (text || "").toLowerCase();
       const has = (...words) => words.some(w => t.includes(w));
       const countHas = (arr) => arr.reduce((n, w) => n + (t.includes(w) ? 1 : 0), 0);
 
-      // C1
-      let c1 = "Developing";
-      if (has("open design") && (has("share") || has("shared") || has("openly"))) c1 = "Secure";
-      if (c1 === "Secure" && (has("cad") || has("licens") || has("ip") || has("copyright"))) c1 = "Advanced";
+      let c1="Developing";
+      if (has("open design") && (has("share")||has("shared")||has("openly"))) c1="Secure";
+      if (c1==="Secure" && (has("cad")||has("licens")||has("ip")||has("copyright"))) c1="Advanced";
 
-      // C2
-      let c2 = "Developing";
-      if (has("traditional") || has("closed") || has("in-house") || has("company") || has("companies")) c2 = "Secure";
-      if (c2 === "Secure" && (has("whereas") || has("in contrast") || has("however") || has("compared"))) c2 = "Advanced";
+      let c2="Developing";
+      if (has("traditional")||has("closed")||has("in-house")||has("company")||has("companies")) c2="Secure";
+      if (c2==="Secure" && (has("whereas")||has("in contrast")||has("however")||has("compared"))) c2="Advanced";
 
-      // C3
-      let c3 = "Developing";
-      if (has("because") || has("therefore") || has("leads to") || has("results in")) c3 = "Secure";
-      if (c3 === "Secure" && (has("iteration") || has("feedback") || has("accelerat") || has("rapid") || has("consequence"))) c3 = "Advanced";
+      let c3="Developing";
+      if (has("because")||has("therefore")||has("leads to")||has("results in")) c3="Secure";
+      if (c3==="Secure" && (has("iteration")||has("feedback")||has("accelerat")||has("rapid")||has("consequence"))) c3="Advanced";
 
-      // C4
-      let c4 = "Developing";
+      let c4="Developing";
       const evalSignals = countHas(["however","on the other hand","although","but"]);
-      if (evalSignals >= 1 || (has("advantage") && has("disadvantage"))) c4 = "Secure";
-      if (c4 === "Secure" && (has("weigh") || has("trade-off") || has("arguably") || has("overall"))) c4 = "Advanced";
+      if (evalSignals>=1 || (has("advantage")&&has("disadvantage"))) c4="Secure";
+      if (c4==="Secure" && (has("weigh")||has("trade-off")||has("arguably")||has("overall"))) c4="Advanced";
 
-      // C5
-      let c5 = "Developing";
+      let c5="Developing";
       const breadthCount = countHas(["ip","copyright","profit","licens","manufactur","3d print","quality control","customis","repair"]);
-      if (breadthCount >= 2) c5 = "Secure";
-      if (breadthCount >= 4) c5 = "Advanced";
+      if (breadthCount>=2) c5="Secure";
+      if (breadthCount>=4) c5="Advanced";
 
-      // C6
-      let c6 = "Developing";
-      if (has("overall") || has("in conclusion") || has("to conclude")) c6 = "Secure";
-      if (c6 === "Secure" && (has("however") || has("although") || has("but"))) c6 = "Advanced";
+      let c6="Developing";
+      if (has("overall")||has("in conclusion")||has("to conclude")) c6="Secure";
+      if (c6==="Secure" && (has("however")||has("although")||has("but"))) c6="Advanced";
 
       return { c1,c2,c3,c4,c5,c6 };
     }
 
-    /***********************
-     * REAL AI ASSESS (Cloudflare Worker)
-     ***********************/
     async function realAIAssess(text){
       const payload = {
         question: QUESTION_TEXT,
@@ -748,7 +710,11 @@
         criteria: CRITERIA.map(c => ({
           id: c.id,
           title: c.title,
-          descriptors: c.descriptors
+          bands: {
+            Developing: c.descriptors.Developing,
+            Secure: c.descriptors.Secure,
+            Advanced: c.descriptors.Advanced
+          }
         }))
       };
 
@@ -765,12 +731,9 @@
 
       const data = await res.json();
       if (!data || !data.bands) throw new Error("Assess API returned unexpected JSON");
-      return data.bands;
+      return data;
     }
 
-    /***********************
-     * MAIN BOX RENDER (MODEL vs ASSESS)
-     ***********************/
     function renderMainBox(){
       answerWrapEl.classList.toggle("noHighlights", !highlightsOn);
       answerWrapEl.innerHTML = "";
@@ -802,7 +765,7 @@
         ta.addEventListener("input", (e) => { studentText = e.target.value; });
         answerWrapEl.appendChild(ta);
 
-        setStatus("warn", "Assess mode: paste answer, then click “Assess response” (or use Mock assess).");
+        setStatus("warn", "Assess mode: paste answer, then click “Assess response”.");
       }
 
       updateScorePill();
@@ -810,6 +773,7 @@
 
     function setMode(next){
       mode = next;
+      assessmentDetailById = {}; // clear old feedback when switching modes
 
       btnModeModel.classList.toggle("active", mode === "model");
       btnModeAssess.classList.toggle("active", mode === "assess");
@@ -820,9 +784,6 @@
       renderMainBox();
     }
 
-    /***********************
-     * BUTTONS
-     ***********************/
     btnModeModel.addEventListener("click", () => setMode("model"));
     btnModeAssess.addEventListener("click", () => setMode("assess"));
 
@@ -842,23 +803,21 @@
         await navigator.clipboard.writeText(text);
         setStatus("ok", "Copied to clipboard.");
       }catch(e){
-        setStatus("bad", "Copy blocked by browser. Try CTRL+C after selecting.");
+        setStatus("bad", "Copy blocked by browser.");
       }
     });
 
     btnReset.addEventListener("click", () => {
       CRITERIA.forEach(c => state[c.id] = DEFAULT_INDEX);
-      renderCards();
-      renderMainBox();
-      updateScorePill();
+      assessmentDetailById = {};
+      renderCards(); renderMainBox(); updateScorePill();
       setStatus("ok", "Reset to Secure.");
     });
 
     btnRandom.addEventListener("click", () => {
       CRITERIA.forEach(c => state[c.id] = Math.floor(Math.random() * BAND_KEYS.length));
-      renderCards();
-      renderMainBox();
-      updateScorePill();
+      assessmentDetailById = {};
+      renderCards(); renderMainBox(); updateScorePill();
       setStatus("ok", "Random mix applied.");
     });
 
@@ -869,7 +828,14 @@
         return;
       }
       const bands = mockAssessBands(text);
-      applyBands(bands);
+      // minimal detail for mock
+      assessmentDetailById = {};
+      Object.entries(bands).forEach(([id, band]) => {
+        const idx = BAND_KEYS.indexOf(band);
+        if (idx >= 0) state[id] = idx;
+      });
+      renderCards();
+      updateScorePill();
       setStatus("ok", "Mock assess applied (quick heuristic).");
     });
 
@@ -885,9 +851,10 @@
       setStatus("warn", "Assessing…");
 
       try{
-        const bands = await realAIAssess(text);
-        applyBands(bands);
-        setStatus("ok", "AI assessment applied.");
+        const data = await realAIAssess(text);
+        applyBandsFromAI(data.bands);
+        // We’re not showing numeric confidence, but we can still display if overall is uncertain
+        setStatus("ok", "AI assessment applied (band + why + evidence).");
       }catch(err){
         setStatus("bad", err && err.message ? err.message : String(err));
       }finally{
@@ -896,9 +863,6 @@
       }
     });
 
-    /***********************
-     * INIT
-     ***********************/
     toggleStateEl.textContent = "On";
     renderCards();
     renderMainBox();
