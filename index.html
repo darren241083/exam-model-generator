@@ -70,12 +70,18 @@
       display:flex;
       flex-direction:column;
       gap:10px;
-      min-height:245px;
+      min-height:230px;
       position:relative;
       overflow:hidden;
+      cursor:pointer;
+      transition: .15s ease;
     }
-
-    .critTop{ display:flex; align-items:flex-start; gap:10px; }
+    .card:hover{ transform: translateY(-1px); border-color:#d7dbf5; }
+    .card:active{ transform: translateY(0px); }
+    .card.selected{ outline: 3px solid rgba(37,99,235,.14); border-color: rgba(37,99,235,.55); }
+    .cardHeaderRow{
+      display:flex; align-items:flex-start; gap:10px;
+    }
     .badge{
       width:22px; height:22px; border-radius:7px;
       background: var(--crit);
@@ -128,79 +134,42 @@
     .tri.up{ border-bottom:14px solid var(--crit); }
     .tri.down{ border-top:14px solid var(--crit); }
 
-    /* Assessment UI */
-    .assessBlock{
-      margin-top:10px;
-      border-top:1px solid var(--line);
-      padding-top:10px;
-      font-size:12px;
-      line-height:1.45;
-    }
-
-    details.toggleBox{
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:#fff;
-      overflow:hidden;
-      margin-top:10px;
-    }
-    details.toggleBox summary{
-      list-style:none;
-      cursor:pointer;
-      user-select:none;
-      padding:10px 12px;
-      font-weight:900;
-      font-size:12px;
-      color:var(--muted);
+    /* Card footer mini status (assess mode) */
+    .miniRow{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
+      margin-top:2px;
     }
-    details.toggleBox summary::-webkit-details-marker{ display:none; }
-    details.toggleBox summary .chev{
-      font-weight:900;
-      color:var(--muted);
-      transition: transform .15s ease;
-    }
-    details.toggleBox[open] summary{
-      color: var(--text);
-      border-bottom:1px solid var(--line);
-      background: var(--soft);
-    }
-    details.toggleBox[open] summary .chev{ transform: rotate(90deg); }
-
-    .toggleBody{ padding:10px 12px; color:var(--muted); }
-    .toggleBody strong{ color:var(--text); }
-
-    .quote{
-      display:block;
-      margin-top:8px;
-      padding:8px 10px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background: var(--soft);
-      color: var(--text);
-    }
-
-    .confPill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
+    .miniPill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:5px 9px;
+      border-radius:999px;
       border:1px solid var(--line);
       background:#fff;
-      border-radius:999px;
-      padding:5px 9px;
       font-size:12px;
       font-weight:900;
       color: var(--muted);
-      margin-top:10px;
-      align-self:flex-start;
+      white-space:nowrap;
     }
-    .confDot{ width:8px; height:8px; border-radius:999px; display:inline-block; }
-    .confDot.high{ background: var(--ok); }
-    .confDot.med{ background: var(--warn); }
-    .confDot.low{ background: var(--bad); }
+    .miniDot{ width:8px; height:8px; border-radius:999px; display:inline-block; background: var(--muted); }
+    .miniDot.ok{ background: var(--ok); }
+    .miniDot.warn{ background: var(--warn); }
+    .miniDot.bad{ background: var(--bad); }
+
+    .miniBtn{
+      border:1px solid var(--line);
+      background:#fff;
+      padding:6px 9px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .miniBtn:hover{ border-color:#c7cbe3; }
+    .miniBtn:active{ transform: translateY(1px); }
 
     /* Output section */
     .output{
@@ -284,6 +253,18 @@
       font-size:14px;
       min-height:190px;
     }
+
+    /* Assess layout */
+    .assessLayout{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:12px;
+      align-items:start;
+    }
+    @media (max-width:900px){
+      .assessLayout{ grid-template-columns: 1fr; }
+    }
+
     textarea.studentInput{
       width:100%;
       min-height:190px;
@@ -298,6 +279,125 @@
       outline:none;
     }
     textarea.studentInput:focus{ box-shadow: 0 0 0 3px rgba(37,99,235,.12); border-color: var(--accent); }
+
+    .panel{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:14px;
+      padding:12px;
+      box-shadow: 0 8px 22px rgba(17,24,39,.06);
+    }
+    .panel h3{
+      margin:0 0 8px;
+      font-size:13px;
+      letter-spacing:.2px;
+    }
+    .panel .muted{ color:var(--muted); font-size:12px; line-height:1.4; }
+    .panelRow{
+      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .panelTabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin:10px 0 0;
+    }
+    .tabBtn{
+      border:1px solid var(--line);
+      background:#fff;
+      padding:7px 10px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+    }
+    .tabBtn.active{
+      border-color: rgba(37,99,235,.55);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.10);
+    }
+
+    .sectionTitle{
+      margin-top:12px;
+      font-size:12px;
+      font-weight:900;
+      color:var(--muted);
+      letter-spacing:.2px;
+      text-transform:uppercase;
+    }
+
+    .quoteList{
+      margin-top:8px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .quoteBtn{
+      width:100%;
+      text-align:left;
+      border:1px solid var(--line);
+      background: var(--soft);
+      border-radius:12px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-size:12px;
+      line-height:1.35;
+    }
+    .quoteBtn:hover{ border-color:#c7cbe3; }
+    .quoteBtn:active{ transform: translateY(1px); }
+
+    .improveList{
+      margin-top:8px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      color:var(--text);
+      font-size:12px;
+      line-height:1.35;
+    }
+    .improveItem{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:8px 10px;
+      background:#fff;
+    }
+    .insertBtn{
+      margin-top:8px;
+      border:1px solid var(--line);
+      background:#fff;
+      padding:7px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+    }
+
+    /* Evidence highlight view */
+    .markedView{
+      margin-top:10px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      padding:12px;
+      font-size:13px;
+      line-height:1.6;
+      white-space:pre-wrap;
+      overflow:auto;
+      max-height:280px;
+    }
+    .evi{
+      display:inline;
+      padding:2px 5px;
+      border-radius:9px;
+      border:1px solid color-mix(in srgb, var(--c) 35%, #ffffff);
+      background: color-mix(in srgb, var(--c) 14%, #ffffff);
+      cursor:pointer;
+    }
+    .evi:hover{ outline: 2px solid color-mix(in srgb, var(--c) 35%, #ffffff); }
+    .evi.focused{
+      outline: 3px solid rgba(37,99,235,.22);
+    }
 
     /* Colour-highlight segments (model answer) */
     .seg{
@@ -340,6 +440,24 @@
     .dot.bad{ background: var(--bad); }
 
     .small{ color:var(--muted); font-size:12px; margin-top:10px; }
+
+    .confPill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:12px;
+      font-weight:900;
+      color: var(--muted);
+      align-self:flex-start;
+    }
+    .confDot{ width:8px; height:8px; border-radius:999px; display:inline-block; }
+    .confDot.high{ background: var(--ok); }
+    .confDot.med{ background: var(--warn); }
+    .confDot.low{ background: var(--bad); }
   </style>
 </head>
 
@@ -373,10 +491,16 @@
             <span class="mut" id="scoreBand">—</span>
           </div>
 
-          <label class="segToggle" title="Toggle colour highlighting in the model answer">
+          <label class="segToggle" title="Toggle colour highlighting in the model answer / evidence highlights in assess mode">
             <input id="toggleHighlights" type="checkbox" checked />
             <span>Highlights</span>
             <span class="mut" id="toggleState">On</span>
+          </label>
+
+          <label class="segToggle" title="Student view keeps feedback short. Teacher view shows why + confidence.">
+            <input id="toggleTeacherView" type="checkbox" />
+            <span>Teacher view</span>
+            <span class="mut" id="teacherState">Off</span>
           </label>
         </div>
       </div>
@@ -392,15 +516,16 @@
 
         <button class="btn primary" id="btnAssess" type="button" style="display:none;">Assess response</button>
         <button class="btn" id="btnMockAssess" type="button" style="display:none;">Mock assess</button>
+        <button class="btn" id="btnReassess" type="button" style="display:none;">Re-assess</button>
       </div>
 
       <div class="status" id="statusLine">
         <span class="dot warn"></span>
-        <span>Assess mode: Why / Evidence / How to improve are optional (collapsed). Confidence sits at the bottom of each card.</span>
+        <span>Assess mode: click a criterion card to view focused feedback on the right.</span>
       </div>
 
       <div class="small">
-        Student-only proof of concept: Assess mode sets bands + estimated mark and provides optional examiner reasoning and next steps.
+        Student-only proof of concept: focused feedback + evidence tagging + improvement prompts (no full answer generation).
       </div>
     </section>
   </div>
@@ -590,10 +715,18 @@
      ***********************/
     const DEFAULT_INDEX = BAND_KEYS.indexOf("Secure");
     const state = Object.fromEntries(CRITERIA.map(c => [c.id, DEFAULT_INDEX]));
-    let highlightsOn = true;
-    let mode = "model";
+
+    let highlightsOn = true;              // model highlights OR evidence highlights
+    let teacherView = false;              // show why/confidence etc
+    let mode = "model";                   // model|assess
     let studentText = "";
-    let assessmentDetailById = {}; // { c1:{why,evidence[],confidence}, ... }
+    let lastAssessedText = "";            // track edits vs assessed
+    let selectedCritId = "c1";
+
+    // assessmentDetailById: { c1:{ why, evidence[], confidence, foundCount }, ... }
+    let assessmentDetailById = {};
+    // evidenceMatchIndex -> element id mapping
+    let evidenceSpans = {}; // { "c3:0": "evi_c3_0", ... }
 
     /***********************
      * DOM
@@ -604,6 +737,8 @@
     const scoreBandEl = document.getElementById("scoreBand");
     const toggleEl = document.getElementById("toggleHighlights");
     const toggleStateEl = document.getElementById("toggleState");
+    const toggleTeacherEl = document.getElementById("toggleTeacherView");
+    const teacherStateEl = document.getElementById("teacherState");
     const statusLineEl = document.getElementById("statusLine");
     const boxTitleEl = document.getElementById("boxTitle");
 
@@ -615,6 +750,7 @@
     const btnRandom = document.getElementById("btnRandom");
     const btnAssess = document.getElementById("btnAssess");
     const btnMockAssess = document.getElementById("btnMockAssess");
+    const btnReassess = document.getElementById("btnReassess");
 
     /***********************
      * HELPERS
@@ -663,6 +799,94 @@
       return { label:"Low", cls:"low" };
     }
 
+    function getCrit(id){ return CRITERIA.find(c => c.id === id); }
+
+    function isAssessed(){
+      return !!Object.keys(assessmentDetailById || {}).length;
+    }
+
+    /***********************
+     * EVIDENCE HIGHLIGHTING
+     ***********************/
+    function buildEvidenceRanges(text, detailById){
+      // returns: { ranges:[{start,end,critId,quoteIndex,quoteText}], foundById:{c1:n,...} }
+      const t = String(text || "");
+      const lower = t.toLowerCase();
+      const ranges = [];
+      const foundById = Object.fromEntries(CRITERIA.map(c => [c.id, 0]));
+
+      for (const c of CRITERIA){
+        const ev = Array.isArray(detailById?.[c.id]?.evidence) ? detailById[c.id].evidence : [];
+        ev.slice(0, 3).forEach((q, idx) => {
+          const needle = String(q || "").trim();
+          if (!needle) return;
+
+          const nLower = needle.toLowerCase();
+          const pos = lower.indexOf(nLower);
+          if (pos === -1) return;
+
+          ranges.push({ start: pos, end: pos + needle.length, critId: c.id, quoteIndex: idx, quoteText: needle });
+          foundById[c.id] += 1;
+        });
+      }
+
+      // sort by start then longer first (to reduce nested overlaps)
+      ranges.sort((a,b) => (a.start - b.start) || ((b.end-b.start)-(a.end-a.start)));
+
+      // merge/skip overlaps (keep first)
+      const final = [];
+      let lastEnd = -1;
+      for (const r of ranges){
+        if (r.start < lastEnd) continue;
+        final.push(r);
+        lastEnd = r.end;
+      }
+
+      return { ranges: final, foundById };
+    }
+
+    function buildMarkedHtml(text, detailById){
+      evidenceSpans = {};
+      const { ranges, foundById } = buildEvidenceRanges(text, detailById);
+
+      // store foundCount into assessmentDetailById so cards can show missing evidence
+      for (const c of CRITERIA){
+        if (!assessmentDetailById[c.id]) assessmentDetailById[c.id] = { why:"", evidence:[], confidence: 0.6 };
+        assessmentDetailById[c.id].foundCount = foundById[c.id] || 0;
+      }
+
+      const t = String(text || "");
+      if (!highlightsOn || !ranges.length) return escapeHtml(t);
+
+      let out = "";
+      let cursor = 0;
+      ranges.forEach(r => {
+        out += escapeHtml(t.slice(cursor, r.start));
+        const crit = getCrit(r.critId);
+        const id = `evi_${r.critId}_${r.quoteIndex}_${r.start}`;
+        evidenceSpans[`${r.critId}:${r.quoteIndex}`] = id;
+
+        const snippet = t.slice(r.start, r.end);
+        out += `<span id="${id}" class="evi" data-crit="${r.critId}" style="--c:${crit.color}" title="${escapeHtml(crit.title)}">${escapeHtml(snippet)}</span>`;
+        cursor = r.end;
+      });
+      out += escapeHtml(t.slice(cursor));
+      return out;
+    }
+
+    function focusEvidenceSpan(critId, quoteIndex){
+      // remove previous
+      document.querySelectorAll(".evi.focused").forEach(el => el.classList.remove("focused"));
+      const key = `${critId}:${quoteIndex}`;
+      const id = evidenceSpans[key];
+      if (!id) return;
+
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add("focused");
+      el.scrollIntoView({ behavior:"smooth", block:"center" });
+    }
+
     /***********************
      * RENDER CARDS
      ***********************/
@@ -677,10 +901,19 @@
         card.className = "card";
         card.style.setProperty("--crit", c.color);
         card.dataset.crit = c.id;
+        if (c.id === selectedCritId) card.classList.add("selected");
 
-        const top = document.createElement("div");
-        top.className = "critTop";
-        top.innerHTML = `
+        card.addEventListener("click", (e) => {
+          // avoid click swallowing button clicks
+          if (e.target && (e.target.closest("button") || e.target.closest("input") || e.target.closest("label"))) return;
+          selectedCritId = c.id;
+          renderCards();
+          if (mode === "assess") renderMainBox(); // refresh feedback panel selection
+        });
+
+        const headerRow = document.createElement("div");
+        headerRow.className = "cardHeaderRow";
+        headerRow.innerHTML = `
           <div class="badge">${c.number}</div>
           <div class="critTitle">${escapeHtml(c.title)}</div>
         `;
@@ -707,7 +940,8 @@
         upBtn.title = "Move up a band";
         upBtn.innerHTML = `<span class="tri up" aria-hidden="true"></span>`;
         upBtn.disabled = (mode === "assess");
-        upBtn.addEventListener("click", () => {
+        upBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
           state[c.id] = clamp(state[c.id] + 1, 0, BAND_KEYS.length - 1);
           assessmentDetailById = {};
           renderCards(); renderMainBox(); updateScorePill();
@@ -719,7 +953,8 @@
         downBtn.title = "Move down a band";
         downBtn.innerHTML = `<span class="tri down" aria-hidden="true"></span>`;
         downBtn.disabled = (mode === "assess");
-        downBtn.addEventListener("click", () => {
+        downBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
           state[c.id] = clamp(state[c.id] - 1, 0, BAND_KEYS.length - 1);
           assessmentDetailById = {};
           renderCards(); renderMainBox(); updateScorePill();
@@ -731,63 +966,46 @@
         descWrap.appendChild(descBox);
         descWrap.appendChild(arrowCol);
 
-        card.appendChild(top);
+        card.appendChild(headerRow);
         card.appendChild(descWrap);
 
-        // Assessment display: Why / Evidence / Improve are toggled; Confidence at bottom
-        if (mode === "assess" && assessmentDetailById[c.id]) {
-          const d = assessmentDetailById[c.id];
-          const why = d.why ? String(d.why) : "";
-          const ev = Array.isArray(d.evidence) ? d.evidence : [];
-          const conf = confidenceLabel(d.confidence);
+        // Assess-mode mini status (missing evidence / assessed state + improve button)
+        if (mode === "assess"){
+          const d = assessmentDetailById?.[c.id];
+          const hasAssessed = !!d;
+          const found = Number(d?.foundCount || 0);
+          const hasEvidence = found > 0 || (Array.isArray(d?.evidence) && d.evidence.length > 0);
 
-          const tips = (IMPROVE?.[c.id]?.[band] || []);
-          const improveHtml = tips.length
-            ? tips.map(t => `<div style="margin-top:6px;">• ${escapeHtml(t)}</div>`).join("")
-            : `<div style="margin-top:6px;">No improvement tips available.</div>`;
+          let kind = "warn";
+          let label = "Not assessed yet";
+          if (hasAssessed){
+            if (hasEvidence) { kind = "ok"; label = "Evidence found"; }
+            else { kind = "bad"; label = "No evidence found"; }
+          }
 
-          const block = document.createElement("div");
-          block.className = "assessBlock";
-          block.innerHTML = `
-            <details class="toggleBox">
-              <summary>
-                <span>Show why</span>
-                <span class="chev">▸</span>
-              </summary>
-              <div class="toggleBody">
-                <strong>Why:</strong> ${escapeHtml(why || "—")}
-              </div>
-            </details>
-
-            <details class="toggleBox">
-              <summary>
-                <span>Show evidence</span>
-                <span class="chev">▸</span>
-              </summary>
-              <div class="toggleBody">
-                ${
-                  ev.slice(0,2).map(q => `<span class="quote">“${escapeHtml(q)}”</span>`).join("") ||
-                  `<div>No quotes extracted.</div>`
-                }
-              </div>
-            </details>
-
-            <details class="toggleBox">
-              <summary>
-                <span>Show how to improve</span>
-                <span class="chev">▸</span>
-              </summary>
-              <div class="toggleBody">
-                ${improveHtml}
-              </div>
-            </details>
-
-            <div class="confPill">
-              <span class="confDot ${conf.cls}"></span>
-              Confidence: ${conf.label}
+          const mini = document.createElement("div");
+          mini.className = "miniRow";
+          mini.innerHTML = `
+            <div class="miniPill">
+              <span class="miniDot ${kind}"></span>
+              ${escapeHtml(label)}
             </div>
           `;
-          card.appendChild(block);
+
+          const improveBtn = document.createElement("button");
+          improveBtn.className = "miniBtn";
+          improveBtn.type = "button";
+          improveBtn.textContent = "Improve this";
+          improveBtn.title = "Open improvement prompts for this criterion";
+          improveBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            selectedCritId = c.id;
+            renderCards();
+            renderMainBox({ forceTab:"improve" });
+          });
+
+          mini.appendChild(improveBtn);
+          card.appendChild(mini);
         }
 
         gridEl.appendChild(card);
@@ -838,6 +1056,7 @@
         };
       }
       assessmentDetailById = byId;
+      lastAssessedText = (studentText || "");
       renderCards();
       updateScorePill();
     }
@@ -879,6 +1098,28 @@
       return { c1,c2,c3,c4,c5,c6 };
     }
 
+    function buildLightEvidenceFromText(text){
+      // simple “evidence” extractor for mock mode: pull up to 1 short snippet per criterion keyword match
+      const src = String(text || "");
+      const lower = src.toLowerCase();
+      const pick = (phrase) => {
+        const idx = lower.indexOf(phrase);
+        if (idx === -1) return "";
+        const start = Math.max(0, idx - 20);
+        const end = Math.min(src.length, idx + phrase.length + 20);
+        return src.slice(start, end).trim();
+      };
+
+      return {
+        c1: [pick("open design")].filter(Boolean),
+        c2: [pick("traditional"), pick("in contrast"), pick("whereas")].filter(Boolean).slice(0,2),
+        c3: [pick("because"), pick("therefore"), pick("leads to")].filter(Boolean).slice(0,2),
+        c4: [pick("however"), pick("although"), pick("on the other hand")].filter(Boolean).slice(0,2),
+        c5: [pick("ip"), pick("profit"), pick("manufactur"), pick("3d")].filter(Boolean).slice(0,2),
+        c6: [pick("overall"), pick("in conclusion")].filter(Boolean).slice(0,2),
+      };
+    }
+
     /***********************
      * REAL AI ASSESS
      ***********************/
@@ -916,7 +1157,152 @@
     /***********************
      * RENDER MAIN BOX
      ***********************/
-    function renderMainBox(){
+    let activePanelTab = "summary"; // summary|evidence|improve
+
+    function renderFeedbackPanel(container, opts = {}){
+      const crit = getCrit(selectedCritId);
+      const band = bandKeyFor(selectedCritId);
+      const range = BAND_META[band].range;
+
+      if (opts.forceTab) activePanelTab = opts.forceTab;
+
+      const d = assessmentDetailById?.[selectedCritId];
+      const why = d?.why ? String(d.why) : "";
+      const ev = Array.isArray(d?.evidence) ? d.evidence : [];
+      const conf = confidenceLabel(d?.confidence);
+
+      const tips = (IMPROVE?.[selectedCritId]?.[band] || []);
+      const hasAssessed = !!d;
+
+      container.innerHTML = `
+        <div class="panel">
+          <div class="panelRow">
+            <div>
+              <h3 style="margin:0;">${escapeHtml(crit.title)}</h3>
+              <div class="muted">Band: <b>${band}</b> (${range})</div>
+            </div>
+
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              ${teacherView ? `
+                <div class="confPill" title="How sure the model is about this band selection">
+                  <span class="confDot ${conf.cls}"></span>
+                  Confidence: ${conf.label}
+                </div>
+              ` : ``}
+            </div>
+          </div>
+
+          <div class="panelTabs" aria-label="Feedback tabs">
+            <button class="tabBtn ${activePanelTab==="summary"?"active":""}" data-tab="summary" type="button">Summary</button>
+            <button class="tabBtn ${activePanelTab==="evidence"?"active":""}" data-tab="evidence" type="button">Evidence</button>
+            <button class="tabBtn ${activePanelTab==="improve"?"active":""}" data-tab="improve" type="button">Improve</button>
+          </div>
+
+          <div id="panelBody"></div>
+        </div>
+      `;
+
+      const body = container.querySelector("#panelBody");
+      const tabBtns = container.querySelectorAll(".tabBtn");
+      tabBtns.forEach(b => b.addEventListener("click", () => {
+        activePanelTab = b.dataset.tab;
+        renderFeedbackPanel(container);
+      }));
+
+      if (activePanelTab === "summary"){
+        body.innerHTML = `
+          <div class="sectionTitle">What this band means</div>
+          <div class="muted" style="margin-top:6px;">${escapeHtml(crit.descriptors[band])}</div>
+
+          ${teacherView ? `
+            <div class="sectionTitle">Why</div>
+            <div class="muted" style="margin-top:6px;">${escapeHtml(hasAssessed ? (why || "—") : "Assess first to see examiner-style reasoning.")}</div>
+          ` : `
+            <div class="sectionTitle">Next step</div>
+            <div class="muted" style="margin-top:6px;">
+              ${escapeHtml((tips[0] || "Click Improve for targeted prompts."))}
+            </div>
+          `}
+        `;
+      }
+
+      if (activePanelTab === "evidence"){
+        const evHtml = ev.length ? `
+          <div class="quoteList">
+            ${ev.slice(0,3).map((q, i) => `
+              <button class="quoteBtn" data-qi="${i}" type="button">
+                “${escapeHtml(q)}”
+                <div class="muted" style="margin-top:4px;">Click to jump to highlight.</div>
+              </button>
+            `).join("")}
+          </div>
+        ` : `
+          <div class="muted" style="margin-top:10px;">
+            ${escapeHtml(hasAssessed ? "No evidence quotes provided. (This can happen if the model can’t confidently extract exact wording.)" : "Assess first to see evidence highlights.")}
+          </div>
+        `;
+
+        body.innerHTML = `
+          <div class="sectionTitle">Evidence found in the answer</div>
+          <div class="muted" style="margin-top:6px;">
+            Evidence highlights appear in the “Marked view” box (if Highlights is On).
+          </div>
+          ${evHtml}
+        `;
+
+        body.querySelectorAll(".quoteBtn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const qi = Number(btn.dataset.qi);
+            focusEvidenceSpan(selectedCritId, qi);
+          });
+        });
+      }
+
+      if (activePanelTab === "improve"){
+        const list = tips.length ? tips.map(t => `<div class="improveItem">• ${escapeHtml(t)}</div>`).join("") : `<div class="muted" style="margin-top:10px;">No tips available.</div>`;
+        const starter = buildSentenceStarter(selectedCritId, band);
+
+        body.innerHTML = `
+          <div class="sectionTitle">How to improve</div>
+          <div class="improveList">${list}</div>
+
+          <div class="sectionTitle">Sentence starter</div>
+          <div class="muted" style="margin-top:6px;">Use this to add a missing move (comparison/evaluation/judgement).</div>
+          <div class="improveItem" style="margin-top:8px;"><b>${escapeHtml(starter)}</b></div>
+          <button id="btnInsertStarter" class="insertBtn" type="button">Insert sentence starter into answer</button>
+        `;
+
+        const insert = body.querySelector("#btnInsertStarter");
+        insert.addEventListener("click", () => {
+          const add = starter ? `\n\n${starter}` : "";
+          studentText = (studentText || "") + add;
+          renderMainBox({ preserveScroll:true, forceTab:"improve" });
+          setStatus("ok", "Inserted sentence starter. Edit it to match your idea, then Re-assess.");
+        });
+      }
+    }
+
+    function buildSentenceStarter(critId, band){
+      // Keep it student-safe: prompts/stems, not full answers.
+      const base = {
+        c1: "Open design refers to… (define what is shared + what others can do with it).",
+        c2: "In contrast to traditional product development, open design…",
+        c3: "This matters because… which therefore leads to…",
+        c4: "Although open design has the benefit of…, it can also…; overall this means…",
+        c5: "Beyond (one impact), open design also affects… which links to…",
+        c6: "Overall, the most significant impact is…, because… however…"
+      };
+      // Slightly stronger nudge if Developing
+      if (band === "Developing"){
+        return base[critId] || "Add a sentence that directly targets this criterion.";
+      }
+      if (band === "Secure"){
+        return base[critId] || "Add one stronger sentence that pushes you toward Advanced.";
+      }
+      return base[critId] || "Keep it concise and precise.";
+    }
+
+    function renderMainBox(opts = {}){
       answerWrapEl.classList.toggle("noHighlights", !highlightsOn);
       answerWrapEl.innerHTML = "";
 
@@ -924,6 +1310,7 @@
         boxTitleEl.textContent = "Live model answer";
         btnAssess.style.display = "none";
         btnMockAssess.style.display = "none";
+        btnReassess.style.display = "none";
         btnCopy.textContent = "Copy";
         btnRandom.disabled = false;
 
@@ -932,31 +1319,83 @@
         div.innerHTML = buildModelHtml();
         answerWrapEl.appendChild(div);
 
-        setStatus("ok", "Model mode: use ▲/▼ to set bands.");
-      } else {
-        boxTitleEl.textContent = "Paste your answer";
-        btnAssess.style.display = "inline-flex";
-        btnMockAssess.style.display = "inline-flex";
-        btnCopy.textContent = "Copy text";
-        btnRandom.disabled = true;
-
-        const ta = document.createElement("textarea");
-        ta.className = "studentInput";
-        ta.placeholder = "Paste your answer here…";
-        ta.value = studentText;
-        ta.addEventListener("input", (e) => { studentText = e.target.value; });
-        answerWrapEl.appendChild(ta);
-
-        setStatus("warn", "Assess mode: Why / Evidence / How to improve are optional (collapsed). Confidence sits at the bottom.");
+        setStatus("ok", "Model mode: use ▲/▼ to set bands. Click cards to select a criterion (for later).");
+        updateScorePill();
+        return;
       }
 
+      // ASSESS MODE
+      boxTitleEl.textContent = "Write / paste your answer (left) and click a criterion for focused feedback (right)";
+      btnAssess.style.display = "inline-flex";
+      btnMockAssess.style.display = "inline-flex";
+      btnReassess.style.display = "inline-flex";
+      btnCopy.textContent = "Copy text";
+      btnRandom.disabled = true;
+
+      const layout = document.createElement("div");
+      layout.className = "assessLayout";
+
+      const left = document.createElement("div");
+      const right = document.createElement("div");
+
+      // Left: textarea + marked view
+      left.innerHTML = `
+        <textarea id="studentInput" class="studentInput" placeholder="Paste your answer here…"></textarea>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
+          <div class="muted" style="font-size:12px; color:var(--muted);">
+            Marked view (highlights link to criteria). ${highlightsOn ? "" : "Highlights are Off."}
+          </div>
+          <div class="miniPill" title="Shows whether your answer has changed since the last assessment">
+            <span class="miniDot ${studentText===lastAssessedText ? "ok" : "warn"}"></span>
+            ${studentText===lastAssessedText ? "No changes since last assess" : "Edited since last assess"}
+          </div>
+        </div>
+        <div id="markedView" class="markedView" aria-label="Marked view"></div>
+      `;
+
+      // Right: feedback panel
+      right.innerHTML = `<div id="feedbackPanel"></div>`;
+
+      layout.appendChild(left);
+      layout.appendChild(right);
+      answerWrapEl.appendChild(layout);
+
+      // Wire textarea
+      const ta = left.querySelector("#studentInput");
+      ta.value = studentText;
+      const prevScroll = ta.scrollTop;
+
+      ta.addEventListener("input", (e) => {
+        studentText = e.target.value;
+        // keep feedback panel, just update marked view (fast)
+        const mv = left.querySelector("#markedView");
+        mv.innerHTML = buildMarkedHtml(studentText, assessmentDetailById);
+      });
+
+      if (opts.preserveScroll) ta.scrollTop = prevScroll;
+
+      // Marked view
+      const mv = left.querySelector("#markedView");
+      mv.innerHTML = buildMarkedHtml(studentText, assessmentDetailById);
+      mv.addEventListener("click", (e) => {
+        const span = e.target.closest(".evi");
+        if (!span) return;
+        selectedCritId = span.dataset.crit;
+        renderCards();
+        renderMainBox({ forceTab:"evidence" });
+      });
+
+      // Feedback panel
+      const panel = right.querySelector("#feedbackPanel");
+      renderFeedbackPanel(panel, opts);
+
       updateScorePill();
+      setStatus("warn", "Assess mode: click a criterion card for focused feedback. Use Improve → edit → Re-assess.");
     }
 
     function setMode(next){
       mode = next;
-      assessmentDetailById = {};
-
+      // keep selection and studentText
       btnModeModel.classList.toggle("active", mode === "model");
       btnModeAssess.classList.toggle("active", mode === "assess");
       btnModeModel.setAttribute("aria-selected", String(mode === "model"));
@@ -975,7 +1414,13 @@
     toggleEl.addEventListener("change", (e) => {
       highlightsOn = !!e.target.checked;
       toggleStateEl.textContent = highlightsOn ? "On" : "Off";
-      renderMainBox();
+      renderMainBox({ preserveScroll:true });
+    });
+
+    toggleTeacherEl.addEventListener("change", (e) => {
+      teacherView = !!e.target.checked;
+      teacherStateEl.textContent = teacherView ? "On" : "Off";
+      renderMainBox({ preserveScroll:true });
     });
 
     btnCopy.addEventListener("click", async () => {
@@ -1012,15 +1457,29 @@
         setStatus("bad", "Paste an answer first.");
         return;
       }
+
       const bands = mockAssessBands(text);
-      assessmentDetailById = {};
       Object.entries(bands).forEach(([id, band]) => {
         const idx = BAND_KEYS.indexOf(band);
         if (idx >= 0) state[id] = idx;
       });
+
+      // lightweight evidence + placeholder why/conf
+      const ev = buildLightEvidenceFromText(text);
+      assessmentDetailById = {};
+      CRITERIA.forEach(c => {
+        assessmentDetailById[c.id] = {
+          why: teacherView ? "Mock assess uses a quick heuristic, not full examiner reasoning." : "",
+          evidence: ev[c.id] || [],
+          confidence: 0.62
+        };
+      });
+
+      lastAssessedText = text;
       renderCards();
+      renderMainBox({ preserveScroll:true, forceTab:"summary" });
       updateScorePill();
-      setStatus("ok", "Mock assess applied (quick heuristic).");
+      setStatus("ok", "Mock assess applied. Click criteria for feedback, then Improve → Re-assess.");
     });
 
     btnAssess.addEventListener("click", async () => {
@@ -1032,24 +1491,48 @@
 
       btnAssess.disabled = true;
       btnMockAssess.disabled = true;
+      btnReassess.disabled = true;
       setStatus("warn", "Assessing…");
 
       try{
         const data = await realAIAssess(text);
         applyBandsFromAI(data.bands);
-        setStatus("ok", "AI assessment applied.");
+
+        // ensure selected criterion exists in returned bands, else keep
+        if (!assessmentDetailById[selectedCritId]) selectedCritId = "c1";
+
+        renderCards();
+        renderMainBox({ preserveScroll:true, forceTab:"summary" });
+        setStatus("ok", "AI assessment applied. Click criteria for focused feedback.");
       }catch(err){
         setStatus("bad", err && err.message ? err.message : String(err));
       }finally{
         btnAssess.disabled = false;
         btnMockAssess.disabled = false;
+        btnReassess.disabled = false;
       }
+    });
+
+    btnReassess.addEventListener("click", async () => {
+      const text = (studentText || "").trim();
+      if (!text){
+        setStatus("bad", "Paste an answer first.");
+        return;
+      }
+      // If no prior assessment, behave like Assess
+      if (!isAssessed()){
+        btnAssess.click();
+        return;
+      }
+      // If unchanged, still allow reassess (can improve evidence extraction)
+      btnAssess.click();
     });
 
     /***********************
      * INIT
      ***********************/
     toggleStateEl.textContent = "On";
+    teacherStateEl.textContent = "Off";
     renderCards();
     renderMainBox();
     updateScorePill();
