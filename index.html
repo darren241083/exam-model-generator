@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Model Answer Generator – Q18 “Open Design”</title>
+  <title>Q18 Open Design – Model + Assess</title>
 
   <style>
     :root{
@@ -16,20 +16,36 @@
       --radius:16px;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
       --accent:#2563eb;
+      --ok:#16a34a;
+      --warn:#f59e0b;
+      --bad:#ef4444;
     }
 
     *{ box-sizing:border-box; }
     body{ margin:0; font-family:var(--sans); color:var(--text); background:var(--bg); }
-    .wrap{ max-width:1200px; margin:0 auto; padding:26px 18px 40px; }
+    .wrap{ max-width:1200px; margin:0 auto; padding:22px 18px 40px; }
 
     header{
       display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;
       margin-bottom:12px;
     }
-
-    .headLeft{ min-width:280px; }
     h1{ font-size:22px; margin:0; letter-spacing:.2px; }
+    .tip{
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+      margin-top:2px;
+    }
+    .tip code{
+      font-family:var(--mono);
+      font-size:12px;
+      background:#fff;
+      border:1px solid var(--line);
+      padding:2px 6px;
+      border-radius:8px;
+    }
 
     .question{
       margin-top:8px;
@@ -50,21 +66,6 @@
       white-space:nowrap;
     }
 
-    .tip{
-      color:var(--muted);
-      font-size:12px;
-      white-space:nowrap;
-      margin-top:2px;
-    }
-    .tip code{
-      font-family:var(--mono);
-      font-size:12px;
-      background:#fff;
-      border:1px solid var(--line);
-      padding:2px 6px;
-      border-radius:8px;
-    }
-
     .grid{
       display:grid;
       grid-template-columns: repeat(6, minmax(170px, 1fr));
@@ -72,7 +73,7 @@
       margin-top:10px;
     }
     @media (max-width:1100px){ .grid{ grid-template-columns: repeat(3, minmax(180px, 1fr)); } }
-    @media (max-width:700px){ .grid{ grid-template-columns: repeat(1, 1fr); } }
+    @media (max-width:700px){ .grid{ grid-template-columns: repeat(1, 1fr)); } }
 
     .card{
       border:1px solid var(--line);
@@ -83,7 +84,7 @@
       display:flex;
       flex-direction:column;
       gap:10px;
-      min-height:240px;
+      min-height:245px;
       position:relative;
       overflow:hidden;
     }
@@ -97,7 +98,6 @@
     }
     .critTitle{ font-size:13px; font-weight:900; line-height:1.25; }
 
-    /* descriptor + arrows on the right */
     .descWrap{
       display:grid;
       grid-template-columns: 1fr 44px;
@@ -110,7 +110,7 @@
       border-radius:14px;
       padding:10px 10px;
       background:#fff;
-      min-height:120px;
+      min-height:125px;
     }
     .descLabel{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -118,11 +118,7 @@
     }
     .descLabel .bandName{ font-weight:900; font-size:12px; }
     .descLabel .bandRange{ color:var(--muted); font-size:12px; font-weight:800; }
-    .descText{
-      font-size:12px;
-      line-height:1.35;
-      color:var(--muted);
-    }
+    .descText{ font-size:12px; line-height:1.35; color:var(--muted); }
 
     .arrowCol{
       display:flex;
@@ -132,8 +128,7 @@
       gap:10px;
     }
     .triBtn{
-      height:44px;
-      width:44px;
+      height:44px; width:44px;
       border-radius:14px;
       border:1px solid var(--line);
       background:#fff;
@@ -149,6 +144,8 @@
       box-shadow: 0 0 0 3px rgba(37,99,235,.12);
       border-color: var(--accent);
     }
+    .triBtn[disabled]{ opacity:.45; cursor:not-allowed; transform:none; }
+
     .tri{
       width:0; height:0;
       border-left:9px solid transparent;
@@ -170,7 +167,6 @@
     .bandPill .range{ font-weight:800; color:var(--muted); }
     .bandFooter{ display:flex; justify-content:flex-start; margin-top:10px; }
 
-    /* output */
     .output{
       margin-top:14px;
       border:1px solid var(--line);
@@ -182,25 +178,24 @@
 
     .outputTop{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap:12px;
       flex-wrap:wrap;
       margin-bottom:10px;
     }
-    .output h2{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.2px;
-    }
 
-    .scoreBox{
+    .outputTop h2{ margin:0; font-size:14px; letter-spacing:.2px; }
+
+    .rightControls{
       display:flex;
       gap:10px;
-      align-items:center;
       flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
     }
-    .scorePill{
+
+    .pill{
       display:inline-flex; align-items:center; gap:8px;
       padding:6px 10px;
       border-radius:999px;
@@ -210,9 +205,30 @@
       font-weight:900;
       white-space:nowrap;
     }
-    .scorePill .mut{ color:var(--muted); font-weight:800; }
+    .pill .mut{ color:var(--muted); font-weight:800; }
 
-    .toggle{
+    .modeToggle{
+      display:inline-flex;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:#fff;
+      overflow:hidden;
+      box-shadow: 0 6px 18px rgba(17,24,39,.06);
+    }
+    .modeBtn{
+      border:0;
+      background:transparent;
+      padding:8px 10px;
+      font-weight:900;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .modeBtn.active{
+      background: var(--accent);
+      color:#fff;
+    }
+
+    .segToggle{
       display:inline-flex;
       align-items:center;
       gap:8px;
@@ -225,19 +241,38 @@
       font-size:12px;
       font-weight:900;
     }
-    .toggle input{ transform: translateY(1px); }
-    .toggle .mut{ color:var(--muted); font-weight:800; }
+    .segToggle input{ transform: translateY(1px); }
+    .segToggle .mut{ color:var(--muted); font-weight:800; }
 
-    .answer{
+    /* Main box */
+    .answerBox{
       background:#fff;
       border:1px solid var(--line);
       border-radius:14px;
       padding:14px 14px;
       line-height:1.6;
       font-size:14px;
+      min-height:190px;
+    }
+    textarea.studentInput{
+      width:100%;
+      min-height:190px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px 14px;
+      font-family:var(--sans);
+      font-size:14px;
+      line-height:1.6;
+      resize:vertical;
+      background:#fff;
+      outline:none;
+    }
+    textarea.studentInput:focus{
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+      border-color: var(--accent);
     }
 
-    /* highlighted segments */
+    /* Highlighted segments */
     .seg{
       display:inline;
       padding:2px 6px;
@@ -245,7 +280,6 @@
       border:1px solid color-mix(in srgb, var(--c) 35%, #ffffff);
       background: color-mix(in srgb, var(--c) 12%, #ffffff);
     }
-    /* when highlights are off, make segments plain text */
     .noHighlights .seg{
       padding:0;
       border:none;
@@ -255,6 +289,7 @@
 
     .toolbar{
       display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;
+      align-items:center;
     }
     .btn{
       border:1px solid var(--line);
@@ -270,41 +305,61 @@
       border-color: var(--accent);
       color:#fff;
     }
-    .mutedSmall{ color:var(--muted); font-size:12px; margin-top:10px; }
+    .btn[disabled]{ opacity:.55; cursor:not-allowed; }
+
+    .status{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:999px;
+      display:inline-block;
+      background: var(--muted);
+    }
+    .dot.ok{ background: var(--ok); }
+    .dot.warn{ background: var(--warn); }
+    .dot.bad{ background: var(--bad); }
+
+    .small{ color:var(--muted); font-size:12px; margin-top:10px; }
   </style>
 </head>
 
 <body>
   <div class="wrap">
     <header>
-      <div class="headLeft">
+      <div style="min-width:320px">
         <h1>Model Answer Generator – Q18 “Open Design”</h1>
-
-        <!-- ✅ Actual question text shown here -->
         <div class="question">
           <b>Question:</b> Analyse and evaluate the impact that ‘open design’ has had on traditional product development.
           <span class="marks">(9 marks)</span>
         </div>
       </div>
-
-      <div class="tip">Tip for GitHub Pages: bump <code>?v=</code> when you update files.</div>
+      <div class="tip">GitHub Pages tip: bump <code>?v=</code> when you update files.</div>
     </header>
 
-    <!-- cards -->
     <section id="criteriaGrid" class="grid" aria-label="Success criteria controls"></section>
 
-    <!-- output (simplified: no legend, no instruction line) -->
-    <section class="output" aria-label="Generated model answer">
+    <section class="output" aria-label="Model/Assess area">
       <div class="outputTop">
-        <h2>Live model answer</h2>
+        <h2 id="boxTitle">Live model answer</h2>
 
-        <div class="scoreBox">
-          <div class="scorePill">
+        <div class="rightControls">
+          <div class="modeToggle" role="tablist" aria-label="Mode toggle">
+            <button id="btnModeModel" class="modeBtn active" type="button" role="tab" aria-selected="true">Model</button>
+            <button id="btnModeAssess" class="modeBtn" type="button" role="tab" aria-selected="false">Assess</button>
+          </div>
+
+          <div class="pill" title="Estimated mark based on current bands">
             <span id="scoreText">Estimated mark: —</span>
             <span class="mut" id="scoreBand">—</span>
           </div>
 
-          <label class="toggle" title="Toggle colour highlighting in the answer">
+          <label class="segToggle" title="Toggle colour highlighting in the model answer">
             <input id="toggleHighlights" type="checkbox" checked />
             <span>Highlights</span>
             <span class="mut" id="toggleState">On</span>
@@ -312,44 +367,61 @@
         </div>
       </div>
 
-      <div id="answerWrap">
-        <div id="answer" class="answer">Select bands to generate an answer…</div>
-      </div>
+      <div id="answerWrap"></div>
 
       <div class="toolbar">
-        <button class="btn primary" id="btnCopy" type="button">Copy answer</button>
+        <button class="btn primary" id="btnCopy" type="button">Copy</button>
         <button class="btn" id="btnReset" type="button">Reset to Secure</button>
         <button class="btn" id="btnRandom" type="button">Random mix</button>
+
+        <span style="flex:1"></span>
+
+        <button class="btn primary" id="btnAssess" type="button" style="display:none;">Assess response</button>
+        <button class="btn" id="btnMockAssess" type="button" style="display:none;">Mock assess</button>
       </div>
 
-      <div class="mutedSmall">
-        Mark shown is an estimate based on the mix of criteria bands.
+      <div class="status" id="statusLine">
+        <span class="dot warn"></span>
+        <span>Assess mode: “Mock assess” works immediately. AI assess uses your Cloudflare Worker.</span>
+      </div>
+
+      <div class="small">
+        Student-only proof of concept: Assess mode sets bands + estimated mark (no model answer writing).
       </div>
     </section>
   </div>
 
   <script>
-    // ----- Bands
+    /***********************
+     * CONFIG
+     ***********************/
+    // ✅ Your Cloudflare Worker endpoint
+    const ASSESS_API_URL = "https://exam-marker.darren-314.workers.dev/assess";
+
+    // Put your question here (used for assessment payload)
+    const QUESTION_TEXT = "Analyse and evaluate the impact that ‘open design’ has had on traditional product development. (9 marks)";
+
+    /***********************
+     * BANDS + SCORING
+     ***********************/
     const BAND_KEYS = ["Developing", "Secure", "Advanced"];
     const BAND_META = {
       Developing: { range: "1–3" },
       Secure:     { range: "4–6" },
       Advanced:   { range: "7–9" }
     };
-
-    // Score mapping: midpoint of each band (used for estimating final /9 mark)
+    // midpoint scoring (estimate /9)
     const BAND_SCORE = { Developing: 2, Secure: 5, Advanced: 8 };
 
-    // ----- Criteria data
+    /***********************
+     * CRITERIA
+     ***********************/
     const CRITERIA = [
       {
-        id: "c1",
-        number: 1,
-        title: "Understanding of Open Design",
-        color: "#4f46e5",
+        id: "c1", number: 1, title: "Understanding of Open Design", color: "#4f46e5",
         descriptors: {
           Developing: "Basic/vague definition; limited terminology.",
-          Secure: "Accurate definition with some key principles; mostly correct terms.",
+          Secure: "Accurate definition with key principles; mostly correct terms.",
           Advanced: "Clear, precise definition with key principles and confident terminology."
         },
         model: {
@@ -359,10 +431,7 @@
         }
       },
       {
-        id: "c2",
-        number: 2,
-        title: "Comparison with Traditional Development",
-        color: "#0ea5e9",
+        id: "c2", number: 2, title: "Comparison with Traditional Development", color: "#0ea5e9",
         descriptors: {
           Developing: "Limited comparison; traditional development not clearly referenced.",
           Secure: "Some comparison made; links to traditional development are mostly clear.",
@@ -375,10 +444,7 @@
         }
       },
       {
-        id: "c3",
-        number: 3,
-        title: "Depth of Analysis (Impact Explained)",
-        color: "#22c55e",
+        id: "c3", number: 3, title: "Depth of Analysis (Impact Explained)", color: "#22c55e",
         descriptors: {
           Developing: "Mostly descriptive; limited cause-and-effect.",
           Secure: "Explains some impacts with basic consequences.",
@@ -391,13 +457,10 @@
         }
       },
       {
-        id: "c4",
-        number: 4,
-        title: "Quality of Evaluation",
-        color: "#f59e0b",
+        id: "c4", number: 4, title: "Quality of Evaluation", color: "#f59e0b",
         descriptors: {
           Developing: "Mentions pros/cons but does not weigh them.",
-          Secure: "Includes both positives and negatives with some judgement.",
+          Secure: "Includes positives and negatives with some judgement.",
           Advanced: "Balanced, reasoned evaluation that weighs trade-offs and implications."
         },
         model: {
@@ -407,10 +470,7 @@
         }
       },
       {
-        id: "c5",
-        number: 5,
-        title: "Breadth of Impact Covered",
-        color: "#a855f7",
+        id: "c5", number: 5, title: "Breadth of Impact Covered", color: "#a855f7",
         descriptors: {
           Developing: "Narrow focus; repeats similar points.",
           Secure: "Covers a few relevant impact areas.",
@@ -423,10 +483,7 @@
         }
       },
       {
-        id: "c6",
-        number: 6,
-        title: "Overall Judgement & Structure",
-        color: "#ef4444",
+        id: "c6", number: 6, title: "Overall Judgement & Structure", color: "#ef4444",
         descriptors: {
           Developing: "Limited structure; unclear overall judgement.",
           Secure: "Some structure; overall judgement present but not fully reasoned.",
@@ -440,21 +497,39 @@
       }
     ];
 
-    // ----- State
+    /***********************
+     * STATE
+     ***********************/
     const DEFAULT_INDEX = BAND_KEYS.indexOf("Secure");
     const state = Object.fromEntries(CRITERIA.map(c => [c.id, DEFAULT_INDEX]));
     let highlightsOn = true;
+    let mode = "model";      // "model" | "assess"
+    let studentText = "";    // textarea content
 
-    // ----- DOM
+    /***********************
+     * DOM
+     ***********************/
     const gridEl = document.getElementById("criteriaGrid");
-    const answerEl = document.getElementById("answer");
     const answerWrapEl = document.getElementById("answerWrap");
     const scoreTextEl = document.getElementById("scoreText");
     const scoreBandEl = document.getElementById("scoreBand");
     const toggleEl = document.getElementById("toggleHighlights");
     const toggleStateEl = document.getElementById("toggleState");
+    const statusLineEl = document.getElementById("statusLine");
+    const boxTitleEl = document.getElementById("boxTitle");
 
-    // ----- Helpers
+    const btnModeModel = document.getElementById("btnModeModel");
+    const btnModeAssess = document.getElementById("btnModeAssess");
+
+    const btnCopy = document.getElementById("btnCopy");
+    const btnReset = document.getElementById("btnReset");
+    const btnRandom = document.getElementById("btnRandom");
+    const btnAssess = document.getElementById("btnAssess");
+    const btnMockAssess = document.getElementById("btnMockAssess");
+
+    /***********************
+     * HELPERS
+     ***********************/
     function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
     function bandKeyFor(id){ return BAND_KEYS[state[id]]; }
 
@@ -467,13 +542,16 @@
         .replaceAll("'","&#039;");
     }
 
-    // ----- Mark estimation
+    function setStatus(kind, text){
+      const dotClass = kind === "ok" ? "ok" : kind === "bad" ? "bad" : "warn";
+      statusLineEl.innerHTML = `<span class="dot ${dotClass}"></span><span>${escapeHtml(text)}</span>`;
+    }
+
     function estimateMarkOutOf9(){
       const scores = CRITERIA.map(c => BAND_SCORE[bandKeyFor(c.id)]);
       const avg = scores.reduce((a,b)=>a+b,0) / scores.length;
 
-      // Map avg (2..8) to mark (1..9) linearly:
-      // 2 -> 1, 8 -> 9
+      // map avg (2..8) to mark (1..9): 2->1, 8->9
       let mark = 1 + ((avg - 2) * (8/6));
       mark = Math.round(mark);
       mark = clamp(mark, 1, 9);
@@ -485,8 +563,16 @@
       return { mark, bandLabel };
     }
 
-    // ----- UI render
-    function render(){
+    function updateScorePill(){
+      const { mark, bandLabel } = estimateMarkOutOf9();
+      scoreTextEl.textContent = `Estimated mark: ${mark}/9`;
+      scoreBandEl.textContent = `• ${bandLabel}`;
+    }
+
+    /***********************
+     * RENDER CRITERIA CARDS
+     ***********************/
+    function renderCards(){
       gridEl.innerHTML = "";
 
       CRITERIA.forEach(c => {
@@ -501,7 +587,7 @@
         top.className = "critTop";
         top.innerHTML = `
           <div class="badge">${c.number}</div>
-          <div class="critTitle">${c.title}</div>
+          <div class="critTitle">${escapeHtml(c.title)}</div>
         `;
 
         const descWrap = document.createElement("div");
@@ -514,7 +600,7 @@
             <div class="bandName">${band}</div>
             <div class="bandRange">(${range})</div>
           </div>
-          <div class="descText">${c.descriptors[band]}</div>
+          <div class="descText">${escapeHtml(c.descriptors[band])}</div>
         `;
 
         const arrowCol = document.createElement("div");
@@ -525,10 +611,13 @@
         upBtn.type = "button";
         upBtn.title = "Move up a band";
         upBtn.innerHTML = `<span class="tri up" aria-hidden="true"></span>`;
+        // In assess mode we auto-set bands; keep arrows disabled (student-only)
+        upBtn.disabled = (mode === "assess");
         upBtn.addEventListener("click", () => {
           state[c.id] = clamp(state[c.id] + 1, 0, BAND_KEYS.length - 1);
-          render();
-          updateAnswerAndScore();
+          renderCards();
+          renderMainBox();
+          updateScorePill();
         });
 
         const downBtn = document.createElement("button");
@@ -536,10 +625,12 @@
         downBtn.type = "button";
         downBtn.title = "Move down a band";
         downBtn.innerHTML = `<span class="tri down" aria-hidden="true"></span>`;
+        downBtn.disabled = (mode === "assess");
         downBtn.addEventListener("click", () => {
           state[c.id] = clamp(state[c.id] - 1, 0, BAND_KEYS.length - 1);
-          render();
-          updateAnswerAndScore();
+          renderCards();
+          renderMainBox();
+          updateScorePill();
         });
 
         arrowCol.appendChild(upBtn);
@@ -563,7 +654,10 @@
       });
     }
 
-    function buildAnswerHtml(){
+    /***********************
+     * MODEL ANSWER BUILDERS
+     ***********************/
+    function buildModelHtml(){
       const seg = (c, text) => `<span class="seg" style="--c:${c.color}">${escapeHtml(text)}</span>`;
 
       const c1 = CRITERIA[0], c2 = CRITERIA[1], c3 = CRITERIA[2], c4 = CRITERIA[3], c5 = CRITERIA[4], c6 = CRITERIA[5];
@@ -576,7 +670,7 @@
       return `${p1}<br><br>${p2}<br><br>${p3}<br><br>${p4}`;
     }
 
-    function buildAnswerText(){
+    function buildModelText(){
       const parts = CRITERIA.map(c => c.model[bandKeyFor(c.id)]);
       return [
         parts[0] + " " + parts[1],
@@ -586,54 +680,229 @@
       ].join("\n\n");
     }
 
-    function updateAnswerAndScore(){
-      answerEl.innerHTML = buildAnswerHtml();
-
-      answerWrapEl.classList.toggle("noHighlights", !highlightsOn);
-
-      const { mark, bandLabel } = estimateMarkOutOf9();
-      scoreTextEl.textContent = `Estimated mark: ${mark}/9`;
-      scoreBandEl.textContent = `• ${bandLabel}`;
+    /***********************
+     * APPLY AI BANDS
+     ***********************/
+    function applyBands(bandsById){
+      // bandsById: { c1:"Secure", c2:"Developing", ... }
+      for (const c of CRITERIA){
+        const b = bandsById[c.id];
+        if (!b) continue;
+        const idx = BAND_KEYS.indexOf(b);
+        if (idx >= 0) state[c.id] = idx;
+      }
+      renderCards();
+      updateScorePill();
     }
 
-    // ----- Toolbar actions
-    document.getElementById("btnCopy").addEventListener("click", async () => {
-      const text = buildAnswerText();
-      try{
-        await navigator.clipboard.writeText(text);
-      }catch(e){
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
+    /***********************
+     * MOCK ASSESS (no AI)
+     ***********************/
+    function mockAssessBands(text){
+      const t = (text || "").toLowerCase();
+      const has = (...words) => words.some(w => t.includes(w));
+      const countHas = (arr) => arr.reduce((n, w) => n + (t.includes(w) ? 1 : 0), 0);
+
+      // C1
+      let c1 = "Developing";
+      if (has("open design") && (has("share") || has("shared") || has("openly"))) c1 = "Secure";
+      if (c1 === "Secure" && (has("cad") || has("licens") || has("ip") || has("copyright"))) c1 = "Advanced";
+
+      // C2
+      let c2 = "Developing";
+      if (has("traditional") || has("closed") || has("in-house") || has("company") || has("companies")) c2 = "Secure";
+      if (c2 === "Secure" && (has("whereas") || has("in contrast") || has("however") || has("compared"))) c2 = "Advanced";
+
+      // C3
+      let c3 = "Developing";
+      if (has("because") || has("therefore") || has("leads to") || has("results in")) c3 = "Secure";
+      if (c3 === "Secure" && (has("iteration") || has("feedback") || has("accelerat") || has("rapid") || has("consequence"))) c3 = "Advanced";
+
+      // C4
+      let c4 = "Developing";
+      const evalSignals = countHas(["however","on the other hand","although","but"]);
+      if (evalSignals >= 1 || (has("advantage") && has("disadvantage"))) c4 = "Secure";
+      if (c4 === "Secure" && (has("weigh") || has("trade-off") || has("arguably") || has("overall"))) c4 = "Advanced";
+
+      // C5
+      let c5 = "Developing";
+      const breadthCount = countHas(["ip","copyright","profit","licens","manufactur","3d print","quality control","customis","repair"]);
+      if (breadthCount >= 2) c5 = "Secure";
+      if (breadthCount >= 4) c5 = "Advanced";
+
+      // C6
+      let c6 = "Developing";
+      if (has("overall") || has("in conclusion") || has("to conclude")) c6 = "Secure";
+      if (c6 === "Secure" && (has("however") || has("although") || has("but"))) c6 = "Advanced";
+
+      return { c1,c2,c3,c4,c5,c6 };
+    }
+
+    /***********************
+     * REAL AI ASSESS (Cloudflare Worker)
+     ***********************/
+    async function realAIAssess(text){
+      const payload = {
+        question: QUESTION_TEXT,
+        student_response: text,
+        criteria: CRITERIA.map(c => ({
+          id: c.id,
+          title: c.title,
+          descriptors: c.descriptors
+        }))
+      };
+
+      const res = await fetch(ASSESS_API_URL, {
+        method: "POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok){
+        const msg = await res.text().catch(()=> "");
+        throw new Error(`Assess API error (${res.status}): ${msg || "No details"}`);
       }
-    });
 
-    document.getElementById("btnReset").addEventListener("click", () => {
-      CRITERIA.forEach(c => state[c.id] = DEFAULT_INDEX);
-      render();
-      updateAnswerAndScore();
-    });
+      const data = await res.json();
+      if (!data || !data.bands) throw new Error("Assess API returned unexpected JSON");
+      return data.bands;
+    }
 
-    document.getElementById("btnRandom").addEventListener("click", () => {
-      CRITERIA.forEach(c => state[c.id] = Math.floor(Math.random() * BAND_KEYS.length));
-      render();
-      updateAnswerAndScore();
-    });
+    /***********************
+     * MAIN BOX RENDER (MODEL vs ASSESS)
+     ***********************/
+    function renderMainBox(){
+      answerWrapEl.classList.toggle("noHighlights", !highlightsOn);
+      answerWrapEl.innerHTML = "";
 
-    // Highlight toggle
+      if (mode === "model"){
+        boxTitleEl.textContent = "Live model answer";
+        btnAssess.style.display = "none";
+        btnMockAssess.style.display = "none";
+        btnCopy.textContent = "Copy";
+        btnRandom.disabled = false;
+
+        const div = document.createElement("div");
+        div.className = "answerBox";
+        div.innerHTML = buildModelHtml();
+        answerWrapEl.appendChild(div);
+
+        setStatus("ok", "Model mode: use ▲/▼ to set bands.");
+      } else {
+        boxTitleEl.textContent = "Paste your answer";
+        btnAssess.style.display = "inline-flex";
+        btnMockAssess.style.display = "inline-flex";
+        btnCopy.textContent = "Copy text";
+        btnRandom.disabled = true;
+
+        const ta = document.createElement("textarea");
+        ta.className = "studentInput";
+        ta.placeholder = "Paste your answer here…";
+        ta.value = studentText;
+        ta.addEventListener("input", (e) => { studentText = e.target.value; });
+        answerWrapEl.appendChild(ta);
+
+        setStatus("warn", "Assess mode: paste answer, then click “Assess response” (or use Mock assess).");
+      }
+
+      updateScorePill();
+    }
+
+    function setMode(next){
+      mode = next;
+
+      btnModeModel.classList.toggle("active", mode === "model");
+      btnModeAssess.classList.toggle("active", mode === "assess");
+      btnModeModel.setAttribute("aria-selected", String(mode === "model"));
+      btnModeAssess.setAttribute("aria-selected", String(mode === "assess"));
+
+      renderCards();
+      renderMainBox();
+    }
+
+    /***********************
+     * BUTTONS
+     ***********************/
+    btnModeModel.addEventListener("click", () => setMode("model"));
+    btnModeAssess.addEventListener("click", () => setMode("assess"));
+
     toggleEl.addEventListener("change", (e) => {
       highlightsOn = !!e.target.checked;
       toggleStateEl.textContent = highlightsOn ? "On" : "Off";
-      updateAnswerAndScore();
+      renderMainBox();
     });
 
-    // ----- Init
+    btnCopy.addEventListener("click", async () => {
+      const text = (mode === "model") ? buildModelText() : (studentText || "");
+      if (!text.trim()){
+        setStatus("bad", "Nothing to copy yet.");
+        return;
+      }
+      try{
+        await navigator.clipboard.writeText(text);
+        setStatus("ok", "Copied to clipboard.");
+      }catch(e){
+        setStatus("bad", "Copy blocked by browser. Try CTRL+C after selecting.");
+      }
+    });
+
+    btnReset.addEventListener("click", () => {
+      CRITERIA.forEach(c => state[c.id] = DEFAULT_INDEX);
+      renderCards();
+      renderMainBox();
+      updateScorePill();
+      setStatus("ok", "Reset to Secure.");
+    });
+
+    btnRandom.addEventListener("click", () => {
+      CRITERIA.forEach(c => state[c.id] = Math.floor(Math.random() * BAND_KEYS.length));
+      renderCards();
+      renderMainBox();
+      updateScorePill();
+      setStatus("ok", "Random mix applied.");
+    });
+
+    btnMockAssess.addEventListener("click", () => {
+      const text = (studentText || "").trim();
+      if (!text){
+        setStatus("bad", "Paste an answer first.");
+        return;
+      }
+      const bands = mockAssessBands(text);
+      applyBands(bands);
+      setStatus("ok", "Mock assess applied (quick heuristic).");
+    });
+
+    btnAssess.addEventListener("click", async () => {
+      const text = (studentText || "").trim();
+      if (!text){
+        setStatus("bad", "Paste an answer first.");
+        return;
+      }
+
+      btnAssess.disabled = true;
+      btnMockAssess.disabled = true;
+      setStatus("warn", "Assessing…");
+
+      try{
+        const bands = await realAIAssess(text);
+        applyBands(bands);
+        setStatus("ok", "AI assessment applied.");
+      }catch(err){
+        setStatus("bad", err && err.message ? err.message : String(err));
+      }finally{
+        btnAssess.disabled = false;
+        btnMockAssess.disabled = false;
+      }
+    });
+
+    /***********************
+     * INIT
+     ***********************/
     toggleStateEl.textContent = "On";
-    render();
-    updateAnswerAndScore();
+    renderCards();
+    renderMainBox();
+    updateScorePill();
   </script>
 </body>
 </html>
