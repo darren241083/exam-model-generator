@@ -872,6 +872,40 @@
      * CONFIG
      ***********************/
     const ASSESS_API_URL = "https://exam-marker.darren-314.workers.dev/assess";
+
+    /***********************
+     * CRITERIA FRAMEWORK V1
+     ***********************/
+    const CRITERIA_SPINE_V1 = [
+      { id: "knowledge", label: "Knowledge / Understanding" },
+      { id: "application", label: "Application to the question" },
+      { id: "analysis", label: "Explanation / Analysis" },
+      { id: "range", label: "Range / Breadth" },
+      { id: "evaluation", label: "Evaluation / Judgement" },
+      { id: "structure", label: "Structure / Clarity" }
+    ];
+
+    const COMMAND_WORD_FRAMEWORK_MAP_V1 = {
+      describe: { spineAreas: ["knowledge", "application", "range"], suitableForModelGeneration: true },
+      explain: { spineAreas: ["knowledge", "application", "analysis", "range"], suitableForModelGeneration: true },
+      analyse: { spineAreas: ["application", "analysis", "range", "knowledge"], suitableForModelGeneration: true },
+      evaluate: { spineAreas: ["application", "analysis", "evaluation", "structure", "range", "knowledge"], suitableForModelGeneration: true },
+      assess: { spineAreas: ["application", "analysis", "evaluation", "structure", "range", "knowledge"], suitableForModelGeneration: true },
+      discuss: { spineAreas: ["application", "analysis", "evaluation", "structure", "range", "knowledge"], suitableForModelGeneration: true },
+      justify: { spineAreas: ["application", "analysis", "evaluation"], suitableForModelGeneration: true },
+      recommend: { spineAreas: ["application", "analysis", "evaluation"], suitableForModelGeneration: true },
+      compare: { spineAreas: ["application", "analysis", "range"], suitableForModelGeneration: true },
+      state: { spineAreas: ["knowledge"], suitableForModelGeneration: false },
+      name: { spineAreas: ["knowledge"], suitableForModelGeneration: false },
+      identify: { spineAreas: ["knowledge"], suitableForModelGeneration: false },
+      give: { spineAreas: ["knowledge"], suitableForModelGeneration: false },
+      draw: { spineAreas: [], suitableForModelGeneration: false },
+      sketch: { spineAreas: [], suitableForModelGeneration: false },
+      label: { spineAreas: [], suitableForModelGeneration: false },
+      calculate: { spineAreas: [], suitableForModelGeneration: false },
+      "work out": { spineAreas: [], suitableForModelGeneration: false }
+    };
+
     const PAPER_LIBRARY = (() => {
       const questionText = "Analyse and evaluate the impact that 'open design' has had on traditional product development.";
 
@@ -890,7 +924,7 @@
      * CRITERIA
      ***********************/
     const CRITERIA = [
-      { id:"c1", number:1, title:"Understanding of Open Design", color:"#4f46e5",
+      { id:"c1", number:1, title:"Understanding of Open Design", spineArea:"knowledge", color:"#4f46e5",
         descriptors:{
           Developing:"Basic/vague definition; limited terminology.",
           Secure:"Accurate definition with some key principles; mostly correct terms.",
@@ -902,7 +936,7 @@
           Advanced:"Open design is built on openly shared design information (often CAD, instructions and licensing), enabling others to access, adapt, distribute and develop products beyond tightly protected IP models."
         }
       },
-      { id:"c2", number:2, title:"Comparison with Traditional Development", color:"#0ea5e9",
+      { id:"c2", number:2, title:"Comparison with Traditional Development", spineArea:"application", color:"#0ea5e9",
         descriptors:{
           Developing:"Limited comparison; traditional development not clearly referenced.",
           Secure:"Some comparison made; links to traditional development are mostly clear.",
@@ -914,7 +948,7 @@
           Advanced:"Where traditional development relies on protected IP, controlled R&D and commercial release cycles, open design shifts development towards shared ownership, distributed contribution and wider access to manufacturing pathways."
         }
       },
-      { id:"c3", number:3, title:"Depth of Analysis (Impact Explained)", color:"#22c55e",
+      { id:"c3", number:3, title:"Depth of Analysis (Impact Explained)", spineArea:"analysis", color:"#22c55e",
         descriptors:{
           Developing:"Mostly descriptive; limited cause-and-effect.",
           Secure:"Explains some impacts with basic consequences.",
@@ -926,7 +960,7 @@
           Advanced:"Its biggest impact is on iteration and knowledge flow: large numbers of contributors can identify issues, propose refinements and release improved versions rapidly, changing the pace and direction of development compared to finite in-house expertise."
         }
       },
-      { id:"c4", number:4, title:"Quality of Evaluation", color:"#f59e0b",
+      { id:"c4", number:4, title:"Quality of Evaluation", spineArea:"evaluation", color:"#f59e0b",
         descriptors:{
           Developing:"Mentions pros/cons but does not weigh them.",
           Secure:"Includes positives and negatives with some judgement.",
@@ -938,7 +972,7 @@
           Advanced:"While open design democratises participation and can accelerate innovation, it also weakens exclusivity (and therefore profit models) and can create ambiguity over responsibility, legality and accountability when problems occur."
         }
       },
-      { id:"c5", number:5, title:"Breadth of Impact Covered", color:"#a855f7",
+      { id:"c5", number:5, title:"Breadth of Impact Covered", spineArea:"range", color:"#a855f7",
         descriptors:{
           Developing:"Narrow focus; repeats similar points.",
           Secure:"Covers a few relevant impact areas.",
@@ -950,7 +984,7 @@
           Advanced:"Its impact spans IP and copyright culture, profitability, speed of iteration, customisation/repair, distributed manufacture (including home 3D printing), and quality control—reshaping who develops products and how value is captured."
         }
       },
-      { id:"c6", number:6, title:"Overall Judgement & Structure", color:"#ef4444",
+      { id:"c6", number:6, title:"Overall Judgement & Structure", spineArea:"structure", color:"#ef4444",
         descriptors:{
           Developing:"Limited structure; unclear overall judgement.",
           Secure:"Some structure; overall judgement present but not fully reasoned.",
@@ -1095,6 +1129,9 @@
             teacherOverride: null,
             markSchemeLinkId: "demo-ms-q18",
             modelSupport: {
+              frameworkVersion: "criteria-framework-v1",
+              frameworkSource: "manual-authored",
+              frameworkConfidence: "high",
               bands: BAND_KEYS,
               bandMeta: BAND_META,
               bandScore: BAND_SCORE,
@@ -1708,6 +1745,36 @@
 
     function getSupport(){
       return appState.currentQuestion?.modelSupport || null;
+    }
+
+    function getVisibleCriteriaForQuestion(question = appState.currentQuestion){
+      return question?.modelSupport?.criteria || [];
+    }
+
+    function getCriteriaSpineArea(id, question = appState.currentQuestion){
+      const criterion = getVisibleCriteriaForQuestion(question).find(c => c.id === id);
+      const spineAreaId = criterion?.spineArea || "";
+      return CRITERIA_SPINE_V1.find(area => area.id === spineAreaId) || null;
+    }
+
+    function getCriteriaFrameworkMeta(question = appState.currentQuestion){
+      const support = question?.modelSupport;
+      if (!support) return null;
+
+      return {
+        frameworkVersion: support.frameworkVersion || "",
+        frameworkSource: support.frameworkSource || "",
+        frameworkConfidence: support.frameworkConfidence || ""
+      };
+    }
+
+    function getFrameworkVisibleCardCountForMarks(marks){
+      const markValue = Number(marks);
+      if (!Number.isFinite(markValue) || markValue <= 3) return 0;
+      if (markValue === 4) return 3;
+      if (markValue <= 6) return 4;
+      if (markValue <= 8) return 5;
+      return 6;
     }
 
     function hasModelSupport(question = appState.currentQuestion){
