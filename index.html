@@ -32,12 +32,6 @@
       margin-bottom:12px;
     }
     h1{ font-size:22px; margin:0; letter-spacing:.2px; }
-    .tip{ color:var(--muted); font-size:12px; white-space:nowrap; margin-top:2px; }
-    .tip code{
-      font-family:var(--mono); font-size:12px; background:#fff; border:1px solid var(--line);
-      padding:2px 6px; border-radius:8px;
-    }
-
     .question{
       margin-top:8px;
       padding:10px 12px;
@@ -51,6 +45,14 @@
     }
     .question b{ font-weight:900; }
     .question .marks{ color:var(--muted); font-weight:800; margin-left:6px; white-space:nowrap; }
+    .selectedQuestionTop{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:6px;
+    }
+    .selectedQuestionText{ color:var(--text); }
 
     .questionBrowser{
       margin:14px 0;
@@ -62,7 +64,7 @@
     }
     .browserHeader{
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
       gap:12px;
       flex-wrap:wrap;
@@ -70,6 +72,11 @@
     }
     .browserHeader h2{
       margin:0;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+    .questionBrowser > h2{
+      margin:0 0 10px;
       font-size:14px;
       letter-spacing:.2px;
     }
@@ -84,7 +91,8 @@
       display:flex;
       align-items:center;
       gap:8px;
-      min-width:260px;
+      min-width:320px;
+      flex:1 1 360px;
     }
     .paperSelector label{
       color:var(--muted);
@@ -94,7 +102,7 @@
     }
     .paperSelector select{
       width:100%;
-      min-width:230px;
+      min-width:260px;
       border:1px solid var(--line);
       border-radius:10px;
       background:#fff;
@@ -156,10 +164,7 @@
       color:var(--muted);
       font-size:12px;
       line-height:1.45;
-      background:#f9fafb;
-      border:1px solid var(--line);
-      border-radius:10px;
-      padding:9px 10px;
+      padding:0;
     }
     .manualImportError{
       grid-column:1 / -1;
@@ -179,6 +184,27 @@
       flex-wrap:wrap;
       justify-content:flex-end;
     }
+    .manualOptional{
+      grid-column:1 / -1;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:9px 10px;
+      background:#fff;
+    }
+    .manualOptional summary{
+      cursor:pointer;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+    }
+    .manualOptionalGrid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+    .manualOptionalGrid .manualImportField.wide{ grid-column:auto; }
+    .manualOptionalGrid .manualImportField.full{ grid-column:1 / -1; }
     .questionMeta{
       color:var(--muted);
       font-size:11px;
@@ -191,6 +217,7 @@
     @media (max-width:700px){
       .manualImportForm{ grid-template-columns:1fr; }
       .manualImportField.small{ grid-column:1 / -1; }
+      .manualOptionalGrid{ grid-template-columns:1fr; }
       .manualImportActions{ justify-content:flex-start; }
     }
     .triageSummary{
@@ -200,24 +227,23 @@
       margin:8px 0 12px;
     }
     .questionList{
-      display:grid;
-      grid-template-columns: repeat(3, minmax(220px, 1fr));
-      gap:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
     }
-    @media (max-width:1000px){ .questionList{ grid-template-columns: repeat(2, minmax(220px, 1fr)); } }
-    @media (max-width:700px){ .questionList{ grid-template-columns: 1fr; } }
     .questionItem{
       width:100%;
       text-align:left;
       border:1px solid var(--line);
-      border-radius:14px;
+      border-radius:12px;
       background:#fff;
-      padding:11px 12px;
+      padding:10px 12px;
       cursor:pointer;
-      min-height:142px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
+      min-height:0;
+      display:grid;
+      grid-template-columns:auto auto auto minmax(0, 1fr);
+      align-items:center;
+      gap:10px;
       transition:.15s ease;
     }
     .questionItem:hover{ border-color:#c7cbe3; transform: translateY(-1px); }
@@ -227,17 +253,35 @@
     .questionItem.ignored{
       background:#f9fafb;
       color:#6b7280;
-      opacity:.72;
-    }
-    .questionItemTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
     }
     .questionNumber{ font-weight:900; font-size:13px; }
-    .questionPreview{ font-size:12px; line-height:1.35; color:var(--text); }
+    .questionMarks{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+    .questionPreview{
+      min-width:0;
+      font-size:12px;
+      line-height:1.35;
+      color:var(--text);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
     .questionItem.ignored .questionPreview{ color:var(--muted); }
+    @media (max-width:700px){
+      .questionItem{
+        grid-template-columns:auto auto;
+        align-items:start;
+      }
+      .questionItem .statusBadge{ justify-self:start; }
+      .questionPreview{
+        grid-column:1 / -1;
+        white-space:normal;
+      }
+    }
     .statusBadge{
       display:inline-flex;
       align-items:center;
@@ -247,8 +291,7 @@
       padding:4px 8px;
       font-size:11px;
       font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.2px;
+      letter-spacing:0;
       white-space:nowrap;
       background:#fff;
     }
@@ -265,6 +308,31 @@
     }
     .unsupportedBox h3{ margin:0 0 8px; font-size:15px; }
     .unsupportedBox p{ margin:8px 0 0; color:var(--muted); font-size:13px; line-height:1.45; }
+    .unsupportedMeta{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin:8px 0 0;
+    }
+    .unsupportedBox details{
+      border-top:1px solid var(--line);
+      margin-top:12px;
+      padding-top:10px;
+    }
+    .unsupportedBox summary{
+      cursor:pointer;
+      font-size:12px;
+      font-weight:900;
+      color:var(--muted);
+    }
+    .unsupportedDetailList{
+      margin:8px 0 0;
+      padding-left:18px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
 
     .grid{
       display:grid;
@@ -681,30 +749,27 @@
       <div style="min-width:320px">
         <h1 id="appTitle">Exam Question Model Generator</h1>
         <div id="questionHeader" class="question">
-          Demo paper loaded. Select a question below to model or assess.
+          Select a paper and question.
         </div>
       </div>
-      <div class="tip">GitHub Pages tip: bump <code>?v=</code> when you update files.</div>
     </header>
 
     <section id="questionBrowser" class="questionBrowser" aria-label="Question browser">
       <div class="browserHeader">
-        <div>
-          <h2 id="paperTitle">Demo paper</h2>
-          <div class="small" id="paperSubtitle">Static Phase 1 triage fixture. PDF extraction is not active yet.</div>
+        <div class="paperSelector">
+          <label for="paperSelect">Paper</label>
+          <select id="paperSelect" aria-label="Choose paper"></select>
         </div>
         <div class="browserControls">
           <button class="btn" id="btnToggleImport" type="button" aria-expanded="false" aria-controls="manualImportPanel">Add draft question</button>
-          <div class="paperSelector">
-            <label for="paperSelect">Paper</label>
-            <select id="paperSelect" aria-label="Choose paper"></select>
-          </div>
         </div>
       </div>
+      <h2 id="paperTitle">Demo paper</h2>
+      <div class="small" id="paperSubtitle" hidden></div>
       <div id="manualImportPanel" class="manualImportPanel" hidden>
         <form id="manualImportForm" class="manualImportForm" novalidate>
           <div class="manualImportHelp">
-            Manual imports are memory-only, disappear on reload, and are for synthetic or user-authorized content only. Mark scheme text is stored in this browser session but is not parsed.
+            Drafts stay in this browser session. Only paste content you are allowed to use.
           </div>
           <div id="manualImportError" class="manualImportError" hidden></div>
           <div class="manualImportField wide">
@@ -723,18 +788,23 @@
             <label for="manualStem">Question stem</label>
             <textarea id="manualStem" name="stem" required></textarea>
           </div>
-          <div class="manualImportField wide">
-            <label for="manualCommandWords">Command words (optional)</label>
-            <input id="manualCommandWords" name="commandWords" type="text" placeholder="evaluate, explain" autocomplete="off" />
-          </div>
-          <div class="manualImportField wide">
-            <label for="manualNotes">Notes/context (optional)</label>
-            <input id="manualNotes" name="notes" type="text" autocomplete="off" />
-          </div>
-          <div class="manualImportField full">
-            <label for="manualMarkScheme">Pasted mark scheme text (optional)</label>
-            <textarea id="manualMarkScheme" name="markScheme"></textarea>
-          </div>
+          <details class="manualOptional">
+            <summary>Optional details</summary>
+            <div class="manualOptionalGrid">
+              <div class="manualImportField wide">
+                <label for="manualCommandWords">Command words</label>
+                <input id="manualCommandWords" name="commandWords" type="text" placeholder="evaluate, explain" autocomplete="off" />
+              </div>
+              <div class="manualImportField wide">
+                <label for="manualNotes">Notes/context</label>
+                <input id="manualNotes" name="notes" type="text" autocomplete="off" />
+              </div>
+              <div class="manualImportField full">
+                <label for="manualMarkScheme">Pasted mark scheme text</label>
+                <textarea id="manualMarkScheme" name="markScheme"></textarea>
+              </div>
+            </div>
+          </details>
           <div class="manualImportActions">
             <button class="btn" id="btnCancelImport" type="button">Cancel</button>
             <button class="btn primary" type="submit">Create draft question</button>
@@ -758,8 +828,8 @@
           </div>
 
           <div class="pill" title="Estimated mark based on current bands">
-            <span id="scoreText">Estimated mark: —</span>
-            <span class="mut" id="scoreBand">—</span>
+            <span id="scoreText">Estimated mark: -</span>
+            <span class="mut" id="scoreBand">-</span>
           </div>
 
           <label class="segToggle" title="Toggle colour highlighting in the model answer / evidence highlights in assess mode">
@@ -794,10 +864,6 @@
         <span class="dot warn"></span>
         <span>Assess mode: click a criterion card to view focused feedback on the right.</span>
       </div>
-
-      <div class="small">
-        Student-only proof of concept: focused feedback + evidence tagging + improvement prompts (no full answer generation).
-      </div>
     </section>
   </div>
 
@@ -814,9 +880,9 @@
      ***********************/
     const BAND_KEYS = ["Developing", "Secure", "Advanced"];
     const BAND_META = {
-      Developing: { range: "1–3" },
-      Secure:     { range: "4–6" },
-      Advanced:   { range: "7–9" }
+      Developing: { range: "1-3" },
+      Secure:     { range: "4-6" },
+      Advanced:   { range: "7-9" }
     };
     const BAND_SCORE = { Developing: 2, Secure: 5, Advanced: 8 };
 
@@ -1394,7 +1460,12 @@
     const statusLineEl = document.getElementById("statusLine");
     const boxTitleEl = document.getElementById("boxTitle");
 
+    const rightControlsEl = document.querySelector(".rightControls");
     const modeToggleEl = document.querySelector(".modeToggle");
+    const scorePillEl = scoreTextEl.closest(".pill");
+    const highlightsControlEl = toggleEl.closest(".segToggle");
+    const teacherControlEl = toggleTeacherEl.closest(".segToggle");
+    const toolbarEl = document.querySelector(".toolbar");
     const btnModeModel = document.getElementById("btnModeModel");
     const btnModeAssess = document.getElementById("btnModeAssess");
 
@@ -1441,6 +1512,27 @@
 
     function pluralMarks(marks){
       return `${marks} ${Number(marks) === 1 ? "mark" : "marks"}`;
+    }
+
+    function statusLabel(status){
+      if (status === "usable") return "Ready";
+      if (status === "ignored") return "Not suitable";
+      return "Needs review";
+    }
+
+    function setElementVisible(el, visible){
+      if (!el) return;
+      el.style.display = visible ? "" : "none";
+    }
+
+    function setSupportedChromeVisible(visible){
+      setElementVisible(rightControlsEl, visible);
+      setElementVisible(modeToggleEl, visible);
+      setElementVisible(scorePillEl, visible);
+      setElementVisible(highlightsControlEl, visible);
+      setElementVisible(teacherControlEl, visible);
+      setElementVisible(toolbarEl, visible);
+      setElementVisible(statusLineEl, visible);
     }
 
     function slugifyIdPart(value){
@@ -1629,9 +1721,9 @@
     }
 
     function getPaperOptionLabel(paper){
-      const status = paper.extractionStatus ? paper.extractionStatus.replaceAll("-", " ") : "fixture";
-      const bits = [paper.examBoard, paper.year, paper.series || paper.paperName].filter(Boolean);
-      return `${bits.join(" ")} - ${paper.paperName || paper.title} (${status})`;
+      const name = paper.paperName || paper.title || "Paper";
+      const bits = [paper.examBoard, paper.year, paper.series].filter(Boolean).join(" ");
+      return bits ? `${name} - ${bits}` : name;
     }
 
     function getMarkSchemeLinkForQuestion(question){
@@ -1923,7 +2015,7 @@
     function updateScorePill(){
       const { mark, bandLabel, maxMarks } = estimateMarkOutOf9();
       scoreTextEl.textContent = `Estimated mark: ${mark}/${maxMarks}`;
-      scoreBandEl.textContent = `• ${bandLabel}`;
+      scoreBandEl.textContent = `- ${bandLabel}`;
     }
 
     function confidenceLabel(conf){
@@ -2324,26 +2416,27 @@
       appTitleEl.textContent = "Exam Question Model Generator";
 
       if (!question){
-        questionHeaderEl.innerHTML = `${escapeHtml(paper?.title || "Paper")} loaded. Select a question below to model or assess.`;
+        questionHeaderEl.innerHTML = `<b>${escapeHtml(paper?.paperName || paper?.title || "Paper")}</b>`;
         return;
       }
 
       const status = getTriageStatus(question);
       questionHeaderEl.innerHTML = `
-        <b>Question:</b> ${escapeHtml(question.stem)}
-        <span class="marks">(${escapeHtml(question.marks)} marks)</span>
-        <div class="status" style="margin-top:8px;">
+        <div class="selectedQuestionTop">
           <span class="dot ${statusDotClass(status)}"></span>
-          <span>${escapeHtml(getQuestionLabel(question))} - ${escapeHtml(question.statusReason)}</span>
+          <span class="statusBadge ${status}">${escapeHtml(statusLabel(status))}</span>
+          <b>${escapeHtml(getQuestionLabel(question))}</b>
+          <span class="marks">${escapeHtml(pluralMarks(question.marks))}</span>
         </div>
+        <div class="selectedQuestionText">${escapeHtml(question.stem)}</div>
       `;
     }
 
     function renderQuestionBrowser(){
       const paper = getSelectedPaper();
       const questions = getQuestions();
-      paperTitleEl.textContent = paper?.title || "Demo paper";
-      paperSubtitleEl.textContent = paper?.subtitle || "";
+      paperTitleEl.textContent = paper?.paperName || paper?.title || "Demo paper";
+      paperSubtitleEl.textContent = "";
       paperSelectEl.innerHTML = PAPER_LIBRARY.map(paperOption => `
         <option value="${escapeHtml(paperOption.id)}">${escapeHtml(getPaperOptionLabel(paperOption))}</option>
       `).join("");
@@ -2357,7 +2450,7 @@
       }, {});
 
       triageSummaryEl.innerHTML = ["usable", "review", "ignored"].map(status => `
-        <span class="statusBadge ${status}">${status}: ${counts[status] || 0}</span>
+        <span class="statusBadge ${status}">${escapeHtml(statusLabel(status))}: ${counts[status] || 0}</span>
       `).join("");
 
       if (!questions.length){
@@ -2368,18 +2461,12 @@
       questionListEl.innerHTML = questions.map(q => {
         const selected = q.id === appState.selectedQuestionId ? " selected" : "";
         const status = getTriageStatus(q);
-        const supportNote = q.importMeta?.kind === "manual-import"
-          ? "Manual draft - No model support yet"
-          : hasModelSupport(q) ? "Model support ready" : "No model support yet";
         return `
           <button class="questionItem ${status}${selected}" type="button" data-question-id="${escapeHtml(q.id)}">
-            <div class="questionItemTop">
-              <span class="questionNumber">Q${escapeHtml(q.number)} - ${escapeHtml(q.marks)} marks</span>
-              <span class="statusBadge ${status}">${escapeHtml(status)}</span>
-            </div>
-            <div class="questionMeta">${escapeHtml(supportNote)}</div>
-            <div class="questionPreview">${escapeHtml(q.stem)}</div>
-            <div class="statusReason">${escapeHtml(q.statusReason)}</div>
+            <span class="questionNumber">Q${escapeHtml(q.number)}</span>
+            <span class="questionMarks">${escapeHtml(pluralMarks(q.marks))}</span>
+            <span class="statusBadge ${status}">${escapeHtml(statusLabel(status))}</span>
+            <span class="questionPreview">${escapeHtml(q.stem)}</span>
           </button>
         `;
       }).join("");
@@ -2395,25 +2482,39 @@
       const markSchemeLink = getMarkSchemeLinkForQuestion(question);
       const isManualDraft = question?.importMeta?.kind === "manual-import";
       const hasManualMarkSchemeText = !!String(markSchemeLink?.rawMarkSchemeText || "").trim();
-      const evidence = Array.isArray(question?.statusEvidence) && question.statusEvidence.length
-        ? `<p><b>Triage evidence:</b> ${question.statusEvidence.map(item => `<span>${escapeHtml(item)}</span>`).join(", ")}</p>`
-        : "";
+      const evidenceItems = Array.isArray(question?.statusEvidence) ? question.statusEvidence.filter(Boolean) : [];
+      const mismatchItems = Array.isArray(markSchemeLink?.mismatchReasons) ? markSchemeLink.mismatchReasons.filter(Boolean) : [];
+      const detailItems = [...evidenceItems, ...mismatchItems];
+      const details = detailItems.length ? `
+        <details>
+          <summary>Why this was blocked</summary>
+          <ul class="unsupportedDetailList">
+            ${detailItems.map(item => `<li>${escapeHtml(item)}</li>`).join("")}
+          </ul>
+        </details>
+      ` : "";
       const manualDraftInfo = isManualDraft ? `
-        <p><b>Manual draft:</b> Memory-only import. ${hasManualMarkSchemeText ? "Mark scheme text was pasted but has not been parsed." : "No mark scheme text was pasted."}</p>
+        <details>
+          <summary>Draft details</summary>
+          <p>Drafts stay in this browser session. ${hasManualMarkSchemeText ? "Mark scheme text was pasted but has not been parsed." : "No mark scheme text was pasted."}</p>
+        </details>
       ` : "";
       boxTitleEl.textContent = question ? getQuestionLabel(question) : "Question not ready";
       answerWrapEl.classList.remove("noHighlights");
       answerWrapEl.innerHTML = `
         <div class="unsupportedBox">
-          <h3>This question is not ready for model generation yet.</h3>
+          <h3>${escapeHtml(statusLabel(status))}</h3>
+          <div class="unsupportedMeta">
+            <span class="statusBadge ${status}">${escapeHtml(statusLabel(status))}</span>
+            ${question?.marks ? `<span class="questionMarks">${escapeHtml(pluralMarks(question.marks))}</span>` : ""}
+          </div>
           <p>${escapeHtml(question?.statusReason || "No model support is available for this question.")}</p>
-          <p>Status: <b>${escapeHtml(status || "unknown")}</b>${question?.marks ? ` - ${escapeHtml(question.marks)} marks` : ""}</p>
+          ${details}
           ${manualDraftInfo}
-          ${evidence}
         </div>
       `;
 
-      if (modeToggleEl) modeToggleEl.style.display = "none";
+      setSupportedChromeVisible(false);
       btnModeModel.disabled = true;
       btnModeAssess.disabled = true;
       btnCopy.style.display = "none";
@@ -2423,7 +2524,7 @@
       btnMockAssess.style.display = "none";
       btnReassess.style.display = "none";
       scoreTextEl.textContent = "Model support: not ready";
-      scoreBandEl.textContent = `- ${status || "review"}`;
+      scoreBandEl.textContent = `- ${statusLabel(status)}`;
       setStatus(status === "ignored" ? "bad" : "warn", question?.statusReason || "This question is not ready yet.");
     }
 
@@ -2495,7 +2596,7 @@
 
           ${teacherView ? `
             <div class="sectionTitle">Why</div>
-            <div class="muted" style="margin-top:6px;">${escapeHtml(hasAssessed ? (why || "—") : "Assess first to see examiner-style reasoning.")}</div>
+            <div class="muted" style="margin-top:6px;">${escapeHtml(hasAssessed ? (why || "-") : "Assess first to see examiner-style reasoning.")}</div>
           ` : `
             <div class="sectionTitle">Next step</div>
             <div class="muted" style="margin-top:6px;">
@@ -2510,21 +2611,21 @@
           <div class="quoteList">
             ${ev.slice(0,3).map((q, i) => `
               <button class="quoteBtn" data-qi="${i}" type="button">
-                “${escapeHtml(q)}”
+                "${escapeHtml(q)}"
                 <div class="muted" style="margin-top:4px;">Click to jump to highlight.</div>
               </button>
             `).join("")}
           </div>
         ` : `
           <div class="muted" style="margin-top:10px;">
-            ${escapeHtml(hasAssessed ? "No evidence quotes provided. (This can happen if the model can’t confidently extract exact wording.)" : "Assess first to see evidence highlights.")}
+            ${escapeHtml(hasAssessed ? "No evidence quotes provided. (This can happen if the model cannot confidently extract exact wording.)" : "Assess first to see evidence highlights.")}
           </div>
         `;
 
         body.innerHTML = `
           <div class="sectionTitle">Evidence found in the answer</div>
           <div class="muted" style="margin-top:6px;">
-            Evidence highlights appear in the “Marked view” box (if Highlights is On).
+            Evidence highlights appear in the "Marked view" box (if Highlights is On).
           </div>
           ${evHtml}
         `;
@@ -2538,7 +2639,7 @@
       }
 
       if (activePanelTab === "improve"){
-        const list = tips.length ? tips.map(t => `<div class="improveItem">• ${escapeHtml(t)}</div>`).join("") : `<div class="muted" style="margin-top:10px;">No tips available.</div>`;
+        const list = tips.length ? tips.map(t => `<div class="improveItem">- ${escapeHtml(t)}</div>`).join("") : `<div class="muted" style="margin-top:10px;">No tips available.</div>`;
         const starter = buildSentenceStarter(selectedCritId, band);
 
         body.innerHTML = `
@@ -2581,7 +2682,8 @@
         return;
       }
 
-      if (modeToggleEl) modeToggleEl.style.display = "";
+      setSupportedChromeVisible(true);
+      setElementVisible(teacherControlEl, mode === "assess");
       btnModeModel.disabled = false;
       btnModeAssess.disabled = false;
       btnCopy.style.display = "";
@@ -2603,7 +2705,7 @@
         div.innerHTML = buildModelHtml();
         answerWrapEl.appendChild(div);
 
-        setStatus("ok", "Model mode: use ▲/▼ to set bands. Click cards to select a criterion (for later).");
+        setStatus("ok", "Model answer ready.");
         updateScorePill();
         return;
       }
@@ -2624,7 +2726,7 @@
 
       // Left: textarea + marked view
       left.innerHTML = `
-        <textarea id="studentInput" class="studentInput" placeholder="Paste your answer here…"></textarea>
+        <textarea id="studentInput" class="studentInput" placeholder="Paste your answer here..."></textarea>
         <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
           <div class="muted" style="font-size:12px; color:var(--muted);">
             Marked view (highlights link to criteria). ${highlightsOn ? "" : "Highlights are Off."}
@@ -2674,7 +2776,7 @@
       renderFeedbackPanel(panel, opts);
 
       updateScorePill();
-      setStatus("warn", "Assess mode: click a criterion card for focused feedback. Use Improve → edit → Re-assess.");
+      setStatus("warn", "Assess an answer to see feedback.");
     }
 
     function setMode(next){
@@ -2790,7 +2892,7 @@
       renderCards();
       renderMainBox({ preserveScroll:true, forceTab:"summary" });
       updateScorePill();
-      setStatus("ok", "Mock assess applied. Click criteria for feedback, then Improve → Re-assess.");
+      setStatus("ok", "Mock assess applied.");
     });
 
     btnAssess.addEventListener("click", async () => {
@@ -2812,7 +2914,7 @@
       btnAssess.disabled = true;
       btnMockAssess.disabled = true;
       btnReassess.disabled = true;
-      setStatus("warn", "Assessing…");
+      setStatus("warn", "Assessing...");
 
       try{
         const data = await realAIAssess(text);
