@@ -73,6 +73,13 @@
       font-size:14px;
       letter-spacing:.2px;
     }
+    .browserControls{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
     .paperSelector{
       display:flex;
       align-items:center;
@@ -97,8 +104,94 @@
       padding:8px 10px;
     }
     @media (max-width:700px){
+      .browserControls{ width:100%; justify-content:flex-start; }
       .paperSelector{ width:100%; min-width:0; align-items:flex-start; flex-direction:column; gap:4px; }
       .paperSelector select{ min-width:0; }
+    }
+    .manualImportPanel{
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      padding:12px 0;
+      margin:8px 0 12px;
+    }
+    .manualImportPanel[hidden]{ display:none; }
+    .manualImportForm{
+      display:grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap:10px;
+      align-items:start;
+    }
+    .manualImportField{
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+    }
+    .manualImportField.full{ grid-column:1 / -1; }
+    .manualImportField.wide{ grid-column: span 3; }
+    .manualImportField.small{ grid-column: span 1; margin-top:0; }
+    .manualImportField label{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+    }
+    .manualImportField input,
+    .manualImportField select,
+    .manualImportField textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      color:var(--text);
+      font:inherit;
+      font-size:13px;
+      padding:9px 10px;
+    }
+    .manualImportField textarea{
+      min-height:78px;
+      resize:vertical;
+      line-height:1.4;
+    }
+    .manualImportHelp{
+      grid-column:1 / -1;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+      background:#f9fafb;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:9px 10px;
+    }
+    .manualImportError{
+      grid-column:1 / -1;
+      color:#991b1b;
+      background:#fef2f2;
+      border:1px solid #fecaca;
+      border-radius:10px;
+      padding:9px 10px;
+      font-size:12px;
+      font-weight:800;
+    }
+    .manualImportError[hidden]{ display:none; }
+    .manualImportActions{
+      grid-column:1 / -1;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .questionMeta{
+      color:var(--muted);
+      font-size:11px;
+      font-weight:800;
+    }
+    @media (max-width:900px){
+      .manualImportField.wide{ grid-column:1 / -1; }
+      .manualImportField.small{ grid-column: span 2; }
+    }
+    @media (max-width:700px){
+      .manualImportForm{ grid-template-columns:1fr; }
+      .manualImportField.small{ grid-column:1 / -1; }
+      .manualImportActions{ justify-content:flex-start; }
     }
     .triageSummary{
       display:flex;
@@ -600,10 +693,53 @@
           <h2 id="paperTitle">Demo paper</h2>
           <div class="small" id="paperSubtitle">Static Phase 1 triage fixture. PDF extraction is not active yet.</div>
         </div>
-        <div class="paperSelector">
-          <label for="paperSelect">Paper</label>
-          <select id="paperSelect" aria-label="Choose paper"></select>
+        <div class="browserControls">
+          <button class="btn" id="btnToggleImport" type="button" aria-expanded="false" aria-controls="manualImportPanel">Add draft question</button>
+          <div class="paperSelector">
+            <label for="paperSelect">Paper</label>
+            <select id="paperSelect" aria-label="Choose paper"></select>
+          </div>
         </div>
+      </div>
+      <div id="manualImportPanel" class="manualImportPanel" hidden>
+        <form id="manualImportForm" class="manualImportForm" novalidate>
+          <div class="manualImportHelp">
+            Manual imports are memory-only, disappear on reload, and are for synthetic or user-authorized content only. Mark scheme text is stored in this browser session but is not parsed.
+          </div>
+          <div id="manualImportError" class="manualImportError" hidden></div>
+          <div class="manualImportField wide">
+            <label for="manualTargetPaper">Target paper</label>
+            <select id="manualTargetPaper" name="targetPaper" required></select>
+          </div>
+          <div class="manualImportField small">
+            <label for="manualQuestionNumber">Question number</label>
+            <input id="manualQuestionNumber" name="questionNumber" type="text" autocomplete="off" required />
+          </div>
+          <div class="manualImportField small">
+            <label for="manualMarks">Marks</label>
+            <input id="manualMarks" name="marks" type="number" min="1" step="1" required />
+          </div>
+          <div class="manualImportField full">
+            <label for="manualStem">Question stem</label>
+            <textarea id="manualStem" name="stem" required></textarea>
+          </div>
+          <div class="manualImportField wide">
+            <label for="manualCommandWords">Command words (optional)</label>
+            <input id="manualCommandWords" name="commandWords" type="text" placeholder="evaluate, explain" autocomplete="off" />
+          </div>
+          <div class="manualImportField wide">
+            <label for="manualNotes">Notes/context (optional)</label>
+            <input id="manualNotes" name="notes" type="text" autocomplete="off" />
+          </div>
+          <div class="manualImportField full">
+            <label for="manualMarkScheme">Pasted mark scheme text (optional)</label>
+            <textarea id="manualMarkScheme" name="markScheme"></textarea>
+          </div>
+          <div class="manualImportActions">
+            <button class="btn" id="btnCancelImport" type="button">Cancel</button>
+            <button class="btn primary" type="submit">Create draft question</button>
+          </div>
+        </form>
       </div>
       <div id="triageSummary" class="triageSummary" aria-label="Triage summary"></div>
       <div id="questionList" class="questionList" aria-label="Selected paper questions"></div>
@@ -1222,6 +1358,8 @@
     let evidenceSpans = {}; // { "c3:0": "evi_c3_0", ... }
     let assessmentContextVersion = 0;
     let latestAssessRequestToken = 0;
+    let manualImportVisible = false;
+    let manualImportCounter = 0;
 
     /***********************
      * DOM
@@ -1231,6 +1369,18 @@
     const paperTitleEl = document.getElementById("paperTitle");
     const paperSubtitleEl = document.getElementById("paperSubtitle");
     const paperSelectEl = document.getElementById("paperSelect");
+    const btnToggleImport = document.getElementById("btnToggleImport");
+    const btnCancelImport = document.getElementById("btnCancelImport");
+    const manualImportPanelEl = document.getElementById("manualImportPanel");
+    const manualImportFormEl = document.getElementById("manualImportForm");
+    const manualImportErrorEl = document.getElementById("manualImportError");
+    const manualTargetPaperEl = document.getElementById("manualTargetPaper");
+    const manualQuestionNumberEl = document.getElementById("manualQuestionNumber");
+    const manualStemEl = document.getElementById("manualStem");
+    const manualMarksEl = document.getElementById("manualMarks");
+    const manualCommandWordsEl = document.getElementById("manualCommandWords");
+    const manualMarkSchemeEl = document.getElementById("manualMarkScheme");
+    const manualNotesEl = document.getElementById("manualNotes");
     const triageSummaryEl = document.getElementById("triageSummary");
     const questionListEl = document.getElementById("questionList");
     const gridEl = document.getElementById("criteriaGrid");
@@ -1270,6 +1420,184 @@
         .replaceAll("'","&#039;");
     }
 
+    function uniqueStrings(items){
+      const seen = new Set();
+      return (items || [])
+        .map(item => String(item ?? "").trim())
+        .filter(Boolean)
+        .filter(item => {
+          const key = item.toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+    }
+
+    function parseCommandWords(text){
+      return uniqueStrings(String(text || "")
+        .split(/[,;\n]+/)
+        .map(item => item.trim().toLowerCase()));
+    }
+
+    function pluralMarks(marks){
+      return `${marks} ${Number(marks) === 1 ? "mark" : "marks"}`;
+    }
+
+    function slugifyIdPart(value){
+      return String(value || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 40) || "draft";
+    }
+
+    function makeManualId(kind, paperId, questionNumber){
+      let id = "";
+      do {
+        manualImportCounter += 1;
+        id = `manual-${kind}-${slugifyIdPart(paperId)}-q${slugifyIdPart(questionNumber)}-${Date.now().toString(36)}-${manualImportCounter}`;
+      } while (PAPER_LIBRARY.some(paper => {
+        const questionMatch = (paper.questions || []).some(q => q.id === id);
+        const markSchemeMatch = (paper.markSchemeLinks || []).some(link => link.id === id);
+        return questionMatch || markSchemeMatch;
+      }));
+      return id;
+    }
+
+    const DETECTION_PATTERNS = {
+      writtenResponseSignals: [
+        ["analyse", /\banaly[sz]e\b/i],
+        ["evaluate", /\bevaluate\b/i],
+        ["explain", /\bexplain\b/i],
+        ["describe", /\bdescribe\b/i],
+        ["justify", /\bjustify\b/i],
+        ["compare", /\bcompare\b/i],
+        ["discuss", /\bdiscuss\b/i],
+        ["assess", /\bassess\b/i]
+      ],
+      visualSignals: [
+        ["figure", /\bfigure\b/i],
+        ["diagram", /\bdiagram\b/i],
+        ["graph", /\bgraph\b/i],
+        ["table", /\btable\b/i],
+        ["image", /\bimage\b/i],
+        ["data", /\bdata\b/i],
+        ["shown", /\bshown\b/i],
+        ["above", /\babove\b/i]
+      ],
+      drawingSignals: [
+        ["draw", /\bdraw(?:ing)?\b/i],
+        ["sketch", /\bsketch(?:ing)?\b/i],
+        ["label", /\blabel(?:led|ling|ed|ing)?\b/i]
+      ],
+      calculationSignals: [
+        ["calculate", /\bcalculate\b/i],
+        ["work out", /\bwork\s+out\b/i],
+        ["determine", /\bdetermine\b/i]
+      ]
+    };
+
+    function detectSignals(text, patternList){
+      return patternList
+        .filter(([, pattern]) => pattern.test(text))
+        .map(([label]) => label);
+    }
+
+    function extractDetectedFeatures(stem, commandWords = []){
+      const combined = `${commandWords.join(" ")} ${stem || ""}`;
+      const visualSignals = detectSignals(combined, DETECTION_PATTERNS.visualSignals);
+      return {
+        writtenResponseSignals: detectSignals(combined, DETECTION_PATTERNS.writtenResponseSignals),
+        visualDependencySignals: visualSignals.filter(signal => ["figure", "diagram", "image", "shown", "above"].includes(signal)),
+        calculationSignals: detectSignals(combined, DETECTION_PATTERNS.calculationSignals),
+        drawingSignals: detectSignals(combined, DETECTION_PATTERNS.drawingSignals),
+        tableOrFigureSignals: visualSignals.filter(signal => ["figure", "graph", "table", "data"].includes(signal))
+      };
+    }
+
+    function getFeatureEvidence(marks, detectedFeatures){
+      return uniqueStrings([
+        pluralMarks(marks),
+        ...(detectedFeatures.writtenResponseSignals || []),
+        ...(detectedFeatures.visualDependencySignals || []),
+        ...(detectedFeatures.tableOrFigureSignals || []),
+        ...(detectedFeatures.drawingSignals || []),
+        ...(detectedFeatures.calculationSignals || [])
+      ]);
+    }
+
+    function isPrimaryDrawingTask(stem, commandWords, detectedFeatures){
+      const firstCommand = String(commandWords?.[0] || "").toLowerCase();
+      const startsWithDrawing = /^\s*(draw|sketch|label)\b/i.test(stem || "");
+      const hasDrawOrSketch = (detectedFeatures.drawingSignals || []).some(signal => signal === "draw" || signal === "sketch");
+      const hasLabelWithoutWriting = (detectedFeatures.drawingSignals || []).includes("label")
+        && !(detectedFeatures.writtenResponseSignals || []).length;
+      return startsWithDrawing || ["draw", "sketch", "label"].includes(firstCommand) || hasDrawOrSketch || hasLabelWithoutWriting;
+    }
+
+    function isPrimaryCalculationTask(stem, commandWords, detectedFeatures){
+      const firstCommand = String(commandWords?.[0] || "").toLowerCase();
+      const startsWithCalculation = /^\s*(calculate|work\s+out|determine)\b/i.test(stem || "");
+      const hasCalculation = !!(detectedFeatures.calculationSignals || []).length;
+      const hasWritten = !!(detectedFeatures.writtenResponseSignals || []).length;
+      return startsWithCalculation || ["calculate", "work out", "determine"].includes(firstCommand) || (hasCalculation && !hasWritten);
+    }
+
+    function triageManualImport({ marks, stem, commandWords, detectedFeatures }){
+      const statusEvidence = getFeatureEvidence(marks, detectedFeatures);
+      const hasWritten = !!(detectedFeatures.writtenResponseSignals || []).length;
+      const hasVisualDependency = !![
+        ...(detectedFeatures.visualDependencySignals || []),
+        ...(detectedFeatures.tableOrFigureSignals || [])
+      ].length;
+
+      if (marks <= 3){
+        return {
+          status: "ignored",
+          statusReason: `Only ${pluralMarks(marks)}, so this is treated as short-answer and not suitable for model generation.`,
+          statusEvidence
+        };
+      }
+
+      if (isPrimaryDrawingTask(stem, commandWords, detectedFeatures)){
+        return {
+          status: "ignored",
+          statusReason: "Requires drawing, sketching or labelling, so it is not suitable for text-only model generation.",
+          statusEvidence
+        };
+      }
+
+      if (isPrimaryCalculationTask(stem, commandWords, detectedFeatures)){
+        return {
+          status: "ignored",
+          statusReason: "Calculation task rather than extended written response.",
+          statusEvidence
+        };
+      }
+
+      if (hasWritten && hasVisualDependency){
+        return {
+          status: "review",
+          statusReason: "Written-response question depends on figure, table, graph, diagram or shown data that has not been extracted.",
+          statusEvidence
+        };
+      }
+
+      if (hasWritten){
+        return {
+          status: "review",
+          statusReason: "Written-response question, but Phase 3 manual imports do not generate model support yet.",
+          statusEvidence
+        };
+      }
+
+      return {
+        status: "review",
+        statusReason: `Worth ${pluralMarks(marks)}, but the response type is ambiguous and needs review before model support is authored.`,
+        statusEvidence
+      };
+    }
+
     function getPaperById(paperId){
       return PAPER_LIBRARY.find(paper => paper.id === paperId) || null;
     }
@@ -1304,6 +1632,167 @@
       const status = paper.extractionStatus ? paper.extractionStatus.replaceAll("-", " ") : "fixture";
       const bits = [paper.examBoard, paper.year, paper.series || paper.paperName].filter(Boolean);
       return `${bits.join(" ")} - ${paper.paperName || paper.title} (${status})`;
+    }
+
+    function getMarkSchemeLinkForQuestion(question){
+      if (!question) return null;
+      const paper = getPaperById(question.paperId) || getSelectedPaper();
+      return (paper?.markSchemeLinks || []).find(link => link.id === question.markSchemeLinkId || link.questionId === question.id) || null;
+    }
+
+    function renderManualImportControls(){
+      const currentTarget = manualImportVisible
+        ? (manualTargetPaperEl.value || appState.selectedPaperId)
+        : appState.selectedPaperId;
+
+      manualTargetPaperEl.innerHTML = PAPER_LIBRARY.map(paperOption => `
+        <option value="${escapeHtml(paperOption.id)}">${escapeHtml(getPaperOptionLabel(paperOption))}</option>
+      `).join("");
+
+      manualTargetPaperEl.value = getPaperById(currentTarget)
+        ? currentTarget
+        : (appState.selectedPaperId || PAPER_LIBRARY[0]?.id || "");
+
+      manualImportPanelEl.hidden = !manualImportVisible;
+      btnToggleImport.textContent = manualImportVisible ? "Hide draft form" : "Add draft question";
+      btnToggleImport.setAttribute("aria-expanded", String(manualImportVisible));
+    }
+
+    function setManualImportError(messages){
+      const list = Array.isArray(messages) ? messages.filter(Boolean) : [messages].filter(Boolean);
+      manualImportErrorEl.hidden = !list.length;
+      manualImportErrorEl.innerHTML = list.length
+        ? list.map(message => `<div>${escapeHtml(message)}</div>`).join("")
+        : "";
+    }
+
+    function clearManualImportError(){
+      setManualImportError([]);
+    }
+
+    function validateManualImportForm(){
+      const errors = [];
+      const paperId = manualTargetPaperEl.value.trim();
+      const number = manualQuestionNumberEl.value.trim();
+      const stem = manualStemEl.value.trim();
+      const marksRaw = manualMarksEl.value.trim();
+      const marks = Number(marksRaw);
+
+      if (!getPaperById(paperId)) errors.push("Choose a valid target paper.");
+      if (!number) errors.push("Enter a question number.");
+      if (!stem) errors.push("Enter a question stem.");
+      if (!marksRaw || !Number.isFinite(marks) || !Number.isInteger(marks) || marks < 1){
+        errors.push("Enter a valid whole-number mark value.");
+      }
+
+      return {
+        ok: !errors.length,
+        errors,
+        data: {
+          paperId,
+          number,
+          stem,
+          marks,
+          commandWordsText: manualCommandWordsEl.value,
+          markSchemeText: manualMarkSchemeEl.value.trim(),
+          notes: manualNotesEl.value.trim()
+        }
+      };
+    }
+
+    function buildManualDraftQuestion(data){
+      const createdAt = new Date().toISOString();
+      const enteredCommandWords = parseCommandWords(data.commandWordsText);
+      const detectedFeatures = extractDetectedFeatures(data.stem, enteredCommandWords);
+      const commandWords = uniqueStrings([
+        ...enteredCommandWords,
+        ...detectedFeatures.writtenResponseSignals,
+        ...detectedFeatures.drawingSignals,
+        ...detectedFeatures.calculationSignals
+      ]).map(word => word.toLowerCase());
+      const triage = triageManualImport({
+        marks: data.marks,
+        stem: data.stem,
+        commandWords,
+        detectedFeatures
+      });
+      const questionId = makeManualId("q", data.paperId, data.number);
+      const markSchemeLinkId = makeManualId("ms", data.paperId, data.number);
+      const rawText = `Q${data.number} ${data.stem} (${pluralMarks(data.marks)})`;
+      const hasMarkSchemeText = !!data.markSchemeText;
+
+      return {
+        question: {
+          id: questionId,
+          paperId: data.paperId,
+          number: data.number,
+          title: "Manual Draft",
+          stem: data.stem,
+          marks: data.marks,
+          commandWords,
+          source: {
+            paperFileName: "manual-import",
+            pageStart: null,
+            pageEnd: null,
+            rawText,
+            notes: data.notes,
+            createdAt
+          },
+          detectedFeatures,
+          status: triage.status,
+          statusReason: triage.statusReason,
+          statusEvidence: triage.statusEvidence,
+          teacherOverride: null,
+          markSchemeLinkId,
+          modelSupport: null,
+          importMeta: {
+            kind: "manual-import",
+            createdAt
+          }
+        },
+        markSchemeLink: {
+          id: markSchemeLinkId,
+          questionId,
+          linkedQuestionNumber: data.number,
+          marks: data.marks,
+          matchStatus: hasMarkSchemeText ? "matched" : "missing",
+          confidence: hasMarkSchemeText ? 0.7 : 0.25,
+          rawMarkSchemeText: data.markSchemeText,
+          extractedBands: [],
+          extractedCriteria: [],
+          mismatchReasons: hasMarkSchemeText
+            ? ["Manual mark scheme text was pasted and has not been parsed into bands or criteria."]
+            : ["Manual import created without pasted mark scheme text; no mark scheme parsing was performed."]
+        }
+      };
+    }
+
+    function handleManualImportSubmit(event){
+      event.preventDefault();
+      const validation = validateManualImportForm();
+      if (!validation.ok){
+        setManualImportError(validation.errors);
+        return;
+      }
+
+      const paper = getPaperById(validation.data.paperId);
+      if (!paper){
+        setManualImportError("Target paper could not be found.");
+        return;
+      }
+
+      const draft = buildManualDraftQuestion(validation.data);
+      if (!Array.isArray(paper.questions)) paper.questions = [];
+      if (!Array.isArray(paper.markSchemeLinks)) paper.markSchemeLinks = [];
+      paper.questions.push(draft.question);
+      paper.markSchemeLinks.push(draft.markSchemeLink);
+
+      manualImportFormEl.reset();
+      manualImportVisible = false;
+      clearManualImportError();
+      appState.selectedPaperId = paper.id;
+      selectQuestion(draft.question.id);
+      setStatus("warn", "Manual draft created. Model support is not generated in this phase.");
     }
 
     function getDefaultQuestionIdForPaper(paper){
@@ -1859,6 +2348,7 @@
         <option value="${escapeHtml(paperOption.id)}">${escapeHtml(getPaperOptionLabel(paperOption))}</option>
       `).join("");
       paperSelectEl.value = paper?.id || "";
+      renderManualImportControls();
 
       const counts = questions.reduce((acc, q) => {
         const status = getTriageStatus(q);
@@ -1878,15 +2368,18 @@
       questionListEl.innerHTML = questions.map(q => {
         const selected = q.id === appState.selectedQuestionId ? " selected" : "";
         const status = getTriageStatus(q);
-        const supportNote = hasModelSupport(q) ? "Model support ready" : "No model support yet";
+        const supportNote = q.importMeta?.kind === "manual-import"
+          ? "Manual draft - No model support yet"
+          : hasModelSupport(q) ? "Model support ready" : "No model support yet";
         return `
           <button class="questionItem ${status}${selected}" type="button" data-question-id="${escapeHtml(q.id)}">
             <div class="questionItemTop">
               <span class="questionNumber">Q${escapeHtml(q.number)} - ${escapeHtml(q.marks)} marks</span>
               <span class="statusBadge ${status}">${escapeHtml(status)}</span>
             </div>
+            <div class="questionMeta">${escapeHtml(supportNote)}</div>
             <div class="questionPreview">${escapeHtml(q.stem)}</div>
-            <div class="statusReason">${escapeHtml(q.statusReason)} ${escapeHtml(supportNote)}</div>
+            <div class="statusReason">${escapeHtml(q.statusReason)}</div>
           </button>
         `;
       }).join("");
@@ -1899,9 +2392,15 @@
     function renderUnsupportedQuestion(){
       const question = appState.currentQuestion;
       const status = getTriageStatus(question);
+      const markSchemeLink = getMarkSchemeLinkForQuestion(question);
+      const isManualDraft = question?.importMeta?.kind === "manual-import";
+      const hasManualMarkSchemeText = !!String(markSchemeLink?.rawMarkSchemeText || "").trim();
       const evidence = Array.isArray(question?.statusEvidence) && question.statusEvidence.length
         ? `<p><b>Triage evidence:</b> ${question.statusEvidence.map(item => `<span>${escapeHtml(item)}</span>`).join(", ")}</p>`
         : "";
+      const manualDraftInfo = isManualDraft ? `
+        <p><b>Manual draft:</b> Memory-only import. ${hasManualMarkSchemeText ? "Mark scheme text was pasted but has not been parsed." : "No mark scheme text was pasted."}</p>
+      ` : "";
       boxTitleEl.textContent = question ? getQuestionLabel(question) : "Question not ready";
       answerWrapEl.classList.remove("noHighlights");
       answerWrapEl.innerHTML = `
@@ -1909,6 +2408,7 @@
           <h3>This question is not ready for model generation yet.</h3>
           <p>${escapeHtml(question?.statusReason || "No model support is available for this question.")}</p>
           <p>Status: <b>${escapeHtml(status || "unknown")}</b>${question?.marks ? ` - ${escapeHtml(question.marks)} marks` : ""}</p>
+          ${manualDraftInfo}
           ${evidence}
         </div>
       `;
@@ -2192,6 +2692,27 @@
     paperSelectEl.addEventListener("change", (e) => {
       selectPaper(e.target.value);
     });
+
+    btnToggleImport.addEventListener("click", () => {
+      manualImportVisible = !manualImportVisible;
+      clearManualImportError();
+      if (manualImportVisible){
+        manualTargetPaperEl.value = appState.selectedPaperId;
+      }
+      renderQuestionBrowser();
+      if (manualImportVisible) manualQuestionNumberEl.focus();
+    });
+
+    btnCancelImport.addEventListener("click", () => {
+      manualImportVisible = false;
+      manualImportFormEl.reset();
+      clearManualImportError();
+      renderQuestionBrowser();
+    });
+
+    manualImportFormEl.addEventListener("submit", handleManualImportSubmit);
+    manualImportFormEl.addEventListener("input", clearManualImportError);
+    manualImportFormEl.addEventListener("change", clearManualImportError);
 
     btnModeModel.addEventListener("click", () => setMode("model"));
     btnModeAssess.addEventListener("click", () => setMode("assess"));
