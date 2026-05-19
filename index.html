@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Model + Assess – Q18 Open Design</title>
+  <title>Exam Question Model Generator</title>
 
   <style>
     :root{
@@ -51,6 +51,100 @@
     }
     .question b{ font-weight:900; }
     .question .marks{ color:var(--muted); font-weight:800; margin-left:6px; white-space:nowrap; }
+
+    .questionBrowser{
+      margin:14px 0;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:#fff;
+      box-shadow: var(--shadow);
+      padding:14px;
+    }
+    .browserHeader{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .browserHeader h2{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+    .triageSummary{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin:8px 0 12px;
+    }
+    .questionList{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      gap:10px;
+    }
+    @media (max-width:1000px){ .questionList{ grid-template-columns: repeat(2, minmax(220px, 1fr)); } }
+    @media (max-width:700px){ .questionList{ grid-template-columns: 1fr; } }
+    .questionItem{
+      width:100%;
+      text-align:left;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      padding:11px 12px;
+      cursor:pointer;
+      min-height:142px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      transition:.15s ease;
+    }
+    .questionItem:hover{ border-color:#c7cbe3; transform: translateY(-1px); }
+    .questionItem:active{ transform: translateY(0); }
+    .questionItem.selected{ border-color:rgba(37,99,235,.65); box-shadow:0 0 0 3px rgba(37,99,235,.10); }
+    .questionItem.review{ background:#fffbeb; border-color:rgba(245,158,11,.28); }
+    .questionItem.ignored{
+      background:#f9fafb;
+      color:#6b7280;
+      opacity:.72;
+    }
+    .questionItemTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+    .questionNumber{ font-weight:900; font-size:13px; }
+    .questionPreview{ font-size:12px; line-height:1.35; color:var(--text); }
+    .questionItem.ignored .questionPreview{ color:var(--muted); }
+    .statusBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:4px 8px;
+      font-size:11px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      background:#fff;
+    }
+    .statusBadge.usable{ color:var(--ok); border-color:rgba(22,163,74,.28); background:rgba(22,163,74,.06); }
+    .statusBadge.review{ color:#b45309; border-color:rgba(245,158,11,.35); background:rgba(245,158,11,.08); }
+    .statusBadge.ignored{ color:#6b7280; border-color:#d1d5db; background:#f3f4f6; }
+    .statusReason{ color:var(--muted); font-size:11px; line-height:1.35; margin-top:auto; }
+    .unsupportedBox{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:16px;
+      min-height:190px;
+    }
+    .unsupportedBox h3{ margin:0 0 8px; font-size:15px; }
+    .unsupportedBox p{ margin:8px 0 0; color:var(--muted); font-size:13px; line-height:1.45; }
 
     .grid{
       display:grid;
@@ -465,14 +559,24 @@
   <div class="wrap">
     <header>
       <div style="min-width:320px">
-        <h1>Model Answer Generator – Q18 “Open Design”</h1>
-        <div class="question">
-          <b>Question:</b> Analyse and evaluate the impact that ‘open design’ has had on traditional product development.
-          <span class="marks">(9 marks)</span>
+        <h1 id="appTitle">Exam Question Model Generator</h1>
+        <div id="questionHeader" class="question">
+          Demo paper loaded. Select a question below to model or assess.
         </div>
       </div>
       <div class="tip">GitHub Pages tip: bump <code>?v=</code> when you update files.</div>
     </header>
+
+    <section id="questionBrowser" class="questionBrowser" aria-label="Question browser">
+      <div class="browserHeader">
+        <div>
+          <h2 id="paperTitle">Demo paper</h2>
+          <div class="small" id="paperSubtitle">Static Phase 1 triage fixture. PDF extraction is not active yet.</div>
+        </div>
+      </div>
+      <div id="triageSummary" class="triageSummary" aria-label="Triage summary"></div>
+      <div id="questionList" class="questionList" aria-label="Demo questions"></div>
+    </section>
 
     <section id="criteriaGrid" class="grid" aria-label="Success criteria controls"></section>
 
@@ -535,7 +639,8 @@
      * CONFIG
      ***********************/
     const ASSESS_API_URL = "https://exam-marker.darren-314.workers.dev/assess";
-    const QUESTION_TEXT = "Analyse and evaluate the impact that ‘open design’ has had on traditional product development. (9 marks)";
+    const DEMO_PAPER = (() => {
+      const questionText = "Analyse and evaluate the impact that 'open design' has had on traditional product development.";
 
     /***********************
      * BANDS + SCORING
@@ -710,18 +815,216 @@
       }
     };
 
+      return {
+        id: "demo-paper",
+        title: "Demo paper",
+        subtitle: "Static Phase 1 triage fixture. PDF extraction is not active yet.",
+        questions: [
+          {
+            id: "demo-q18-open-design",
+            paperId: "demo-paper",
+            number: "18",
+            title: "Open Design",
+            stem: questionText,
+            marks: 9,
+            commandWords: ["analyse", "evaluate"],
+            source: {
+              paperFileName: "demo",
+              pageStart: null,
+              pageEnd: null,
+              rawText: "18 Analyse and evaluate the impact that 'open design' has had on traditional product development. (9 marks)"
+            },
+            detectedFeatures: {
+              writtenResponseSignals: ["analyse", "evaluate"],
+              visualDependencySignals: [],
+              calculationSignals: [],
+              drawingSignals: [],
+              tableOrFigureSignals: []
+            },
+            status: "usable",
+            statusReason: "Written-response question worth 4 or more marks with no detected visual, drawing or calculation dependency.",
+            statusEvidence: ["9 marks", "analyse", "evaluate"],
+            teacherOverride: null,
+            markSchemeLinkId: "demo-ms-q18",
+            modelSupport: {
+              bands: BAND_KEYS,
+              bandMeta: BAND_META,
+              bandScore: BAND_SCORE,
+              defaultBand: "Secure",
+              criteria: CRITERIA,
+              improveTips: IMPROVE,
+              sentenceStarters: {
+                c1: "Open design refers to... (define what is shared + what others can do with it).",
+                c2: "In contrast to traditional product development, open design...",
+                c3: "This matters because... which therefore leads to...",
+                c4: "Although open design has the benefit of..., it can also...; overall this means...",
+                c5: "Beyond (one impact), open design also affects... which links to...",
+                c6: "Overall, the most significant impact is..., because... however..."
+              },
+              paragraphPlan: [["c1", "c2"], ["c3", "c4"], ["c5"], ["c6"]],
+              mockAssessKind: "openDesignDemo"
+            }
+          },
+          {
+            id: "demo-q2-recall",
+            paperId: "demo-paper",
+            number: "2",
+            title: "Short Recall",
+            stem: "State two properties of thermoplastics.",
+            marks: 2,
+            commandWords: ["state"],
+            source: { paperFileName: "demo", pageStart: null, pageEnd: null, rawText: "2 State two properties of thermoplastics. (2 marks)" },
+            detectedFeatures: {
+              writtenResponseSignals: [],
+              visualDependencySignals: [],
+              calculationSignals: [],
+              drawingSignals: [],
+              tableOrFigureSignals: []
+            },
+            status: "ignored",
+            statusReason: "Only 2 marks, so it is below the 4 mark written-response threshold.",
+            statusEvidence: ["2 marks"],
+            teacherOverride: null,
+            markSchemeLinkId: "demo-ms-q2",
+            modelSupport: null
+          },
+          {
+            id: "demo-q7-sketch",
+            paperId: "demo-paper",
+            number: "7",
+            title: "Sketching Task",
+            stem: "Sketch a design idea for a foldable phone stand and label two important features.",
+            marks: 6,
+            commandWords: ["sketch", "label"],
+            source: { paperFileName: "demo", pageStart: null, pageEnd: null, rawText: "7 Sketch a design idea for a foldable phone stand and label two important features. (6 marks)" },
+            detectedFeatures: {
+              writtenResponseSignals: [],
+              visualDependencySignals: [],
+              calculationSignals: [],
+              drawingSignals: ["sketch", "label"],
+              tableOrFigureSignals: []
+            },
+            status: "ignored",
+            statusReason: "Requires sketching or labelling, so it is not suitable for text-only model generation.",
+            statusEvidence: ["sketch", "label"],
+            teacherOverride: null,
+            markSchemeLinkId: "demo-ms-q7",
+            modelSupport: null
+          },
+          {
+            id: "demo-q11-figure",
+            paperId: "demo-paper",
+            number: "11",
+            title: "Figure-Dependent Question",
+            stem: "Using Figure 3 and the table above, explain why the chosen material is suitable for the product.",
+            marks: 6,
+            commandWords: ["explain"],
+            source: { paperFileName: "demo", pageStart: null, pageEnd: null, rawText: "11 Using Figure 3 and the table above, explain why the chosen material is suitable for the product. (6 marks)" },
+            detectedFeatures: {
+              writtenResponseSignals: ["explain"],
+              visualDependencySignals: ["Figure 3"],
+              calculationSignals: [],
+              drawingSignals: [],
+              tableOrFigureSignals: ["table"]
+            },
+            status: "review",
+            statusReason: "Worth 4 or more marks and asks for explanation, but depends on a figure/table that has not been extracted.",
+            statusEvidence: ["6 marks", "Figure 3", "table"],
+            teacherOverride: null,
+            markSchemeLinkId: "demo-ms-q11",
+            modelSupport: null
+          },
+          {
+            id: "demo-q15-calculation",
+            paperId: "demo-paper",
+            number: "15",
+            title: "Calculation",
+            stem: "Calculate the total material cost for 250 units using the values shown.",
+            marks: 4,
+            commandWords: ["calculate"],
+            source: { paperFileName: "demo", pageStart: null, pageEnd: null, rawText: "15 Calculate the total material cost for 250 units using the values shown. (4 marks)" },
+            detectedFeatures: {
+              writtenResponseSignals: [],
+              visualDependencySignals: [],
+              calculationSignals: ["calculate", "250 units"],
+              drawingSignals: [],
+              tableOrFigureSignals: []
+            },
+            status: "ignored",
+            statusReason: "Calculation task rather than extended written response.",
+            statusEvidence: ["calculate", "4 marks"],
+            teacherOverride: null,
+            markSchemeLinkId: "demo-ms-q15",
+            modelSupport: null
+          },
+          {
+            id: "demo-q21-review-written",
+            paperId: "demo-paper",
+            number: "21",
+            title: "Incomplete Support",
+            stem: "Evaluate the environmental impact of choosing recycled aluminium for a high-volume product.",
+            marks: 6,
+            commandWords: ["evaluate"],
+            source: { paperFileName: "demo", pageStart: null, pageEnd: null, rawText: "21 Evaluate the environmental impact of choosing recycled aluminium for a high-volume product. (6 marks)" },
+            detectedFeatures: {
+              writtenResponseSignals: ["evaluate"],
+              visualDependencySignals: [],
+              calculationSignals: [],
+              drawingSignals: [],
+              tableOrFigureSignals: []
+            },
+            status: "review",
+            statusReason: "Written-response question, but Phase 1 does not yet generate criteria or model support for new questions.",
+            statusEvidence: ["6 marks", "evaluate"],
+            teacherOverride: null,
+            markSchemeLinkId: "demo-ms-q21",
+            modelSupport: null
+          }
+        ],
+        markSchemeLinks: [
+          {
+            id: "demo-ms-q18",
+            questionId: "demo-q18-open-design",
+            matchStatus: "matched",
+            confidence: 1,
+            linkedQuestionNumber: "18",
+            marks: 9,
+            rawMarkSchemeText: "Demo support is hand-authored for Q18.",
+            extractedBands: [
+              { band: "Developing", markRange: "1-3", descriptor: "Basic response." },
+              { band: "Secure", markRange: "4-6", descriptor: "Clear response with relevant explanation." },
+              { band: "Advanced", markRange: "7-9", descriptor: "Detailed, evaluative response." }
+            ],
+            extractedCriteria: CRITERIA.map(c => ({ id: c.id, title: c.title })),
+            mismatchReasons: []
+          },
+          { id: "demo-ms-q2", questionId: "demo-q2-recall", matchStatus: "matched", confidence: 1, linkedQuestionNumber: "2", marks: 2, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: [] },
+          { id: "demo-ms-q7", questionId: "demo-q7-sketch", matchStatus: "review", confidence: .8, linkedQuestionNumber: "7", marks: 6, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: ["Drawing-based answer expected."] },
+          { id: "demo-ms-q11", questionId: "demo-q11-figure", matchStatus: "review", confidence: .62, linkedQuestionNumber: "11", marks: 6, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: ["Question depends on missing figure/table content."] },
+          { id: "demo-ms-q15", questionId: "demo-q15-calculation", matchStatus: "matched", confidence: .9, linkedQuestionNumber: "15", marks: 4, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: [] },
+          { id: "demo-ms-q21", questionId: "demo-q21-review-written", matchStatus: "missing", confidence: .35, linkedQuestionNumber: "21", marks: 6, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: ["Model support has not been generated in Phase 1."] }
+        ]
+      };
+    })();
+
     /***********************
      * STATE
      ***********************/
-    const DEFAULT_INDEX = BAND_KEYS.indexOf("Secure");
-    const state = Object.fromEntries(CRITERIA.map(c => [c.id, DEFAULT_INDEX]));
+    const appState = {
+      currentStage: "question-browser",
+      selectedPaper: DEMO_PAPER,
+      selectedQuestionId: "demo-q18-open-design",
+      currentQuestion: null
+    };
+
+    let state = {};
 
     let highlightsOn = true;              // model highlights OR evidence highlights
     let teacherView = false;              // show why/confidence etc
     let mode = "model";                   // model|assess
     let studentText = "";
     let lastAssessedText = "";            // track edits vs assessed
-    let selectedCritId = "c1";
+    let selectedCritId = "";
 
     // assessmentDetailById: { c1:{ why, evidence[], confidence, foundCount }, ... }
     let assessmentDetailById = {};
@@ -731,6 +1034,12 @@
     /***********************
      * DOM
      ***********************/
+    const appTitleEl = document.getElementById("appTitle");
+    const questionHeaderEl = document.getElementById("questionHeader");
+    const paperTitleEl = document.getElementById("paperTitle");
+    const paperSubtitleEl = document.getElementById("paperSubtitle");
+    const triageSummaryEl = document.getElementById("triageSummary");
+    const questionListEl = document.getElementById("questionList");
     const gridEl = document.getElementById("criteriaGrid");
     const answerWrapEl = document.getElementById("answerWrap");
     const scoreTextEl = document.getElementById("scoreText");
@@ -756,7 +1065,7 @@
      * HELPERS
      ***********************/
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-    const bandKeyFor = (id) => BAND_KEYS[state[id]];
+    const bandKeyFor = (id) => getBandKeys()[state[id]] || getBandKeys()[0] || "";
 
     function escapeHtml(str){
       return String(str ?? "")
@@ -767,28 +1076,115 @@
         .replaceAll("'","&#039;");
     }
 
+    function getQuestions(){
+      return appState.selectedPaper?.questions || [];
+    }
+
+    function getQuestionById(id){
+      return getQuestions().find(q => q.id === id) || null;
+    }
+
+    function getSupport(){
+      return appState.currentQuestion?.modelSupport || null;
+    }
+
+    function hasModelSupport(question = appState.currentQuestion){
+      return !!(question && question.modelSupport && Array.isArray(question.modelSupport.criteria));
+    }
+
+    function getCriteria(){
+      return getSupport()?.criteria || [];
+    }
+
+    function getBandKeys(){
+      return getSupport()?.bands || [];
+    }
+
+    function getBandMeta(){
+      return getSupport()?.bandMeta || {};
+    }
+
+    function getBandScore(){
+      return getSupport()?.bandScore || {};
+    }
+
+    function getImproveTips(){
+      return getSupport()?.improveTips || {};
+    }
+
+    function getSentenceStarters(){
+      return getSupport()?.sentenceStarters || {};
+    }
+
+    function getQuestionLabel(question = appState.currentQuestion){
+      if (!question) return "No question selected";
+      return `Q${question.number}${question.title ? ` ${question.title}` : ""}`;
+    }
+
+    function statusDotClass(status){
+      if (status === "usable") return "ok";
+      if (status === "ignored") return "bad";
+      return "warn";
+    }
+
+    function resetQuestionWorkspace(question){
+      const support = question?.modelSupport;
+      const criteria = support?.criteria || [];
+      const bandKeys = support?.bands || [];
+      const defaultBand = support?.defaultBand || bandKeys[0];
+      const defaultIndex = Math.max(0, bandKeys.indexOf(defaultBand));
+
+      state = Object.fromEntries(criteria.map(c => [c.id, defaultIndex]));
+      selectedCritId = criteria[0]?.id || "";
+      mode = "model";
+      studentText = "";
+      lastAssessedText = "";
+      assessmentDetailById = {};
+      evidenceSpans = {};
+      activePanelTab = "summary";
+    }
+
+    function selectQuestion(questionId){
+      const question = getQuestionById(questionId);
+      if (!question) return;
+
+      appState.selectedQuestionId = question.id;
+      appState.currentQuestion = question;
+      appState.currentStage = hasModelSupport(question) ? "model-assess" : "question-review";
+      resetQuestionWorkspace(question);
+      renderApp();
+    }
+
     function setStatus(kind, text){
       const dotClass = kind === "ok" ? "ok" : kind === "bad" ? "bad" : "warn";
       statusLineEl.innerHTML = `<span class="dot ${dotClass}"></span><span>${escapeHtml(text)}</span>`;
     }
 
     function estimateMarkOutOf9(){
-      const scores = CRITERIA.map(c => BAND_SCORE[bandKeyFor(c.id)]);
+      const criteria = getCriteria();
+      const bandScore = getBandScore();
+      const scores = criteria.map(c => bandScore[bandKeyFor(c.id)]).filter(n => Number.isFinite(n));
+      const maxMarks = Number(appState.currentQuestion?.marks || 9);
+      if (!scores.length) return { mark:"-", bandLabel:"-", maxMarks };
+
       const avg = scores.reduce((a,b)=>a+b,0) / scores.length;
-      let mark = 1 + ((avg - 2) * (8/6));
+      const bandScores = Object.values(bandScore).filter(n => Number.isFinite(n));
+      const minScore = Math.min(...bandScores);
+      const maxScore = Math.max(...bandScores);
+      let mark = 1 + ((avg - minScore) * ((maxMarks - 1) / Math.max(1, maxScore - minScore)));
       mark = Math.round(mark);
-      mark = clamp(mark, 1, 9);
+      mark = clamp(mark, 1, maxMarks);
 
       let bandLabel = "Developing";
       if (mark >= 7) bandLabel = "Advanced";
       else if (mark >= 4) bandLabel = "Secure";
 
-      return { mark, bandLabel };
+      return { mark, bandLabel, maxMarks };
     }
 
     function updateScorePill(){
-      const { mark, bandLabel } = estimateMarkOutOf9();
-      scoreTextEl.textContent = `Estimated mark: ${mark}/9`;
+      const { mark, bandLabel, maxMarks } = estimateMarkOutOf9();
+      scoreTextEl.textContent = `Estimated mark: ${mark}/${maxMarks}`;
       scoreBandEl.textContent = `• ${bandLabel}`;
     }
 
@@ -799,7 +1195,7 @@
       return { label:"Low", cls:"low" };
     }
 
-    function getCrit(id){ return CRITERIA.find(c => c.id === id); }
+    function getCrit(id){ return getCriteria().find(c => c.id === id); }
 
     function isAssessed(){
       return !!Object.keys(assessmentDetailById || {}).length;
@@ -813,9 +1209,10 @@
       const t = String(text || "");
       const lower = t.toLowerCase();
       const ranges = [];
-      const foundById = Object.fromEntries(CRITERIA.map(c => [c.id, 0]));
+      const criteria = getCriteria();
+      const foundById = Object.fromEntries(criteria.map(c => [c.id, 0]));
 
-      for (const c of CRITERIA){
+      for (const c of criteria){
         const ev = Array.isArray(detailById?.[c.id]?.evidence) ? detailById[c.id].evidence : [];
         ev.slice(0, 3).forEach((q, idx) => {
           const needle = String(q || "").trim();
@@ -850,7 +1247,7 @@
       const { ranges, foundById } = buildEvidenceRanges(text, detailById);
 
       // store foundCount into assessmentDetailById so cards can show missing evidence
-      for (const c of CRITERIA){
+      for (const c of getCriteria()){
         if (!assessmentDetailById[c.id]) assessmentDetailById[c.id] = { why:"", evidence:[], confidence: 0.6 };
         assessmentDetailById[c.id].foundCount = foundById[c.id] || 0;
       }
@@ -892,10 +1289,18 @@
      ***********************/
     function renderCards(){
       gridEl.innerHTML = "";
+      const criteria = getCriteria();
+      if (!criteria.length){
+        gridEl.style.display = "none";
+        return;
+      }
+      gridEl.style.display = "";
+      const bandMeta = getBandMeta();
+      const bandKeys = getBandKeys();
 
-      CRITERIA.forEach(c => {
+      criteria.forEach(c => {
         const band = bandKeyFor(c.id);
-        const range = BAND_META[band].range;
+        const range = bandMeta[band]?.range || "";
 
         const card = document.createElement("div");
         card.className = "card";
@@ -942,7 +1347,7 @@
         upBtn.disabled = (mode === "assess");
         upBtn.addEventListener("click", (e) => {
           e.stopPropagation();
-          state[c.id] = clamp(state[c.id] + 1, 0, BAND_KEYS.length - 1);
+          state[c.id] = clamp(state[c.id] + 1, 0, bandKeys.length - 1);
           assessmentDetailById = {};
           renderCards(); renderMainBox(); updateScorePill();
         });
@@ -955,7 +1360,7 @@
         downBtn.disabled = (mode === "assess");
         downBtn.addEventListener("click", (e) => {
           e.stopPropagation();
-          state[c.id] = clamp(state[c.id] - 1, 0, BAND_KEYS.length - 1);
+          state[c.id] = clamp(state[c.id] - 1, 0, bandKeys.length - 1);
           assessmentDetailById = {};
           renderCards(); renderMainBox(); updateScorePill();
         });
@@ -1017,24 +1422,26 @@
      ***********************/
     function buildModelHtml(){
       const seg = (c, text) => `<span class="seg" style="--c:${c.color}">${escapeHtml(text)}</span>`;
-      const c1=CRITERIA[0], c2=CRITERIA[1], c3=CRITERIA[2], c4=CRITERIA[3], c5=CRITERIA[4], c6=CRITERIA[5];
+      const criteria = getCriteria();
+      const byId = Object.fromEntries(criteria.map(c => [c.id, c]));
+      const paragraphPlan = getSupport()?.paragraphPlan || [criteria.map(c => c.id)];
 
-      const p1 = `${seg(c1, c1.model[bandKeyFor("c1")])} ${seg(c2, c2.model[bandKeyFor("c2")])}`;
-      const p2 = `${seg(c3, c3.model[bandKeyFor("c3")])} ${seg(c4, c4.model[bandKeyFor("c4")])}`;
-      const p3 = `${seg(c5, c5.model[bandKeyFor("c5")])}`;
-      const p4 = `${seg(c6, c6.model[bandKeyFor("c6")])}`;
-
-      return `${p1}<br><br>${p2}<br><br>${p3}<br><br>${p4}`;
+      return paragraphPlan.map(group => group.map(id => {
+        const c = byId[id];
+        if (!c) return "";
+        return seg(c, c.model?.[bandKeyFor(c.id)] || "");
+      }).filter(Boolean).join(" ")).filter(Boolean).join("<br><br>");
     }
 
     function buildModelText(){
-      const parts = CRITERIA.map(c => c.model[bandKeyFor(c.id)]);
-      return [
-        parts[0] + " " + parts[1],
-        parts[2] + " " + parts[3],
-        parts[4],
-        parts[5]
-      ].join("\n\n");
+      const criteria = getCriteria();
+      const byId = Object.fromEntries(criteria.map(c => [c.id, c]));
+      const paragraphPlan = getSupport()?.paragraphPlan || [criteria.map(c => c.id)];
+
+      return paragraphPlan.map(group => group.map(id => {
+        const c = byId[id];
+        return c ? (c.model?.[bandKeyFor(c.id)] || "") : "";
+      }).filter(Boolean).join(" ")).filter(Boolean).join("\n\n");
     }
 
     /***********************
@@ -1042,11 +1449,12 @@
      ***********************/
     function applyBandsFromAI(aiBands){
       const byId = {};
-      for (const c of CRITERIA) {
+      const bandKeys = getBandKeys();
+      for (const c of getCriteria()) {
         const entry = aiBands?.[c.id];
         if (!entry) continue;
 
-        const idx = BAND_KEYS.indexOf(entry.band);
+        const idx = bandKeys.indexOf(entry.band);
         if (idx >= 0) state[c.id] = idx;
 
         byId[c.id] = {
@@ -1125,16 +1533,12 @@
      ***********************/
     async function realAIAssess(text){
       const payload = {
-        question: QUESTION_TEXT,
+        question: appState.currentQuestion?.stem || "",
         student_response: text,
-        criteria: CRITERIA.map(c => ({
+        criteria: getCriteria().map(c => ({
           id: c.id,
           title: c.title,
-          bands: {
-            Developing: c.descriptors.Developing,
-            Secure: c.descriptors.Secure,
-            Advanced: c.descriptors.Advanced
-          }
+          bands: Object.fromEntries(getBandKeys().map(band => [band, c.descriptors?.[band] || ""]))
         }))
       };
 
@@ -1159,10 +1563,107 @@
      ***********************/
     let activePanelTab = "summary"; // summary|evidence|improve
 
+    function updateModeButtons(){
+      btnModeModel.classList.toggle("active", mode === "model");
+      btnModeAssess.classList.toggle("active", mode === "assess");
+      btnModeModel.setAttribute("aria-selected", String(mode === "model"));
+      btnModeAssess.setAttribute("aria-selected", String(mode === "assess"));
+    }
+
+    function renderHeader(){
+      const question = appState.currentQuestion;
+      appTitleEl.textContent = "Exam Question Model Generator";
+
+      if (!question){
+        questionHeaderEl.innerHTML = "Demo paper loaded. Select a question below to model or assess.";
+        return;
+      }
+
+      questionHeaderEl.innerHTML = `
+        <b>Question:</b> ${escapeHtml(question.stem)}
+        <span class="marks">(${escapeHtml(question.marks)} marks)</span>
+        <div class="status" style="margin-top:8px;">
+          <span class="dot ${statusDotClass(question.status)}"></span>
+          <span>${escapeHtml(getQuestionLabel(question))} - ${escapeHtml(question.statusReason)}</span>
+        </div>
+      `;
+    }
+
+    function renderQuestionBrowser(){
+      const paper = appState.selectedPaper;
+      const questions = getQuestions();
+      paperTitleEl.textContent = paper?.title || "Demo paper";
+      paperSubtitleEl.textContent = paper?.subtitle || "";
+
+      const counts = questions.reduce((acc, q) => {
+        acc[q.status] = (acc[q.status] || 0) + 1;
+        return acc;
+      }, {});
+
+      triageSummaryEl.innerHTML = ["usable", "review", "ignored"].map(status => `
+        <span class="statusBadge ${status}">${status}: ${counts[status] || 0}</span>
+      `).join("");
+
+      questionListEl.innerHTML = questions.map(q => {
+        const selected = q.id === appState.selectedQuestionId ? " selected" : "";
+        const supportNote = hasModelSupport(q) ? "Model support ready" : "No model support yet";
+        return `
+          <button class="questionItem ${q.status}${selected}" type="button" data-question-id="${escapeHtml(q.id)}">
+            <div class="questionItemTop">
+              <span class="questionNumber">Q${escapeHtml(q.number)} - ${escapeHtml(q.marks)} marks</span>
+              <span class="statusBadge ${q.status}">${escapeHtml(q.status)}</span>
+            </div>
+            <div class="questionPreview">${escapeHtml(q.stem)}</div>
+            <div class="statusReason">${escapeHtml(q.statusReason)} ${escapeHtml(supportNote)}</div>
+          </button>
+        `;
+      }).join("");
+
+      questionListEl.querySelectorAll("[data-question-id]").forEach(btn => {
+        btn.addEventListener("click", () => selectQuestion(btn.dataset.questionId));
+      });
+    }
+
+    function renderUnsupportedQuestion(){
+      const question = appState.currentQuestion;
+      boxTitleEl.textContent = question ? getQuestionLabel(question) : "Question not ready";
+      answerWrapEl.classList.remove("noHighlights");
+      answerWrapEl.innerHTML = `
+        <div class="unsupportedBox">
+          <h3>This question is not ready for model generation yet.</h3>
+          <p>${escapeHtml(question?.statusReason || "No model support is available for this question.")}</p>
+          <p>Status: <b>${escapeHtml(question?.status || "unknown")}</b>${question?.marks ? ` - ${escapeHtml(question.marks)} marks` : ""}</p>
+        </div>
+      `;
+
+      btnModeModel.disabled = true;
+      btnModeAssess.disabled = true;
+      btnCopy.style.display = "none";
+      btnReset.style.display = "none";
+      btnRandom.style.display = "none";
+      btnAssess.style.display = "none";
+      btnMockAssess.style.display = "none";
+      btnReassess.style.display = "none";
+      scoreTextEl.textContent = "Model support: not ready";
+      scoreBandEl.textContent = `- ${question?.status || "review"}`;
+      setStatus(question?.status === "ignored" ? "bad" : "warn", question?.statusReason || "This question is not ready yet.");
+    }
+
+    function renderApp(){
+      renderHeader();
+      renderQuestionBrowser();
+      renderCards();
+      renderMainBox();
+    }
+
     function renderFeedbackPanel(container, opts = {}){
       const crit = getCrit(selectedCritId);
+      if (!crit){
+        container.innerHTML = "";
+        return;
+      }
       const band = bandKeyFor(selectedCritId);
-      const range = BAND_META[band].range;
+      const range = getBandMeta()[band]?.range || "";
 
       if (opts.forceTab) activePanelTab = opts.forceTab;
 
@@ -1171,7 +1672,7 @@
       const ev = Array.isArray(d?.evidence) ? d.evidence : [];
       const conf = confidenceLabel(d?.confidence);
 
-      const tips = (IMPROVE?.[selectedCritId]?.[band] || []);
+      const tips = (getImproveTips()?.[selectedCritId]?.[band] || []);
       const hasAssessed = !!d;
 
       container.innerHTML = `
@@ -1284,14 +1785,7 @@
 
     function buildSentenceStarter(critId, band){
       // Keep it student-safe: prompts/stems, not full answers.
-      const base = {
-        c1: "Open design refers to… (define what is shared + what others can do with it).",
-        c2: "In contrast to traditional product development, open design…",
-        c3: "This matters because… which therefore leads to…",
-        c4: "Although open design has the benefit of…, it can also…; overall this means…",
-        c5: "Beyond (one impact), open design also affects… which links to…",
-        c6: "Overall, the most significant impact is…, because… however…"
-      };
+      const base = getSentenceStarters();
       // Slightly stronger nudge if Developing
       if (band === "Developing"){
         return base[critId] || "Add a sentence that directly targets this criterion.";
@@ -1303,6 +1797,17 @@
     }
 
     function renderMainBox(opts = {}){
+      updateModeButtons();
+      if (!hasModelSupport()){
+        renderUnsupportedQuestion();
+        return;
+      }
+
+      btnModeModel.disabled = false;
+      btnModeAssess.disabled = false;
+      btnCopy.style.display = "";
+      btnReset.style.display = "";
+      btnRandom.style.display = "";
       answerWrapEl.classList.toggle("noHighlights", !highlightsOn);
       answerWrapEl.innerHTML = "";
 
@@ -1396,10 +1901,7 @@
     function setMode(next){
       mode = next;
       // keep selection and studentText
-      btnModeModel.classList.toggle("active", mode === "model");
-      btnModeAssess.classList.toggle("active", mode === "assess");
-      btnModeModel.setAttribute("aria-selected", String(mode === "model"));
-      btnModeAssess.setAttribute("aria-selected", String(mode === "assess"));
+      updateModeButtons();
 
       renderCards();
       renderMainBox();
@@ -1438,14 +1940,18 @@
     });
 
     btnReset.addEventListener("click", () => {
-      CRITERIA.forEach(c => state[c.id] = DEFAULT_INDEX);
+      const bandKeys = getBandKeys();
+      const defaultBand = getSupport()?.defaultBand || bandKeys[0];
+      const defaultIndex = Math.max(0, bandKeys.indexOf(defaultBand));
+      getCriteria().forEach(c => state[c.id] = defaultIndex);
       assessmentDetailById = {};
       renderCards(); renderMainBox(); updateScorePill();
       setStatus("ok", "Reset to Secure.");
     });
 
     btnRandom.addEventListener("click", () => {
-      CRITERIA.forEach(c => state[c.id] = Math.floor(Math.random() * BAND_KEYS.length));
+      const bandKeys = getBandKeys();
+      getCriteria().forEach(c => state[c.id] = Math.floor(Math.random() * bandKeys.length));
       assessmentDetailById = {};
       renderCards(); renderMainBox(); updateScorePill();
       setStatus("ok", "Random mix applied.");
@@ -1459,15 +1965,16 @@
       }
 
       const bands = mockAssessBands(text);
+      const bandKeys = getBandKeys();
       Object.entries(bands).forEach(([id, band]) => {
-        const idx = BAND_KEYS.indexOf(band);
+        const idx = bandKeys.indexOf(band);
         if (idx >= 0) state[id] = idx;
       });
 
       // lightweight evidence + placeholder why/conf
       const ev = buildLightEvidenceFromText(text);
       assessmentDetailById = {};
-      CRITERIA.forEach(c => {
+      getCriteria().forEach(c => {
         assessmentDetailById[c.id] = {
           why: teacherView ? "Mock assess uses a quick heuristic, not full examiner reasoning." : "",
           evidence: ev[c.id] || [],
@@ -1499,7 +2006,7 @@
         applyBandsFromAI(data.bands);
 
         // ensure selected criterion exists in returned bands, else keep
-        if (!assessmentDetailById[selectedCritId]) selectedCritId = "c1";
+        if (!assessmentDetailById[selectedCritId]) selectedCritId = getCriteria()[0]?.id || "";
 
         renderCards();
         renderMainBox({ preserveScroll:true, forceTab:"summary" });
@@ -1533,9 +2040,7 @@
      ***********************/
     toggleStateEl.textContent = "On";
     teacherStateEl.textContent = "Off";
-    renderCards();
-    renderMainBox();
-    updateScorePill();
+    selectQuestion(appState.selectedQuestionId);
   </script>
 </body>
 </html>
