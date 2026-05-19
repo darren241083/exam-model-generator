@@ -73,6 +73,33 @@
       font-size:14px;
       letter-spacing:.2px;
     }
+    .paperSelector{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:260px;
+    }
+    .paperSelector label{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+    .paperSelector select{
+      width:100%;
+      min-width:230px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      color:var(--text);
+      font:inherit;
+      font-size:12px;
+      padding:8px 10px;
+    }
+    @media (max-width:700px){
+      .paperSelector{ width:100%; min-width:0; align-items:flex-start; flex-direction:column; gap:4px; }
+      .paperSelector select{ min-width:0; }
+    }
     .triageSummary{
       display:flex;
       gap:8px;
@@ -573,9 +600,13 @@
           <h2 id="paperTitle">Demo paper</h2>
           <div class="small" id="paperSubtitle">Static Phase 1 triage fixture. PDF extraction is not active yet.</div>
         </div>
+        <div class="paperSelector">
+          <label for="paperSelect">Paper</label>
+          <select id="paperSelect" aria-label="Choose paper"></select>
+        </div>
       </div>
       <div id="triageSummary" class="triageSummary" aria-label="Triage summary"></div>
-      <div id="questionList" class="questionList" aria-label="Demo questions"></div>
+      <div id="questionList" class="questionList" aria-label="Selected paper questions"></div>
     </section>
 
     <section id="criteriaGrid" class="grid" aria-label="Success criteria controls"></section>
@@ -639,7 +670,7 @@
      * CONFIG
      ***********************/
     const ASSESS_API_URL = "https://exam-marker.darren-314.workers.dev/assess";
-    const DEMO_PAPER = (() => {
+    const PAPER_LIBRARY = (() => {
       const questionText = "Analyse and evaluate the impact that 'open design' has had on traditional product development.";
 
     /***********************
@@ -815,10 +846,25 @@
       }
     };
 
-      return {
+      return [
+        {
         id: "demo-paper",
+        examBoard: "Demo Board",
+        qualification: "GCSE Design and Technology",
+        year: "2026",
+        series: "Phase 1",
+        paperName: "Open Design Demo Paper",
+        paperCode: "DEMO-P1",
         title: "Demo paper",
         subtitle: "Static Phase 1 triage fixture. PDF extraction is not active yet.",
+        sourceKind: "demo-fixture",
+        extractionStatus: "manual-fixture",
+        defaultQuestionId: "demo-q18-open-design",
+        copyrightNote: "Synthetic demo fixture. No copied past-paper or mark scheme text is stored.",
+        sourceFiles: {
+          questionPaper: null,
+          markScheme: null
+        },
         questions: [
           {
             id: "demo-q18-open-design",
@@ -1004,7 +1050,151 @@
           { id: "demo-ms-q15", questionId: "demo-q15-calculation", matchStatus: "matched", confidence: .9, linkedQuestionNumber: "15", marks: 4, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: [] },
           { id: "demo-ms-q21", questionId: "demo-q21-review-written", matchStatus: "missing", confidence: .35, linkedQuestionNumber: "21", marks: 6, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: ["Model support has not been generated in Phase 1."] }
         ]
-      };
+        },
+        {
+        id: "practice-paper-sustainable-systems",
+        examBoard: "Practice Board",
+        qualification: "GCSE Design and Technology",
+        year: "2025",
+        series: "Autumn",
+        paperName: "Product Design Systems",
+        paperCode: "PB-DT-A1",
+        title: "Practice Board 2025 Autumn - Product Design Systems",
+        subtitle: "Synthetic library fixture. Manual question data only; PDF extraction is not active yet.",
+        sourceKind: "demo-fixture",
+        extractionStatus: "manual-fixture",
+        defaultQuestionId: "practice-q20-material-choices",
+        copyrightNote: "Synthetic demo fixture. No copied past-paper or mark scheme text is stored.",
+        sourceFiles: {
+          questionPaper: null,
+          markScheme: null
+        },
+        questions: [
+          {
+            id: "practice-q1-recall",
+            paperId: "practice-paper-sustainable-systems",
+            number: "1",
+            title: "Short Recall",
+            stem: "Name two renewable materials that could be used for a small desk organiser.",
+            marks: 2,
+            commandWords: ["name"],
+            source: { paperFileName: "practice-product-systems-demo", pageStart: null, pageEnd: null, rawText: "1 Name two renewable materials that could be used for a small desk organiser. (2 marks)" },
+            detectedFeatures: {
+              writtenResponseSignals: [],
+              visualDependencySignals: [],
+              calculationSignals: [],
+              drawingSignals: [],
+              tableOrFigureSignals: []
+            },
+            status: "ignored",
+            statusReason: "Only 2 marks, so it is below the 4 mark written-response threshold.",
+            statusEvidence: ["2 marks"],
+            teacherOverride: null,
+            markSchemeLinkId: "practice-ms-q1",
+            modelSupport: null
+          },
+          {
+            id: "practice-q6-sketch",
+            paperId: "practice-paper-sustainable-systems",
+            number: "6",
+            title: "Sketching Task",
+            stem: "Sketch a storage concept for a flat-pack desk lamp and label two joining methods.",
+            marks: 6,
+            commandWords: ["sketch", "label"],
+            source: { paperFileName: "practice-product-systems-demo", pageStart: null, pageEnd: null, rawText: "6 Sketch a storage concept for a flat-pack desk lamp and label two joining methods. (6 marks)" },
+            detectedFeatures: {
+              writtenResponseSignals: [],
+              visualDependencySignals: [],
+              calculationSignals: [],
+              drawingSignals: ["sketch", "label"],
+              tableOrFigureSignals: []
+            },
+            status: "ignored",
+            statusReason: "Requires sketching or labelling, so it is not suitable for text-only model generation.",
+            statusEvidence: ["sketch", "label"],
+            teacherOverride: null,
+            markSchemeLinkId: "practice-ms-q6",
+            modelSupport: null
+          },
+          {
+            id: "practice-q10-graph",
+            paperId: "practice-paper-sustainable-systems",
+            number: "10",
+            title: "Graph-Dependent Question",
+            stem: "Using the lifecycle graph and data table, explain why the redesign may reduce environmental impact.",
+            marks: 6,
+            commandWords: ["explain"],
+            source: { paperFileName: "practice-product-systems-demo", pageStart: null, pageEnd: null, rawText: "10 Using the lifecycle graph and data table, explain why the redesign may reduce environmental impact. (6 marks)" },
+            detectedFeatures: {
+              writtenResponseSignals: ["explain"],
+              visualDependencySignals: ["lifecycle graph"],
+              calculationSignals: [],
+              drawingSignals: [],
+              tableOrFigureSignals: ["graph", "data table"]
+            },
+            status: "review",
+            statusReason: "Worth 4 or more marks and asks for explanation, but depends on a graph/table that has not been extracted.",
+            statusEvidence: ["6 marks", "lifecycle graph", "data table"],
+            teacherOverride: null,
+            markSchemeLinkId: "practice-ms-q10",
+            modelSupport: null
+          },
+          {
+            id: "practice-q14-calculation",
+            paperId: "practice-paper-sustainable-systems",
+            number: "14",
+            title: "Calculation",
+            stem: "Calculate the total sheet material area needed for 40 units using the dimensions provided.",
+            marks: 4,
+            commandWords: ["calculate"],
+            source: { paperFileName: "practice-product-systems-demo", pageStart: null, pageEnd: null, rawText: "14 Calculate the total sheet material area needed for 40 units using the dimensions provided. (4 marks)" },
+            detectedFeatures: {
+              writtenResponseSignals: [],
+              visualDependencySignals: [],
+              calculationSignals: ["calculate", "40 units", "dimensions"],
+              drawingSignals: [],
+              tableOrFigureSignals: []
+            },
+            status: "ignored",
+            statusReason: "Calculation task rather than extended written response.",
+            statusEvidence: ["calculate", "4 marks"],
+            teacherOverride: null,
+            markSchemeLinkId: "practice-ms-q14",
+            modelSupport: null
+          },
+          {
+            id: "practice-q20-material-choices",
+            paperId: "practice-paper-sustainable-systems",
+            number: "20",
+            title: "Incomplete Support",
+            stem: "Evaluate the suitability of using a modular casing for a repairable portable speaker.",
+            marks: 6,
+            commandWords: ["evaluate"],
+            source: { paperFileName: "practice-product-systems-demo", pageStart: null, pageEnd: null, rawText: "20 Evaluate the suitability of using a modular casing for a repairable portable speaker. (6 marks)" },
+            detectedFeatures: {
+              writtenResponseSignals: ["evaluate"],
+              visualDependencySignals: [],
+              calculationSignals: [],
+              drawingSignals: [],
+              tableOrFigureSignals: []
+            },
+            status: "review",
+            statusReason: "Written-response question, but model support has not been authored for this fixture yet.",
+            statusEvidence: ["6 marks", "evaluate"],
+            teacherOverride: null,
+            markSchemeLinkId: "practice-ms-q20",
+            modelSupport: null
+          }
+        ],
+        markSchemeLinks: [
+          { id: "practice-ms-q1", questionId: "practice-q1-recall", matchStatus: "matched", confidence: 1, linkedQuestionNumber: "1", marks: 2, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: [] },
+          { id: "practice-ms-q6", questionId: "practice-q6-sketch", matchStatus: "review", confidence: .78, linkedQuestionNumber: "6", marks: 6, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: ["Drawing-based answer expected."] },
+          { id: "practice-ms-q10", questionId: "practice-q10-graph", matchStatus: "review", confidence: .6, linkedQuestionNumber: "10", marks: 6, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: ["Question depends on missing graph/table content."] },
+          { id: "practice-ms-q14", questionId: "practice-q14-calculation", matchStatus: "matched", confidence: .9, linkedQuestionNumber: "14", marks: 4, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: [] },
+          { id: "practice-ms-q20", questionId: "practice-q20-material-choices", matchStatus: "missing", confidence: .35, linkedQuestionNumber: "20", marks: 6, rawMarkSchemeText: "", extractedBands: [], extractedCriteria: [], mismatchReasons: ["Model support has not been generated for this fixture."] }
+        ]
+        }
+      ];
     })();
 
     /***********************
@@ -1012,8 +1202,8 @@
      ***********************/
     const appState = {
       currentStage: "question-browser",
-      selectedPaper: DEMO_PAPER,
-      selectedQuestionId: "demo-q18-open-design",
+      selectedPaperId: PAPER_LIBRARY[0]?.id || "",
+      selectedQuestionId: PAPER_LIBRARY[0]?.defaultQuestionId || "",
       currentQuestion: null
     };
 
@@ -1030,6 +1220,8 @@
     let assessmentDetailById = {};
     // evidenceMatchIndex -> element id mapping
     let evidenceSpans = {}; // { "c3:0": "evi_c3_0", ... }
+    let assessmentContextVersion = 0;
+    let latestAssessRequestToken = 0;
 
     /***********************
      * DOM
@@ -1038,6 +1230,7 @@
     const questionHeaderEl = document.getElementById("questionHeader");
     const paperTitleEl = document.getElementById("paperTitle");
     const paperSubtitleEl = document.getElementById("paperSubtitle");
+    const paperSelectEl = document.getElementById("paperSelect");
     const triageSummaryEl = document.getElementById("triageSummary");
     const questionListEl = document.getElementById("questionList");
     const gridEl = document.getElementById("criteriaGrid");
@@ -1051,6 +1244,7 @@
     const statusLineEl = document.getElementById("statusLine");
     const boxTitleEl = document.getElementById("boxTitle");
 
+    const modeToggleEl = document.querySelector(".modeToggle");
     const btnModeModel = document.getElementById("btnModeModel");
     const btnModeAssess = document.getElementById("btnModeAssess");
 
@@ -1076,8 +1270,16 @@
         .replaceAll("'","&#039;");
     }
 
+    function getPaperById(paperId){
+      return PAPER_LIBRARY.find(paper => paper.id === paperId) || null;
+    }
+
+    function getSelectedPaper(){
+      return getPaperById(appState.selectedPaperId) || PAPER_LIBRARY[0] || null;
+    }
+
     function getQuestions(){
-      return appState.selectedPaper?.questions || [];
+      return getSelectedPaper()?.questions || [];
     }
 
     function getQuestionById(id){
@@ -1090,6 +1292,29 @@
 
     function hasModelSupport(question = appState.currentQuestion){
       return !!(question && question.modelSupport && Array.isArray(question.modelSupport.criteria));
+    }
+
+    function getTriageStatus(question){
+      if (!question) return "review";
+      if (question.status === "usable" && !hasModelSupport(question)) return "review";
+      return question.status || (hasModelSupport(question) ? "usable" : "review");
+    }
+
+    function getPaperOptionLabel(paper){
+      const status = paper.extractionStatus ? paper.extractionStatus.replaceAll("-", " ") : "fixture";
+      const bits = [paper.examBoard, paper.year, paper.series || paper.paperName].filter(Boolean);
+      return `${bits.join(" ")} - ${paper.paperName || paper.title} (${status})`;
+    }
+
+    function getDefaultQuestionIdForPaper(paper){
+      const questions = paper?.questions || [];
+      const configured = questions.find(q => q.id === paper.defaultQuestionId);
+      if (configured) return configured.id;
+
+      const supported = questions.find(q => getTriageStatus(q) === "usable" && hasModelSupport(q));
+      if (supported) return supported.id;
+
+      return questions[0]?.id || "";
     }
 
     function getCriteria(){
@@ -1127,7 +1352,20 @@
       return "warn";
     }
 
+    function clearQuestionWorkspace(){
+      assessmentContextVersion += 1;
+      state = {};
+      selectedCritId = "";
+      mode = "model";
+      studentText = "";
+      lastAssessedText = "";
+      assessmentDetailById = {};
+      evidenceSpans = {};
+      activePanelTab = "summary";
+    }
+
     function resetQuestionWorkspace(question){
+      clearQuestionWorkspace();
       const support = question?.modelSupport;
       const criteria = support?.criteria || [];
       const bandKeys = support?.bands || [];
@@ -1136,12 +1374,23 @@
 
       state = Object.fromEntries(criteria.map(c => [c.id, defaultIndex]));
       selectedCritId = criteria[0]?.id || "";
-      mode = "model";
-      studentText = "";
-      lastAssessedText = "";
-      assessmentDetailById = {};
-      evidenceSpans = {};
-      activePanelTab = "summary";
+    }
+
+    function selectPaper(paperId){
+      const paper = getPaperById(paperId) || PAPER_LIBRARY[0] || null;
+      appState.selectedPaperId = paper?.id || "";
+      clearQuestionWorkspace();
+
+      const questionId = getDefaultQuestionIdForPaper(paper);
+      if (questionId){
+        selectQuestion(questionId);
+        return;
+      }
+
+      appState.selectedQuestionId = "";
+      appState.currentQuestion = null;
+      appState.currentStage = "question-browser";
+      renderApp();
     }
 
     function selectQuestion(questionId){
@@ -1199,6 +1448,16 @@
 
     function isAssessed(){
       return !!Object.keys(assessmentDetailById || {}).length;
+    }
+
+    function isAssessSnapshotCurrent(snapshot){
+      return !!snapshot
+        && snapshot.token === latestAssessRequestToken
+        && snapshot.contextVersion === assessmentContextVersion
+        && appState.selectedPaperId === snapshot.selectedPaperId
+        && appState.selectedQuestionId === snapshot.selectedQuestionId
+        && appState.currentQuestion?.id === snapshot.questionId
+        && (studentText || "").trim() === snapshot.studentText;
     }
 
     /***********************
@@ -1572,31 +1831,38 @@
 
     function renderHeader(){
       const question = appState.currentQuestion;
+      const paper = getSelectedPaper();
       appTitleEl.textContent = "Exam Question Model Generator";
 
       if (!question){
-        questionHeaderEl.innerHTML = "Demo paper loaded. Select a question below to model or assess.";
+        questionHeaderEl.innerHTML = `${escapeHtml(paper?.title || "Paper")} loaded. Select a question below to model or assess.`;
         return;
       }
 
+      const status = getTriageStatus(question);
       questionHeaderEl.innerHTML = `
         <b>Question:</b> ${escapeHtml(question.stem)}
         <span class="marks">(${escapeHtml(question.marks)} marks)</span>
         <div class="status" style="margin-top:8px;">
-          <span class="dot ${statusDotClass(question.status)}"></span>
+          <span class="dot ${statusDotClass(status)}"></span>
           <span>${escapeHtml(getQuestionLabel(question))} - ${escapeHtml(question.statusReason)}</span>
         </div>
       `;
     }
 
     function renderQuestionBrowser(){
-      const paper = appState.selectedPaper;
+      const paper = getSelectedPaper();
       const questions = getQuestions();
       paperTitleEl.textContent = paper?.title || "Demo paper";
       paperSubtitleEl.textContent = paper?.subtitle || "";
+      paperSelectEl.innerHTML = PAPER_LIBRARY.map(paperOption => `
+        <option value="${escapeHtml(paperOption.id)}">${escapeHtml(getPaperOptionLabel(paperOption))}</option>
+      `).join("");
+      paperSelectEl.value = paper?.id || "";
 
       const counts = questions.reduce((acc, q) => {
-        acc[q.status] = (acc[q.status] || 0) + 1;
+        const status = getTriageStatus(q);
+        acc[status] = (acc[status] || 0) + 1;
         return acc;
       }, {});
 
@@ -1604,14 +1870,20 @@
         <span class="statusBadge ${status}">${status}: ${counts[status] || 0}</span>
       `).join("");
 
+      if (!questions.length){
+        questionListEl.innerHTML = `<div class="statusReason">No questions are available for this paper fixture yet.</div>`;
+        return;
+      }
+
       questionListEl.innerHTML = questions.map(q => {
         const selected = q.id === appState.selectedQuestionId ? " selected" : "";
+        const status = getTriageStatus(q);
         const supportNote = hasModelSupport(q) ? "Model support ready" : "No model support yet";
         return `
-          <button class="questionItem ${q.status}${selected}" type="button" data-question-id="${escapeHtml(q.id)}">
+          <button class="questionItem ${status}${selected}" type="button" data-question-id="${escapeHtml(q.id)}">
             <div class="questionItemTop">
               <span class="questionNumber">Q${escapeHtml(q.number)} - ${escapeHtml(q.marks)} marks</span>
-              <span class="statusBadge ${q.status}">${escapeHtml(q.status)}</span>
+              <span class="statusBadge ${status}">${escapeHtml(status)}</span>
             </div>
             <div class="questionPreview">${escapeHtml(q.stem)}</div>
             <div class="statusReason">${escapeHtml(q.statusReason)} ${escapeHtml(supportNote)}</div>
@@ -1626,16 +1898,22 @@
 
     function renderUnsupportedQuestion(){
       const question = appState.currentQuestion;
+      const status = getTriageStatus(question);
+      const evidence = Array.isArray(question?.statusEvidence) && question.statusEvidence.length
+        ? `<p><b>Triage evidence:</b> ${question.statusEvidence.map(item => `<span>${escapeHtml(item)}</span>`).join(", ")}</p>`
+        : "";
       boxTitleEl.textContent = question ? getQuestionLabel(question) : "Question not ready";
       answerWrapEl.classList.remove("noHighlights");
       answerWrapEl.innerHTML = `
         <div class="unsupportedBox">
           <h3>This question is not ready for model generation yet.</h3>
           <p>${escapeHtml(question?.statusReason || "No model support is available for this question.")}</p>
-          <p>Status: <b>${escapeHtml(question?.status || "unknown")}</b>${question?.marks ? ` - ${escapeHtml(question.marks)} marks` : ""}</p>
+          <p>Status: <b>${escapeHtml(status || "unknown")}</b>${question?.marks ? ` - ${escapeHtml(question.marks)} marks` : ""}</p>
+          ${evidence}
         </div>
       `;
 
+      if (modeToggleEl) modeToggleEl.style.display = "none";
       btnModeModel.disabled = true;
       btnModeAssess.disabled = true;
       btnCopy.style.display = "none";
@@ -1645,8 +1923,8 @@
       btnMockAssess.style.display = "none";
       btnReassess.style.display = "none";
       scoreTextEl.textContent = "Model support: not ready";
-      scoreBandEl.textContent = `- ${question?.status || "review"}`;
-      setStatus(question?.status === "ignored" ? "bad" : "warn", question?.statusReason || "This question is not ready yet.");
+      scoreBandEl.textContent = `- ${status || "review"}`;
+      setStatus(status === "ignored" ? "bad" : "warn", question?.statusReason || "This question is not ready yet.");
     }
 
     function renderApp(){
@@ -1803,6 +2081,7 @@
         return;
       }
 
+      if (modeToggleEl) modeToggleEl.style.display = "";
       btnModeModel.disabled = false;
       btnModeAssess.disabled = false;
       btnCopy.style.display = "";
@@ -1910,6 +2189,10 @@
     /***********************
      * EVENTS
      ***********************/
+    paperSelectEl.addEventListener("change", (e) => {
+      selectPaper(e.target.value);
+    });
+
     btnModeModel.addEventListener("click", () => setMode("model"));
     btnModeAssess.addEventListener("click", () => setMode("assess"));
 
@@ -1996,6 +2279,15 @@
         return;
       }
 
+      const assessSnapshot = {
+        token: ++latestAssessRequestToken,
+        contextVersion: assessmentContextVersion,
+        selectedPaperId: appState.selectedPaperId,
+        selectedQuestionId: appState.selectedQuestionId,
+        questionId: appState.currentQuestion?.id || "",
+        studentText: text
+      };
+
       btnAssess.disabled = true;
       btnMockAssess.disabled = true;
       btnReassess.disabled = true;
@@ -2003,6 +2295,10 @@
 
       try{
         const data = await realAIAssess(text);
+        if (!isAssessSnapshotCurrent(assessSnapshot)){
+          setStatus("warn", "Assessment result ignored because the selected question or answer changed.");
+          return;
+        }
         applyBandsFromAI(data.bands);
 
         // ensure selected criterion exists in returned bands, else keep
@@ -2012,11 +2308,17 @@
         renderMainBox({ preserveScroll:true, forceTab:"summary" });
         setStatus("ok", "AI assessment applied. Click criteria for focused feedback.");
       }catch(err){
+        if (!isAssessSnapshotCurrent(assessSnapshot)){
+          setStatus("warn", "Assessment result ignored because the selected question or answer changed.");
+          return;
+        }
         setStatus("bad", err && err.message ? err.message : String(err));
       }finally{
-        btnAssess.disabled = false;
-        btnMockAssess.disabled = false;
-        btnReassess.disabled = false;
+        if (assessSnapshot.token === latestAssessRequestToken){
+          btnAssess.disabled = false;
+          btnMockAssess.disabled = false;
+          btnReassess.disabled = false;
+        }
       }
     });
 
@@ -2040,7 +2342,7 @@
      ***********************/
     toggleStateEl.textContent = "On";
     teacherStateEl.textContent = "Off";
-    selectQuestion(appState.selectedQuestionId);
+    selectPaper(appState.selectedPaperId);
   </script>
 </body>
 </html>
